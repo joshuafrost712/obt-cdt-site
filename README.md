@@ -31,6 +31,13 @@ the batch lands in `feedback/incoming/`; deployed, it posts to the Apps Script
 sink (`VITE_FEEDBACK_URL` repo variable) or downloads as a file. See
 `feedback/README.md` for how batches are handled.
 
+**Developer version (for reviewers):** open
+https://joshuafrost712.github.io/obt-cdt-site/dev/ once on any device. It
+switches the review tools on for that device (highlight → comment / edit
+text) and drops you on the home page. `?dev=0` turns them off again. Text
+edits made on the deployed site can't write to the repo, so they are captured
+old→new in the feedback batch for Claude to apply.
+
 Images: every image is a manifest-keyed slot; see `docs/MEDIA.md`.
 
 ## Development
@@ -48,5 +55,6 @@ npm run preview   # serve the built site
   Aggregate figures only.
 - No identification of partner organizations or projects in sensitive
   contexts.
-- Phase 2 (accounts, event sign-up, evaluations, certificates) is designed but
-  not built: see `docs/PHASE-2-BACKEND.md`.
+- The accounts backend (sign-in, event sign-up, evaluations, certificates) is
+  built behind feature flags and appears only once Supabase is provisioned:
+  see `docs/PHASE-2-BACKEND.md` for the 5-step activation.

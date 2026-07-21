@@ -1,4 +1,31 @@
-# Phase 2: accounts backend (design memo)
+# Phase 2: accounts backend
+
+**Status (2026-07-21): BUILT, behind flags, awaiting provisioning.** The
+participant area (sign-in, profile, evaluations, event sign-up, PDF
+certificates) ships in the repo but activates only when a Supabase project
+exists and its env vars are set. Until then the site builds fully static and
+none of it appears.
+
+## Provisioning steps (when ready to go live)
+
+1. Create a Supabase project (free tier is fine). Auth → providers: leave
+   Email enabled; magic links are the only sign-in method used.
+2. SQL editor → run `supabase/schema.sql` (idempotent; creates tables, RLS,
+   the profile trigger, and seeds the three workshop events).
+3. Auth → URL configuration: set the site URL to
+   `https://joshuafrost712.github.io/obt-cdt-site/` and add it to redirect
+   URLs (plus `http://localhost:5173` for dev).
+4. Repo → Settings → Secrets and variables → Actions → **Variables**: add
+   `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` (both are public client
+   values, not secrets). Re-run the deploy workflow.
+5. The "My Account" nav entry and the `/account`, `/events`, `/certificates`
+   routes appear on the next deploy. For local dev, put the same two vars in
+   `.env.local`.
+
+Evaluations and certificates are written via the Supabase dashboard or the
+workshop-evaluation pipeline (service role), never by participants.
+
+## Original design memo
 
 The MVP is a fully static site. Phase 2 adds user accounts so participants can
 sign up for events, view the evaluations they received, and print PDF

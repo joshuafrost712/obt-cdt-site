@@ -1,6 +1,7 @@
 import { useState, type ReactNode } from 'react'
 import { Link, NavLink } from 'react-router-dom'
-import { getContent, navItems } from '../../lib/content/loader'
+import { getContent, navItems, siteLabel } from '../../lib/content/loader'
+import { backendEnabled } from '../../lib/backend/config'
 import { Txt } from '../text'
 import { DevFeedbackMount } from './DevFeedbackMount'
 
@@ -44,6 +45,20 @@ function SiteHeader() {
               </span>
             </NavLink>
           ))}
+          {backendEnabled && (
+            <NavLink
+              to="/account"
+              className={({ isActive }) =>
+                `rounded-full border px-3.5 py-1.5 text-sm font-medium no-underline transition-colors ${
+                  isActive ? 'border-ink bg-ink text-paper' : 'border-ink/20 text-ink-soft hover:bg-paper-deep hover:text-ink'
+                }`
+              }
+            >
+              <span data-dfb-node="site.nav.account" data-dfb-field="label">
+                {siteLabel('site.nav.account', 'My Account')}
+              </span>
+            </NavLink>
+          )}
         </nav>
         <button
           type="button"
@@ -74,6 +89,21 @@ function SiteHeader() {
               </span>
             </NavLink>
           ))}
+          {backendEnabled && (
+            <NavLink
+              to="/account"
+              onClick={() => setOpen(false)}
+              className={({ isActive }) =>
+                `block rounded-lg px-3 py-2.5 text-base font-medium no-underline ${
+                  isActive ? 'bg-ink text-paper' : 'text-ink-soft'
+                }`
+              }
+            >
+              <span data-dfb-node="site.nav.account" data-dfb-field="label">
+                {siteLabel('site.nav.account', 'My Account')}
+              </span>
+            </NavLink>
+          )}
         </nav>
       )}
     </header>

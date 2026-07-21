@@ -49,6 +49,28 @@ for (const route of routeList) {
   writeFileSync(join(outDir, 'index.html'), page)
 }
 
+// Developer-version entry: opening <site>/dev/ turns the review tools on for
+// this device (same as ?dev=1) and lands on the home page. Memorable link for
+// Josh & reviewers; not in the sitemap or nav.
+const devEntry = `<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="robots" content="noindex" />
+    <title>OBT-CDT · developer version</title>
+    <script>
+      try { localStorage.setItem('cdt.dev', '1') } catch (e) {}
+      location.replace('${base}')
+    </script>
+  </head>
+  <body>
+    <p>Turning on review tools… <a href="${base}">Continue to the site</a>.</p>
+  </body>
+</html>
+`
+mkdirSync(join(dist, 'dev'), { recursive: true })
+writeFileSync(join(dist, 'dev', 'index.html'), devEntry)
+
 const sitemap = [
   '<?xml version="1.0" encoding="UTF-8"?>',
   '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',

@@ -35,6 +35,11 @@
         "id": "site.facts.dates",
         "type": "labelToken",
         "label": "Dates"
+      },
+      {
+        "id": "site.nav.account",
+        "type": "labelToken",
+        "label": "My Account"
       }
     ]
   },
