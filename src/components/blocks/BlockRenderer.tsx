@@ -197,12 +197,13 @@ export function CtaGroup({ block }: { block: Block }) {
   )
 }
 
-export function Cta({ block }: { block: Block }) {
+export function Cta({ block, onDark = false }: { block: Block; onDark?: boolean }) {
   const primary = block.variant !== 'ghost'
+  const ghost = onDark
+    ? 'border border-paper/35 text-paper hover:border-paper/70 hover:bg-paper/10'
+    : 'border border-ink/20 text-ink hover:border-ink/40 hover:bg-paper-deep'
   const className = `inline-block rounded-full px-5 py-2.5 text-sm font-semibold no-underline transition-colors ${
-    primary
-      ? 'bg-clay text-white hover:bg-clay-deep'
-      : 'border border-ink/20 text-ink hover:border-ink/40 hover:bg-paper-deep'
+    primary ? 'bg-clay text-white hover:bg-clay-deep' : ghost
   }`
   const label = <Txt node={block} field="label" as="span" />
   if (block.href) {

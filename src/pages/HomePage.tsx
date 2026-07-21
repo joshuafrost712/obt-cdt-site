@@ -45,7 +45,7 @@ function Hero({ block }: { block: Block }) {
         <Body node={block} className="mt-6 max-w-xl space-y-4 text-lg leading-relaxed text-paper/75" />
         <div className="mt-9 flex flex-wrap gap-3">
           {(block.items ?? []).map((cta) => (
-            <Cta key={cta.id} block={cta} />
+            <Cta key={cta.id} block={cta} onDark />
           ))}
         </div>
         <p aria-hidden className="mt-16 hidden animate-bounce text-sm text-paper/40 md:block">
