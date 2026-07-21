@@ -1,0 +1,15 @@
+# dependencies / build
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+# feedback inbox — transient working artifacts, handled then moved to processed/
+feedback/incoming/*
+!feedback/incoming/.gitkeep
+feedback/processed/*
+!feedback/processed/.gitkeep
+feedback/.pull.json
+
+# editor
+.DS_Store

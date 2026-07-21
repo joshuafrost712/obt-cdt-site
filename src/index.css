@@ -1,0 +1,76 @@
+@import 'tailwindcss';
+
+/*
+ * OBT-CDT design tokens. Warm editorial palette: paper field, deep ink,
+ * terracotta accent (the roundabout), muted teal secondary.
+ */
+@theme {
+  --font-display: 'Fraunces', 'Iowan Old Style', Georgia, serif;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+
+  --color-paper: #faf6f0;
+  --color-paper-deep: #f1e9de;
+  --color-ink: #211a13;
+  --color-ink-soft: #57493c;
+  --color-ink-faint: #8b7d6e;
+  --color-clay: #b4551f;
+  --color-clay-deep: #8f3f12;
+  --color-clay-soft: #e8c9b4;
+  --color-teal: #1e5f5b;
+  --color-teal-soft: #cfe3e0;
+  --color-gold: #c9972c;
+  --color-night: #201a14;
+  --color-night-soft: #35291d;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-text-size-adjust: 100%;
+  text-rendering: optimizeLegibility;
+}
+
+/*
+ * Scroll reveals. Only pages with JS get the hidden initial state (the inline
+ * script in index.html adds .js to <html>), so no-JS visitors and crawlers see
+ * everything. data-revealed is set by the useReveal IntersectionObserver hook.
+ */
+.js .reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.js .reveal[data-revealed] {
+  opacity: 1;
+  transform: none;
+}
+
+/* Roundabout diagram stage transitions. */
+.ra-part {
+  transition:
+    opacity 0.8s ease,
+    stroke-dashoffset 1.1s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.8s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .js .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .ra-part {
+    transition: none;
+  }
+}

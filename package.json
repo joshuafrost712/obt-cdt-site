@@ -1,0 +1,30 @@
+{
+  "name": "obt-cdt-site",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Public website for the OBT Consultant Development Track (OBT-CDT).",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build && vite build --ssr src/prerender-entry.tsx --outDir dist-ssr && node scripts/prerender.mjs",
+    "preview": "vite preview",
+    "pull-feedback": "node scripts/pull-feedback.mjs"
+  },
+  "dependencies": {
+    "dexie": "^4.4.3",
+    "dexie-react-hooks": "^4.4.0",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6",
+    "react-router-dom": "^7.17.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.1.0",
+    "@types/node": "^24.12.3",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.1",
+    "tailwindcss": "^4.1.0",
+    "typescript": "~6.0.2",
+    "vite": "^8.0.12"
+  }
+}

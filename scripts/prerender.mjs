@@ -1,0 +1,62 @@
+/**
+ * Build-time prerender. Runs after `vite build` (client → dist/) and
+ * `vite build --ssr src/prerender-entry.tsx --outDir dist-ssr`. For every
+ * route in the content store it renders real HTML into dist/<route>/index.html
+ * with per-page <title>/<meta>/OG tags, then emits sitemap.xml and robots.txt.
+ * GitHub Pages therefore serves crawlable pages; 404.html stays the plain app
+ * shell so unknown paths still client-render the NotFound page.
+ */
+import { mkdirSync, readFileSync, writeFileSync, copyFileSync } from 'node:fs'
+import { join, dirname } from 'node:path'
+import { fileURLToPath, pathToFileURL } from 'node:url'
+
+const root = join(dirname(fileURLToPath(import.meta.url)), '..')
+const dist = join(root, 'dist')
+
+const { render, routes } = await import(pathToFileURL(join(root, 'dist-ssr', 'prerender-entry.js')).href)
+
+const template = readFileSync(join(dist, 'index.html'), 'utf8')
+
+// 404.html is the UN-prerendered shell: unknown paths client-render NotFound.
+copyFileSync(join(dist, 'index.html'), join(dist, '404.html'))
+
+// Absolute-URL prefix for canonical/OG/sitemap. VITE_SITE_ORIGIN is the bare
+// origin (no trailing slash); VITE_BASE is the Pages project path.
+const origin = process.env.VITE_SITE_ORIGIN || 'https://joshuafrost712.github.io'
+const base = process.env.VITE_BASE || '/'
+const site = origin + base.replace(/\/$/, '')
+
+const esc = (s) => s.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('"', '&quot;')
+
+const routeList = routes()
+for (const route of routeList) {
+  const { html, title, description } = render(route)
+  const canonical = site + (route === '/' ? '/' : route + '/')
+  const head = [
+    `<meta name="description" content="${esc(description)}" />`,
+    `<link rel="canonical" href="${canonical}" />`,
+    `<meta property="og:type" content="website" />`,
+    `<meta property="og:title" content="${esc(title)}" />`,
+    `<meta property="og:description" content="${esc(description)}" />`,
+    `<meta property="og:url" content="${canonical}" />`,
+  ].join('\n    ')
+  const page = template
+    .replace(/<title>.*?<\/title>/, `<title>${esc(title)}</title>`)
+    .replace('<!--app-head-->', head)
+    .replace('<!--app-html-->', html)
+  const outDir = route === '/' ? dist : join(dist, ...route.split('/').filter(Boolean))
+  mkdirSync(outDir, { recursive: true })
+  writeFileSync(join(outDir, 'index.html'), page)
+}
+
+const sitemap = [
+  '<?xml version="1.0" encoding="UTF-8"?>',
+  '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+  ...routeList.map((r) => `  <url><loc>${site + (r === '/' ? '/' : r + '/')}</loc></url>`),
+  '</urlset>',
+  '',
+].join('\n')
+writeFileSync(join(dist, 'sitemap.xml'), sitemap)
+writeFileSync(join(dist, 'robots.txt'), `User-agent: *\nAllow: /\n\nSitemap: ${site}/sitemap.xml\n`)
+
+console.log(`prerendered ${routeList.length} routes → dist/`)

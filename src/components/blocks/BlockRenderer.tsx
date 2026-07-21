@@ -1,0 +1,220 @@
+import { Link } from 'react-router-dom'
+import type { Block } from '../../schema/types'
+import { Body, Txt } from '../text'
+import { ImageSlot } from './ImageSlot'
+import { useReveal } from '../scrolly/useReveal'
+
+/**
+ * Renders a list of content blocks. Every text element is tagged (via Txt/Body)
+ * for the devfeedback edit-in-place layer. Home-essay 'scene' blocks are NOT
+ * handled here — the HomePage renders those inside the scrollytelling shell.
+ */
+export function BlockRenderer({ blocks }: { blocks: Block[] }) {
+  return (
+    <>
+      {blocks.map((block) => (
+        <BlockView key={block.id} block={block} />
+      ))}
+    </>
+  )
+}
+
+function BlockView({ block }: { block: Block }) {
+  switch (block.type) {
+    case 'prose':
+      return <Prose block={block} />
+    case 'quote':
+      return <Quote block={block} />
+    case 'statRow':
+      return <StatRow block={block} />
+    case 'cardGrid':
+      return <CardGrid block={block} />
+    case 'threadCard':
+      return <ThreadCard block={block} index={0} />
+    case 'timeline':
+      return <Timeline block={block} />
+    case 'imageSlot':
+      return <ImageSlot block={block} />
+    case 'rubricScale':
+      return <RubricScale block={block} />
+    case 'ctaGroup':
+      return <CtaGroup block={block} />
+    default:
+      return null
+  }
+}
+
+function Section({ children, wide = false }: { children: React.ReactNode; wide?: boolean }) {
+  const ref = useReveal<HTMLDivElement>()
+  return (
+    <div ref={ref} className={`reveal mx-auto px-5 ${wide ? 'max-w-5xl' : 'max-w-3xl'}`}>
+      {children}
+    </div>
+  )
+}
+
+function Prose({ block }: { block: Block }) {
+  return (
+    <section className="py-8">
+      <Section>
+        <Txt node={block} field="kicker" as="p" className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-clay" />
+        <Txt node={block} field="title" as="h2" className="font-display text-3xl font-semibold tracking-tight text-ink" />
+        <Body node={block} className="mt-4 space-y-4 text-[1.05rem] leading-relaxed text-ink-soft" />
+      </Section>
+    </section>
+  )
+}
+
+function Quote({ block }: { block: Block }) {
+  return (
+    <section className="py-10">
+      <Section>
+        <figure className="rounded-2xl border-l-4 border-clay bg-paper-deep/70 px-7 py-6">
+          <blockquote>
+            <Txt node={block} field="body" as="p" className="font-display text-xl leading-snug text-ink md:text-2xl" />
+          </blockquote>
+          <figcaption>
+            <Txt node={block} field="attribution" as="p" className="mt-3 text-sm font-medium text-ink-faint" />
+          </figcaption>
+        </figure>
+      </Section>
+    </section>
+  )
+}
+
+export function StatRow({ block }: { block: Block }) {
+  return (
+    <section className="py-10">
+      <Section wide>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {(block.items ?? []).map((stat) => (
+            <div key={stat.id} className="rounded-2xl bg-night px-6 py-6 text-paper">
+              <Txt node={stat} field="value" as="p" className="font-display text-4xl font-semibold text-gold" />
+              <Txt node={stat} field="label" as="p" className="mt-1.5 text-sm font-medium leading-snug text-paper/85" />
+              <Txt node={stat} field="note" as="p" className="mt-2 text-xs leading-relaxed text-paper/55" />
+            </div>
+          ))}
+        </div>
+      </Section>
+    </section>
+  )
+}
+
+function CardGrid({ block }: { block: Block }) {
+  const threads = (block.items ?? []).every((c) => c.type === 'threadCard')
+  return (
+    <section className="py-8">
+      <Section wide>
+        <Txt node={block} field="kicker" as="p" className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-clay" />
+        <Txt node={block} field="title" as="h2" className="font-display text-3xl font-semibold tracking-tight text-ink" />
+        <Body node={block} className="mt-3 max-w-3xl space-y-3 leading-relaxed text-ink-soft" />
+        <div className={`mt-8 grid gap-5 ${threads ? 'md:grid-cols-2 lg:grid-cols-3' : 'md:grid-cols-2'}`}>
+          {(block.items ?? []).map((card, i) =>
+            card.type === 'threadCard' ? (
+              <ThreadCard key={card.id} block={card} index={i} />
+            ) : (
+              <div key={card.id} className="rounded-2xl border border-ink/10 bg-white/60 p-6">
+                <Txt node={card} field="title" as="h3" className="font-display text-xl font-semibold text-ink" />
+                <Body node={card} className="mt-2.5 space-y-3 text-[0.95rem] leading-relaxed text-ink-soft" />
+                <Txt node={card} field="note" as="p" className="mt-3 text-xs font-medium uppercase tracking-wide text-clay" />
+              </div>
+            ),
+          )}
+        </div>
+      </Section>
+    </section>
+  )
+}
+
+function ThreadCard({ block, index }: { block: Block; index: number }) {
+  return (
+    <div className="relative overflow-hidden rounded-2xl border border-ink/10 bg-white/60 p-6">
+      <span aria-hidden className="font-display absolute -right-2 -top-5 text-[5.5rem] font-semibold leading-none text-clay/10">
+        {index + 1}
+      </span>
+      <Txt node={block} field="kicker" as="p" className="text-xs font-semibold uppercase tracking-[0.18em] text-teal" />
+      <Txt node={block} field="title" as="h3" className="mt-1 font-display text-xl font-semibold text-ink" />
+      <Body node={block} className="mt-2.5 space-y-3 text-[0.95rem] leading-relaxed text-ink-soft" />
+    </div>
+  )
+}
+
+function Timeline({ block }: { block: Block }) {
+  return (
+    <section className="py-8">
+      <Section>
+        <Txt node={block} field="kicker" as="p" className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-clay" />
+        <Txt node={block} field="title" as="h2" className="font-display text-3xl font-semibold tracking-tight text-ink" />
+        <ol className="mt-8 space-y-0 border-l-2 border-clay-soft pl-6">
+          {(block.items ?? []).map((item) => (
+            <li key={item.id} className="relative pb-8 last:pb-0">
+              <span aria-hidden className="absolute -left-[31px] top-1.5 size-3 rounded-full border-2 border-clay bg-paper" />
+              <Txt node={item} field="kicker" as="p" className="text-xs font-semibold uppercase tracking-wide text-ink-faint" />
+              <Txt node={item} field="title" as="h3" className="mt-0.5 font-display text-lg font-semibold text-ink" />
+              <Body node={item} className="mt-1.5 space-y-2 text-[0.95rem] leading-relaxed text-ink-soft" />
+            </li>
+          ))}
+        </ol>
+      </Section>
+    </section>
+  )
+}
+
+export function RubricScale({ block }: { block: Block }) {
+  return (
+    <section className="py-8">
+      <Section wide>
+        <Txt node={block} field="kicker" as="p" className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-clay" />
+        <Txt node={block} field="title" as="h2" className="font-display text-3xl font-semibold tracking-tight text-ink" />
+        <Body node={block} className="mt-3 max-w-3xl space-y-3 leading-relaxed text-ink-soft" />
+        <ol className="mt-8 grid gap-4 md:grid-cols-4">
+          {(block.items ?? []).map((step) => (
+            <li key={step.id} className="rounded-2xl border border-ink/10 bg-white/60 p-5">
+              <Txt node={step} field="value" as="p" className="font-display text-3xl font-semibold text-teal" />
+              <Txt node={step} field="label" as="p" className="mt-1 text-sm font-semibold text-ink" />
+              <Txt node={step} field="body" as="p" className="mt-2 text-[0.85rem] leading-relaxed text-ink-soft" />
+            </li>
+          ))}
+        </ol>
+      </Section>
+    </section>
+  )
+}
+
+export function CtaGroup({ block }: { block: Block }) {
+  return (
+    <section className="py-10">
+      <Section>
+        <Txt node={block} field="title" as="h2" className="font-display text-2xl font-semibold tracking-tight text-ink" />
+        <Body node={block} className="mt-2 space-y-2 leading-relaxed text-ink-soft" />
+        <div className="mt-5 flex flex-wrap gap-3">
+          {(block.items ?? []).map((cta) => (
+            <Cta key={cta.id} block={cta} />
+          ))}
+        </div>
+      </Section>
+    </section>
+  )
+}
+
+export function Cta({ block }: { block: Block }) {
+  const primary = block.variant !== 'ghost'
+  const className = `inline-block rounded-full px-5 py-2.5 text-sm font-semibold no-underline transition-colors ${
+    primary
+      ? 'bg-clay text-white hover:bg-clay-deep'
+      : 'border border-ink/20 text-ink hover:border-ink/40 hover:bg-paper-deep'
+  }`
+  const label = <Txt node={block} field="label" as="span" />
+  if (block.href) {
+    return (
+      <a href={block.href} className={className}>
+        {label}
+      </a>
+    )
+  }
+  return (
+    <Link to={block.route ?? '/'} className={className}>
+      {label}
+    </Link>
+  )
+}

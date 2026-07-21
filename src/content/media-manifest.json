@@ -1,0 +1,50 @@
+{
+  "home-workshop": {
+    "kind": "placeholder",
+    "alt": "Workshop participants seated in a circle, internalizing a Bible passage together",
+    "aspect": "21/9",
+    "placeholder": { "style": "gradient", "hue": "amber", "label": "Photo slot: workshop internalization circle" },
+    "src": null,
+    "credit": null
+  },
+  "philosophy-performance": {
+    "kind": "placeholder",
+    "alt": "A translator performing an oral Scripture passage for community members",
+    "aspect": "16/9",
+    "placeholder": { "style": "gradient", "hue": "teal", "label": "Photo slot: oral performance / community checking" },
+    "src": null,
+    "credit": null
+  },
+  "threads-cohort": {
+    "kind": "placeholder",
+    "alt": "A cohort of participants studying together around a table",
+    "aspect": "16/9",
+    "placeholder": { "style": "gradient", "hue": "amber", "label": "Photo slot: cohort study session" },
+    "src": null,
+    "credit": null
+  },
+  "workshop-narrative": {
+    "kind": "placeholder",
+    "alt": "Participants acting out a narrative passage during internalization",
+    "aspect": "16/9",
+    "placeholder": { "style": "gradient", "hue": "amber", "label": "Photo slot: Narrative workshop, Bangalore 2025" },
+    "src": null,
+    "credit": null
+  },
+  "workshop-epistles": {
+    "kind": "placeholder",
+    "alt": "A team mapping the argument structure of an epistle on a whiteboard",
+    "aspect": "16/9",
+    "placeholder": { "style": "gradient", "hue": "teal", "label": "Photo slot: Epistles workshop, Chiang Mai 2025" },
+    "src": null,
+    "credit": null
+  },
+  "workshop-psalms": {
+    "kind": "placeholder",
+    "alt": "Local artists crafting a psalm as a song in their community's musical genre",
+    "aspect": "16/9",
+    "placeholder": { "style": "gradient", "hue": "amber", "label": "Photo slot: Psalms workshop, Bali 2026" },
+    "src": null,
+    "credit": null
+  }
+}

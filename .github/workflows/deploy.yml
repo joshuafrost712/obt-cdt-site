@@ -1,0 +1,53 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One in-flight deploy at a time; let a new push supersede an older run.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      # `npm run build` runs the client build, the SSR build, and the prerender
+      # script (every route becomes real crawlable HTML + sitemap + robots).
+      # Project Pages serve under /<repo>/; override VITE_BASE if renamed or
+      # moved to a custom domain, and VITE_SITE_ORIGIN for canonical/OG URLs.
+      - run: npm run build
+        env:
+          VITE_BASE: /obt-cdt-site/
+          VITE_SITE_ORIGIN: https://joshuafrost712.github.io
+          # Public Google Apps Script web-app URL for the in-app feedback sink
+          # (see feedback/server/). Set as a repo Actions variable so feedback
+          # from the deployed site (?dev=1) lands in the Sheet. Leave unset and
+          # submissions fall back to downloading a markdown file.
+          VITE_FEEDBACK_URL: ${{ vars.VITE_FEEDBACK_URL }}
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
