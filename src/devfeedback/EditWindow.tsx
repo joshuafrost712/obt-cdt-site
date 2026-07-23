@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { findNode } from '../lib/content/loader'
 import { useFeedback } from './feedbackContext'
 import { addEdit } from './db'
@@ -31,6 +31,17 @@ export function EditWindow() {
   const [text, setText] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
   const [notice, setNotice] = useState('')
+
+  // This panel is a singleton (mounted once, shown/hidden via `editDraft`), so its
+  // local draft state survives across edit targets. Without this reset, a previous
+  // target's typed `text` wins over the new target's `oldText` (`value = text ??
+  // oldText`) and the panel opens showing the wrong, stale text. Clear the draft
+  // whenever the target identity changes (including on close → reopen).
+  useEffect(() => {
+    setText(null)
+    setSaving(false)
+    setNotice('')
+  }, [editDraft?.nodeId, editDraft?.field])
 
   if (!editDraft) return null
 
