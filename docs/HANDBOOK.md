@@ -26,6 +26,17 @@ form links, is readable in `src/content/site-content.json` on github.com and in
 the commit history. Do not put anything in a handbook that would be a problem
 world-readable. Personal data stays out entirely, same as the rest of the site.
 
+### Deliberately absent: the registration form link
+
+The registration and travel form is **not** linked from the handbook, by decision
+(2026-07-28). An open Google Form on a URL that anyone can reach collects junk
+submissions, and the form is the one link here that writes data rather than
+reads it. Sections 08 and 18 tell participants the link came by email and to
+write to Josh if they lost it. Do not add it back as a convenience.
+
+The Exegetical Guide link is fine to keep: it is read-only and already
+circulated to the cohort.
+
 ## Where the copy lives
 
 One page node in `src/content/site-content.json`, `id: "bali-2026-handbook"`,

@@ -1365,21 +1365,7 @@
               "type": "callout",
               "variant": "action-required",
               "title": "Fill in the registration form, and add your flight details as soon as they are booked",
-              "body": "One form covers the whole event, so if you are attending both weeks you fill it in once. We use it to arrange visas, accommodation and airport pickups.\n\nIf you are travelling on a passport that does not get visa on arrival and you will need an invitation letter, say so on the form as early as you can. Those take time to arrange."
-            },
-            {
-              "id": "bali.08.form",
-              "type": "linkGrid",
-              "items": [
-                {
-                  "id": "bali.08.form.form",
-                  "type": "cta",
-                  "label": "OBT-CDT Bali 2026 registration form",
-                  "href": "https://docs.google.com/forms/d/e/1FAIpQLScaCO6WMIDHAgui1qofDhFlK9UWL9pGKWS7LvjumtflpGivHg/viewform",
-                  "body": "Airline, flight number, arrival and departure dates and times, and a mobile or WhatsApp number we can reach you on.",
-                  "note": "Google Form"
-                }
-              ]
+              "body": "The form link is in the email we sent you. Write to Josh if you cannot find it. One form covers the whole event, so if you are attending both weeks you fill it in once. We use it to arrange visas, accommodation and airport pickups.\n\nWe need your airline, flight number, arrival and departure dates and times, and a mobile or WhatsApp number we can reach you on.\n\nIf you are travelling on a passport that does not get visa on arrival and you will need an invitation letter, say so on the form as early as you can. Those take time to arrange."
             }
           ]
         },
@@ -1888,14 +1874,6 @@
               "title": "Available now",
               "items": [
                 {
-                  "id": "bali.18.live.form",
-                  "type": "cta",
-                  "label": "Registration and travel form",
-                  "href": "https://docs.google.com/forms/d/e/1FAIpQLScaCO6WMIDHAgui1qofDhFlK9UWL9pGKWS7LvjumtflpGivHg/viewform",
-                  "body": "Also the place to update flight details when they change.",
-                  "note": "Google Form"
-                },
-                {
                   "id": "bali.18.live.guide",
                   "type": "cta",
                   "label": "Exegetical Guide",
@@ -1904,6 +1882,12 @@
                   "note": "Google Doc"
                 }
               ]
+            },
+            {
+              "id": "bali.18.form",
+              "type": "subsection",
+              "title": "The registration and travel form",
+              "body": "We send the link by email rather than posting it here. It is also where you update flight details when they change, so keep that email findable. Write to Josh if you have lost it."
             },
             {
               "id": "bali.18.pending",
