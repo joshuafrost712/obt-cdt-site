@@ -5,6 +5,10 @@
  * with per-page <title>/<meta>/OG tags, then emits sitemap.xml and robots.txt.
  * GitHub Pages therefore serves crawlable pages; 404.html stays the plain app
  * shell so unknown paths still client-render the NotFound page.
+ *
+ * Pages marked `hidden` in the content store are still prerendered (so a
+ * participant with the link gets real HTML, printable and readable without JS)
+ * but get noindex and no sitemap entry.
  */
 import { mkdirSync, readFileSync, writeFileSync, copyFileSync } from 'node:fs'
 import { join, dirname } from 'node:path'
@@ -13,7 +17,9 @@ import { fileURLToPath, pathToFileURL } from 'node:url'
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
 const dist = join(root, 'dist')
 
-const { render, routes } = await import(pathToFileURL(join(root, 'dist-ssr', 'prerender-entry.js')).href)
+const { render, routes, hiddenRoutes } = await import(
+  pathToFileURL(join(root, 'dist-ssr', 'prerender-entry.js')).href
+)
 
 const template = readFileSync(join(dist, 'index.html'), 'utf8')
 
@@ -29,11 +35,13 @@ const site = origin + base.replace(/\/$/, '')
 const esc = (s) => s.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('"', '&quot;')
 
 const routeList = routes()
+const unlisted = new Set(hiddenRoutes())
 for (const route of routeList) {
   const { html, title, description } = render(route)
   const canonical = site + (route === '/' ? '/' : route + '/')
   const head = [
     `<meta name="description" content="${esc(description)}" />`,
+    ...(unlisted.has(route) ? [`<meta name="robots" content="noindex, nofollow" />`] : []),
     `<link rel="canonical" href="${canonical}" />`,
     `<meta property="og:type" content="website" />`,
     `<meta property="og:title" content="${esc(title)}" />`,
@@ -74,11 +82,13 @@ writeFileSync(join(dist, 'dev', 'index.html'), devEntry)
 const sitemap = [
   '<?xml version="1.0" encoding="UTF-8"?>',
   '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
-  ...routeList.map((r) => `  <url><loc>${site + (r === '/' ? '/' : r + '/')}</loc></url>`),
+  ...routeList
+    .filter((r) => !unlisted.has(r))
+    .map((r) => `  <url><loc>${site + (r === '/' ? '/' : r + '/')}</loc></url>`),
   '</urlset>',
   '',
 ].join('\n')
 writeFileSync(join(dist, 'sitemap.xml'), sitemap)
 writeFileSync(join(dist, 'robots.txt'), `User-agent: *\nAllow: /\n\nSitemap: ${site}/sitemap.xml\n`)
 
-console.log(`prerendered ${routeList.length} routes → dist/`)
+console.log(`prerendered ${routeList.length} routes → dist/ (${unlisted.size} unlisted)`)

@@ -61,6 +61,39 @@ body {
     transform 0.8s ease;
 }
 
+/*
+ * Handbook: a duotone wash over openly-licensed photography so it sits inside
+ * the palette instead of reading as dropped-in stock. Multiply the clay accent
+ * over the shadows, lift the highlights toward paper.
+ */
+.hb-duotone {
+  background:
+    linear-gradient(200deg, color-mix(in oklab, var(--color-clay) 26%, transparent), transparent 62%),
+    linear-gradient(20deg, color-mix(in oklab, var(--color-teal) 22%, transparent), transparent 58%);
+  mix-blend-mode: multiply;
+}
+
+.hb-band img {
+  transition: transform 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.hb-band:hover img {
+  transform: scale(1.03);
+}
+
+/* Only the action-required chip pulses; "coming soon" should read as calm. */
+@keyframes hb-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in oklab, var(--color-clay) 45%, transparent);
+  }
+  60% {
+    box-shadow: 0 0 0 6px transparent;
+  }
+}
+.js .hb-pulse {
+  animation: hb-pulse 3.2s ease-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -72,5 +105,77 @@ body {
   }
   .ra-part {
     transition: none;
+  }
+  .js .hb-pulse {
+    animation: none;
+  }
+  .hb-band img,
+  .hb-band:hover img {
+    transition: none;
+    transform: none;
+  }
+}
+
+/*
+ * Print. The handbook is a travel document: participants will print it or save
+ * it as a PDF before they fly, so it has to survive leaving the browser.
+ */
+@media print {
+  body {
+    background: #fff;
+  }
+  header.sticky,
+  footer,
+  .hb-rail,
+  .hb-progress,
+  .hb-noprint,
+  .hb-contents {
+    display: none !important;
+  }
+  .hb-hero {
+    background: #fff !important;
+    color: var(--color-ink) !important;
+  }
+  .hb-hero img,
+  .hb-hero [aria-hidden] {
+    display: none !important;
+  }
+  .hb-hero a,
+  .hb-hero p,
+  .hb-hero h1,
+  .hb-hero span {
+    color: var(--color-ink) !important;
+  }
+  /* Sections are far too long to keep whole on a page — forcing that wastes
+     half the paper. Keep the small units intact instead, and never orphan a
+     heading from the text under it. */
+  .hb-section {
+    border-top: 1px solid #ddd;
+    padding-top: 1.25rem;
+  }
+  .hb-section h2,
+  .hb-section h3 {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+  .hb-section aside,
+  .hb-section li,
+  .hb-section dl > div {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  .hb-band,
+  .hb-credit {
+    display: none;
+  }
+  .js .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  /* Spell out where a link actually goes; a printed href is useless otherwise. */
+  a[href^='http']::after {
+    content: ' (' attr(href) ')';
+    font-size: 0.75em;
+    word-break: break-all;
   }
 }

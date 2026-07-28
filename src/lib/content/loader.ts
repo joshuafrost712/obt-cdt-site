@@ -82,10 +82,20 @@ export interface NavItem {
 }
 
 export function navItems(): NavItem[] {
-  return content.pages.map((p) => ({ route: p.route, label: p.navLabel, nodeId: p.id }))
+  return content.pages
+    .filter((p) => !p.hidden)
+    .map((p) => ({ route: p.route, label: p.navLabel, nodeId: p.id }))
 }
 
 /** Every concrete route the site serves; the prerender script walks this. */
 export function allRoutes(): string[] {
   return [...content.pages.map((p) => p.route), ...content.workshops.map((w) => w.route)]
+}
+
+/**
+ * Routes that are prerendered but unlisted: no sitemap entry, noindex in the
+ * head, no nav link. The prerender script reads this to decide both.
+ */
+export function hiddenRoutes(): string[] {
+  return content.pages.filter((p) => p.hidden).map((p) => p.route)
 }

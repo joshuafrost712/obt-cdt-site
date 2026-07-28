@@ -9,7 +9,7 @@ import { renderToString } from 'react-dom/server'
 import { StaticRouter } from 'react-router'
 import App from './App'
 import { getRouteMeta } from './lib/meta'
-import { allRoutes } from './lib/content/loader'
+import { allRoutes, hiddenRoutes as unlistedRoutes } from './lib/content/loader'
 
 export function render(url: string): { html: string; title: string; description: string } {
   // Same basename as the client BrowserRouter, so hrefs match at hydration.
@@ -29,4 +29,9 @@ export function render(url: string): { html: string; title: string; description:
 
 export function routes(): string[] {
   return allRoutes()
+}
+
+/** Prerendered but unlisted: noindex in the head, no sitemap entry. */
+export function hiddenRoutes(): string[] {
+  return unlistedRoutes()
 }

@@ -40,6 +40,24 @@ old→new in the feedback batch for Claude to apply.
 
 Images: every image is a manifest-keyed slot; see `docs/MEDIA.md`.
 
+## Page kinds
+
+Most pages are a header plus a stream of content blocks. Two page fields change
+that:
+
+- `"layout": "handbook"` renders the page with the participant-handbook shell
+  (photo hero, reading progress, sticky section rail, print stylesheet) instead
+  of the generic one. See `docs/HANDBOOK.md`.
+- `"hidden": true` makes a page **unlisted**: still prerendered and reachable by
+  link, but absent from the top nav and `sitemap.xml`, and served with
+  `noindex, nofollow`.
+
+Unlisted is not private. **This repo is public**, so hidden-page copy is
+readable in `site-content.json` on github.com and in the history regardless.
+Treat `hidden` as "don't index, don't advertise", never as access control.
+
+Currently unlisted: `/workshops/psalms-bali-2026/handbook`.
+
 ## Development
 
 ```bash

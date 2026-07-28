@@ -3,23 +3,45 @@ import type { Block } from '../../schema/types'
 import { Body, Txt } from '../text'
 import { ImageSlot } from './ImageSlot'
 import { useReveal } from '../scrolly/useReveal'
+import { Callout, Checklist, GlanceGrid, HandbookSection, LinkGrid, SectionNav, Subsection } from './HandbookBlocks'
 
 /**
  * Renders a list of content blocks. Every text element is tagged (via Txt/Body)
  * for the devfeedback edit-in-place layer. Home-essay 'scene' blocks are NOT
  * handled here — the HomePage renders those inside the scrollytelling shell.
+ *
+ * Handbook block types are delegated to HandbookBlocks; they live in their own
+ * file because they carry a different visual contract (a reference document,
+ * not an essay) but must share this renderer so nesting and edit-in-place work.
  */
-export function BlockRenderer({ blocks }: { blocks: Block[] }) {
+/**
+ * `nested` means "already inside something that owns the column width" — a
+ * handbookSection. Handbook leaf blocks are written container-free so they can
+ * sit inside that column; used at the top level of an ordinary page they need
+ * the same Section wrapper every other block gets.
+ */
+export function BlockRenderer({ blocks, nested = false }: { blocks: Block[]; nested?: boolean }) {
   return (
     <>
       {blocks.map((block) => (
-        <BlockView key={block.id} block={block} />
+        <BlockView key={block.id} block={block} nested={nested} />
       ))}
     </>
   )
 }
 
-function BlockView({ block }: { block: Block }) {
+const HANDBOOK_LEAF = new Set(['subsection', 'callout', 'checklist', 'glanceGrid', 'linkGrid'])
+
+function BlockView({ block, nested }: { block: Block; nested: boolean }) {
+  if (!nested && HANDBOOK_LEAF.has(block.type)) {
+    return (
+      <section className="py-4">
+        <Section>
+          <BlockView block={block} nested />
+        </Section>
+      </section>
+    )
+  }
   switch (block.type) {
     case 'prose':
       return <Prose block={block} />
@@ -39,6 +61,20 @@ function BlockView({ block }: { block: Block }) {
       return <RubricScale block={block} />
     case 'ctaGroup':
       return <CtaGroup block={block} />
+    case 'handbookSection':
+      return <HandbookSection block={block} />
+    case 'subsection':
+      return <Subsection block={block} />
+    case 'callout':
+      return <Callout block={block} />
+    case 'checklist':
+      return <Checklist block={block} />
+    case 'glanceGrid':
+      return <GlanceGrid block={block} />
+    case 'linkGrid':
+      return <LinkGrid block={block} />
+    case 'sectionNav':
+      return <SectionNav block={block} />
     default:
       return null
   }

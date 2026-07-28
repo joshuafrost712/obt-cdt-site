@@ -8,6 +8,7 @@ import { HomePage } from './pages/HomePage'
 import { ContentPage } from './pages/ContentPage'
 import { WorkshopsIndexPage } from './pages/WorkshopsIndexPage'
 import { WorkshopPage } from './pages/WorkshopPage'
+import { HandbookPage } from './pages/HandbookPage'
 import { NotFoundPage } from './pages/NotFoundPage'
 
 // Participant-area pages: lazy chunks so supabase-js never touches the main
@@ -40,7 +41,11 @@ export default function App() {
         {pages
           .filter((p) => p.route !== '/' && p.route !== '/workshops')
           .map((p) => (
-            <Route key={p.id} path={p.route} element={<ContentPage pageId={p.id} />} />
+            <Route
+              key={p.id}
+              path={p.route}
+              element={p.layout === 'handbook' ? <HandbookPage pageId={p.id} /> : <ContentPage pageId={p.id} />}
+            />
           ))}
         <Route path="/workshops" element={<WorkshopsIndexPage />} />
         <Route path="/workshops/:slug" element={<WorkshopPage />} />

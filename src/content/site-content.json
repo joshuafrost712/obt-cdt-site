@@ -691,6 +691,1411 @@
           ]
         }
       ]
+    },
+    {
+      "id": "bali-2026-handbook",
+      "route": "/workshops/psalms-bali-2026/handbook",
+      "navLabel": "Bali 2026 handbook",
+      "title": "Bali 2026 participant handbook",
+      "metaDescription": "Participant handbook for Workshop 3 of the OBT Consultant Development Track: Psalms, Bali, 17 August to 4 September 2026. Dates, venue, travel, preparation and contacts for confirmed participants and facilitators.",
+      "kicker": "Workshop 3 · Psalms · Bali 2026",
+      "hidden": true,
+      "layout": "handbook",
+      "blocks": [
+        {
+          "id": "bali.hero",
+          "type": "hero",
+          "kicker": "OBT Consultant Development Track · Workshop 3",
+          "title": "Psalms in Bali: participant handbook",
+          "body": "Everything you need in order to arrive ready: what the weeks hold, where the base is, what to put in your bag, and what to do before you fly.",
+          "mediaId": "bali-hero",
+          "items": [
+            {
+              "id": "bali.hero.dates",
+              "type": "labelToken",
+              "label": "18 August to 4 September 2026"
+            },
+            {
+              "id": "bali.hero.arrival",
+              "type": "labelToken",
+              "label": "Arrival: 17 August"
+            },
+            {
+              "id": "bali.hero.venue",
+              "type": "labelToken",
+              "label": "YWAM base, Jimbaran, Bali"
+            },
+            {
+              "id": "bali.hero.size",
+              "type": "labelToken",
+              "label": "About 50 participants"
+            }
+          ]
+        },
+        {
+          "id": "bali.contents",
+          "type": "sectionNav",
+          "kicker": "Contents",
+          "title": "Find what you need",
+          "items": [
+            {
+              "id": "bali.contents.s01-welcome",
+              "type": "cta",
+              "number": "01",
+              "anchor": "s01-welcome",
+              "label": "Welcome to Workshop 3"
+            },
+            {
+              "id": "bali.contents.s02-dates",
+              "type": "cta",
+              "number": "02",
+              "anchor": "s02-dates",
+              "label": "Dates at a glance"
+            },
+            {
+              "id": "bali.contents.s03-location",
+              "type": "cta",
+              "number": "03",
+              "anchor": "s03-location",
+              "label": "Where we will be"
+            },
+            {
+              "id": "bali.contents.s04-journey",
+              "type": "cta",
+              "number": "04",
+              "anchor": "s04-journey",
+              "label": "How the weeks build"
+            },
+            {
+              "id": "bali.contents.s05-programme",
+              "type": "cta",
+              "number": "05",
+              "anchor": "s05-programme",
+              "label": "Programme overview"
+            },
+            {
+              "id": "bali.contents.s06-learning",
+              "type": "cta",
+              "number": "06",
+              "anchor": "s06-learning",
+              "label": "What you will be able to do"
+            },
+            {
+              "id": "bali.contents.s07-team",
+              "type": "cta",
+              "number": "07",
+              "anchor": "s07-team",
+              "label": "Facilitators and organisers"
+            },
+            {
+              "id": "bali.contents.s08-travel",
+              "type": "cta",
+              "number": "08",
+              "anchor": "s08-travel",
+              "label": "Travel plans"
+            },
+            {
+              "id": "bali.contents.s09-transfers",
+              "type": "cta",
+              "number": "09",
+              "anchor": "s09-transfers",
+              "label": "Airport transfers"
+            },
+            {
+              "id": "bali.contents.s10-before-you-fly",
+              "type": "cta",
+              "number": "10",
+              "anchor": "s10-before-you-fly",
+              "label": "Before you fly"
+            },
+            {
+              "id": "bali.contents.s11-entry",
+              "type": "cta",
+              "number": "11",
+              "anchor": "s11-entry",
+              "label": "Indonesian entry requirements"
+            },
+            {
+              "id": "bali.contents.s12-packing",
+              "type": "cta",
+              "number": "12",
+              "anchor": "s12-packing",
+              "label": "Packing suggestions"
+            },
+            {
+              "id": "bali.contents.s13-accommodation",
+              "type": "cta",
+              "number": "13",
+              "anchor": "s13-accommodation",
+              "label": "Venue and accommodation"
+            },
+            {
+              "id": "bali.contents.s14-meals",
+              "type": "cta",
+              "number": "14",
+              "anchor": "s14-meals",
+              "label": "Meals and dietary needs"
+            },
+            {
+              "id": "bali.contents.s15-connectivity",
+              "type": "cta",
+              "number": "15",
+              "anchor": "s15-connectivity",
+              "label": "Wi-Fi and mobile connectivity"
+            },
+            {
+              "id": "bali.contents.s16-laundry",
+              "type": "cta",
+              "number": "16",
+              "anchor": "s16-laundry",
+              "label": "Laundry"
+            },
+            {
+              "id": "bali.contents.s17-preparation",
+              "type": "cta",
+              "number": "17",
+              "anchor": "s17-preparation",
+              "label": "Participant preparation"
+            },
+            {
+              "id": "bali.contents.s18-documents",
+              "type": "cta",
+              "number": "18",
+              "anchor": "s18-documents",
+              "label": "Documents and shared resources"
+            },
+            {
+              "id": "bali.contents.s19-health",
+              "type": "cta",
+              "number": "19",
+              "anchor": "s19-health",
+              "label": "Health, safety and contacts"
+            },
+            {
+              "id": "bali.contents.s20-departure",
+              "type": "cta",
+              "number": "20",
+              "anchor": "s20-departure",
+              "label": "Departure and check-out"
+            },
+            {
+              "id": "bali.contents.s21-free-time",
+              "type": "cta",
+              "number": "21",
+              "anchor": "s21-free-time",
+              "label": "Free time and exploring together"
+            }
+          ]
+        },
+        {
+          "id": "bali.01",
+          "type": "handbookSection",
+          "number": "01",
+          "anchor": "s01-welcome",
+          "kicker": "Welcome",
+          "title": "Welcome to Workshop 3",
+          "body": "The Psalter has been the church's most sustained song-and-prayer text for as long as there has been a church. Where Christians have received it as living song, in the musical forms their community already trusts with its most serious speech, it has shaped their theology and their emotional life. Where it has arrived as prose on a page, much less has happened.\n\nWorkshop 3 is about that gap. Over these weeks you will exegete Psalms 1 and 13 closely, work alongside mother-tongue translators and artists to craft them in local genres, and then check that work the way a consultant checks aesthetic Scripture.",
+          "mediaId": "bali-artistry",
+          "caption": "Canang sari, the daily woven offerings of flowers and petals set out across Bali.",
+          "items": [
+            {
+              "id": "bali.01.thesis",
+              "type": "callout",
+              "variant": "note",
+              "label": "Workshop thesis",
+              "title": "The Psalms serve communities most fully when they are translated faithfully into artistic forms local people embrace and use, devotionally and congregationally."
+            },
+            {
+              "id": "bali.01.community",
+              "type": "checklist",
+              "title": "What we are asking of each other",
+              "items": [
+                {
+                  "id": "bali.01.community.1",
+                  "type": "checklistItem",
+                  "label": "Listen closely to Scripture, to artists, to translators and to one another."
+                },
+                {
+                  "id": "bali.01.community.2",
+                  "type": "checklistItem",
+                  "label": "Practise consultant skills in real cross-cultural team settings."
+                },
+                {
+                  "id": "bali.01.community.3",
+                  "type": "checklistItem",
+                  "label": "Connect exegesis, internalisation, artistic translation and community use."
+                },
+                {
+                  "id": "bali.01.community.4",
+                  "type": "checklistItem",
+                  "label": "Grow through mentor guidance, peer feedback and reflective practice."
+                }
+              ]
+            },
+            {
+              "id": "bali.01.capacity",
+              "type": "callout",
+              "variant": "note",
+              "label": "Participation",
+              "title": "The workshop is full",
+              "body": "About fifty people will be on the base at the peak and every place is taken. This handbook is for confirmed participants and facilitators."
+            },
+            {
+              "id": "bali.01.working",
+              "type": "callout",
+              "variant": "coming-soon",
+              "label": "How to read it",
+              "title": "This is a working handbook",
+              "body": "Sections marked like this are waiting on a detail that is not settled yet. They are tracked, not forgotten, and they get filled in here as they are confirmed. Read this page rather than a copy you saved earlier."
+            }
+          ]
+        },
+        {
+          "id": "bali.02",
+          "type": "handbookSection",
+          "number": "02",
+          "anchor": "s02-dates",
+          "kicker": "The shape of the trip",
+          "title": "Dates at a glance",
+          "items": [
+            {
+              "id": "bali.02.dates",
+              "type": "glanceGrid",
+              "items": [
+                {
+                  "id": "bali.02.dates.arrive",
+                  "type": "glanceCard",
+                  "kicker": "Mon 17 Aug",
+                  "value": "Arrive",
+                  "label": "Independence Day",
+                  "body": "Land during the afternoon if your schedule allows. The 17th is Indonesia's national Independence Day, so expect celebrations, red and white everywhere, and slower traffic."
+                },
+                {
+                  "id": "bali.02.dates.crash",
+                  "type": "glanceCard",
+                  "kicker": "Tue 18 to Sat 22 Aug",
+                  "value": "Crash Course",
+                  "label": "Five full days",
+                  "body": "The OBT Crash Course, for participants who need the shared foundations. It runs Tuesday to Saturday rather than Monday to Friday because the 17th is a public holiday."
+                },
+                {
+                  "id": "bali.02.dates.transition",
+                  "type": "glanceCard",
+                  "kicker": "Sun 23 Aug",
+                  "value": "Transition",
+                  "label": "Rest and arrivals",
+                  "body": "A rest day. Anyone coming only for the Psalms workshop should be on the base by this evening."
+                },
+                {
+                  "id": "bali.02.dates.psalms",
+                  "type": "glanceCard",
+                  "kicker": "Mon 24 Aug to Fri 4 Sep",
+                  "value": "Psalms workshop",
+                  "label": "Two weeks",
+                  "body": "Instruction in the mornings; translation and consulting practice with the teams in the afternoons."
+                },
+                {
+                  "id": "bali.02.dates.close",
+                  "type": "glanceCard",
+                  "kicker": "Fri 4 Sep",
+                  "value": "5:00 PM",
+                  "label": "Workshop closes",
+                  "body": "Book a late-evening flight that day, or leave on the 5th or later."
+                }
+              ]
+            },
+            {
+              "id": "bali.02.action",
+              "type": "callout",
+              "variant": "action-required",
+              "title": "Check your itinerary against these dates before you book or change anything",
+              "body": "Do not plan to leave before the workshop closes at 5:00 PM on Friday 4 September. If your flights are already booked and they conflict with these dates, tell us now rather than later."
+            }
+          ]
+        },
+        {
+          "id": "bali.03",
+          "type": "handbookSection",
+          "number": "03",
+          "anchor": "s03-location",
+          "kicker": "Location",
+          "title": "Where we will be",
+          "body": "Jimbaran sits just south of the airport on Bali's Bukit peninsula.",
+          "mediaId": "bali-location",
+          "caption": "Jimbaran, on the Bukit peninsula in the south of Bali.",
+          "items": [
+            {
+              "id": "bali.03.venue",
+              "type": "glanceGrid",
+              "title": "The base",
+              "variant": "rows",
+              "items": [
+                {
+                  "id": "bali.03.venue.venue",
+                  "type": "glanceCard",
+                  "value": "YWAM Bali base, Jimbaran",
+                  "label": "Venue"
+                },
+                {
+                  "id": "bali.03.venue.address",
+                  "type": "glanceCard",
+                  "value": "Yayasan Putra Pemenang, Tiara Nusa, Jl. Goa Gong, Jimbaran, Bali, Indonesia",
+                  "label": "Address"
+                },
+                {
+                  "id": "bali.03.venue.area",
+                  "type": "glanceCard",
+                  "value": "Bukit peninsula, south Bali",
+                  "label": "Area",
+                  "body": "The base is a working campus of the University of the Nations."
+                }
+              ]
+            },
+            {
+              "id": "bali.03.map",
+              "type": "linkGrid",
+              "items": [
+                {
+                  "id": "bali.03.map.maps",
+                  "type": "cta",
+                  "label": "Open the address in Google Maps",
+                  "href": "https://www.google.com/maps/search/?api=1&query=Yayasan+Putra+Pemenang+Tiara+Nusa+Jl.+Goa+Gong+Jimbaran+Bali",
+                  "note": "External map"
+                }
+              ]
+            },
+            {
+              "id": "bali.03.hosts",
+              "type": "subsection",
+              "title": "Our hosts",
+              "body": "We are guests here. Part of the reason this workshop can happen at a cost that lets fifty people attend is the real generosity of the base, and that shapes some of the practical arrangements further down, meals in particular."
+            },
+            {
+              "id": "bali.03.pending",
+              "type": "callout",
+              "variant": "coming-soon",
+              "title": "Reception number, pinned map location and arrival instructions",
+              "body": "These arrive in the official venue message. Please wait for it before arranging independent transport."
+            }
+          ]
+        },
+        {
+          "id": "bali.04",
+          "type": "handbookSection",
+          "number": "04",
+          "anchor": "s04-journey",
+          "kicker": "Workshop journey",
+          "title": "How the weeks build",
+          "mediaId": "bali-journey",
+          "caption": "A candi bentar, the split gate that marks the entrance to a Balinese temple.",
+          "items": [
+            {
+              "id": "bali.04.phases",
+              "type": "glanceGrid",
+              "items": [
+                {
+                  "id": "bali.04.phases.foundations",
+                  "type": "glanceCard",
+                  "kicker": "Phase one",
+                  "value": "Foundations",
+                  "label": "18 to 22 August",
+                  "body": "OBT orientation and crash course: a shared starting point for people arriving from very different backgrounds."
+                },
+                {
+                  "id": "bali.04.phases.create",
+                  "type": "glanceCard",
+                  "kicker": "Phase two",
+                  "value": "Learn and create",
+                  "label": "Week one",
+                  "body": "Aesthetic language and ethnopoetics, genre in the Psalms and in cultures, the CLAT process, and hands-on crafting of Psalms 1 and 13 with artists."
+                },
+                {
+                  "id": "bali.04.phases.check",
+                  "type": "glanceCard",
+                  "kicker": "Phase three",
+                  "value": "Check and consult",
+                  "label": "Week two",
+                  "body": "Community checking, consultant checking, supervised consulting practice, and peer feedback on all of it."
+                },
+                {
+                  "id": "bali.04.phases.integrate",
+                  "type": "glanceCard",
+                  "kicker": "Phase four",
+                  "value": "Integrate",
+                  "label": "Final day",
+                  "body": "Integration conversations with artists and community leaders, performances of both psalms, and the closing ceremony."
+                }
+              ]
+            },
+            {
+              "id": "bali.04.psalms",
+              "type": "subsection",
+              "title": "Which psalms",
+              "body": "The workshop works closely with Psalm 1, a wisdom psalm, and Psalm 13, a lament. Hebrew poetic conventions beyond those two get their own session, so what you learn transfers to the rest of the Psalter."
+            }
+          ]
+        },
+        {
+          "id": "bali.05",
+          "type": "handbookSection",
+          "number": "05",
+          "anchor": "s05-programme",
+          "kicker": "What the days look like",
+          "title": "Programme overview",
+          "items": [
+            {
+              "id": "bali.05.status",
+              "type": "callout",
+              "variant": "coming-soon",
+              "label": "Working plan",
+              "title": "The sequence is set; the clock is not",
+              "body": "Daily hours, meal times, where the devotionals sit, room assignments and the final facilitator roster are still being fixed. The shape below is settled."
+            },
+            {
+              "id": "bali.05.rhythm",
+              "type": "subsection",
+              "title": "The daily rhythm",
+              "body": "Mornings are theory and skill. Afternoons are application with the mother-tongue translation teams and the artists, and they are also where most competencies get observed and evaluated. Expect around seven hours of classroom time a day, with evening homework kept to about ninety minutes on average.\n\nEach morning opens with a devotional chosen for that day's work rather than as a generic opener."
+            },
+            {
+              "id": "bali.05.week1",
+              "type": "checklist",
+              "kicker": "Mornings theory, afternoons application",
+              "title": "Week one",
+              "items": [
+                {
+                  "id": "bali.05.week1.1",
+                  "type": "checklistItem",
+                  "label": "Day 1",
+                  "body": "Opening session and structured introductions between the consultant teams and the artist and translator teams. Aesthetic language and ethnopoetics in the Bible; genre in the Psalms and in cultures. Afternoon: mapping the genre repertoire of the communities present."
+                },
+                {
+                  "id": "bali.05.week1.2",
+                  "type": "checklistItem",
+                  "label": "Day 2",
+                  "body": "CLAT overview, with Scripture goals, genre matching and genre feature analysis. Afternoon: the same three applied to Psalm 1."
+                },
+                {
+                  "id": "bali.05.week1.3",
+                  "type": "checklistItem",
+                  "label": "Day 3",
+                  "body": "Translating aesthetic language, CLAT step 5, then Psalm 1 exegesis and an internalisation plan. Afternoon: facilitating internalisation and beginning to craft Psalm 1 as local art."
+                },
+                {
+                  "id": "bali.05.week1.4",
+                  "type": "checklistItem",
+                  "label": "Day 4",
+                  "body": "Debrief of the Psalm 1 process, then Psalm 13 exegesis and internalisation. Afternoon: refine Psalm 1, match a genre for Psalm 13, begin crafting."
+                },
+                {
+                  "id": "bali.05.week1.5",
+                  "type": "checklistItem",
+                  "label": "Day 5",
+                  "body": "Hebrew poetic conventions beyond Psalms 1 and 13, and how to use the Scriptura materials. Afternoon: Psalm 1 refinement and group work on Psalm 13."
+                }
+              ]
+            },
+            {
+              "id": "bali.05.week2",
+              "type": "checklist",
+              "title": "Week two",
+              "items": [
+                {
+                  "id": "bali.05.week2.1",
+                  "type": "checklistItem",
+                  "label": "Day 1",
+                  "body": "Community checking and consultant checking of artistic translations, moving into application mid-morning. Afternoon: helping the teams begin community checking of Psalm 1."
+                },
+                {
+                  "id": "bali.05.week2.2",
+                  "type": "checklistItem",
+                  "label": "Day 2",
+                  "body": "Preparing consulting questions and a checking plan for Psalm 1, with real planning time built in. Afternoon: the consultant check itself, then revision."
+                },
+                {
+                  "id": "bali.05.week2.3",
+                  "type": "checklistItem",
+                  "label": "Day 3",
+                  "body": "A full day of checking and revising Psalm 13, carrying on Psalm 1 work where it is needed."
+                },
+                {
+                  "id": "bali.05.week2.4",
+                  "type": "checklistItem",
+                  "label": "Day 4",
+                  "body": "Still being decided between two options: Proverbs, or practice at being a Psalms ambassador to community leaders."
+                },
+                {
+                  "id": "bali.05.week2.5",
+                  "type": "checklistItem",
+                  "label": "Day 5",
+                  "body": "Integration conversations and APPLY conversations with the artists in the morning. Afternoon: finalising integration plans, each group performing Psalms 1 and 13, and the closing ceremony."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "bali.06",
+          "type": "handbookSection",
+          "number": "06",
+          "anchor": "s06-learning",
+          "kicker": "Learning focus",
+          "title": "What you will be able to do",
+          "mediaId": "bali-gamelan",
+          "caption": "Bamboo keys of a Balinese tingklik, struck with padded mallets.",
+          "items": [
+            {
+              "id": "bali.06.focus",
+              "type": "glanceGrid",
+              "items": [
+                {
+                  "id": "bali.06.focus.scripture",
+                  "type": "glanceCard",
+                  "kicker": "Scripture",
+                  "value": "Exegete and internalise",
+                  "body": "Work through a psalm deeply yourself, recognise the features of Hebrew poetry that matter for translation, and be able to say what those forms did socially and theologically in their own setting."
+                },
+                {
+                  "id": "bali.06.focus.art",
+                  "type": "glanceCard",
+                  "kicker": "Art and culture",
+                  "value": "Map the repertoire",
+                  "body": "Ask culturally appropriate questions to find out what a community actually sings, chants and performs, then analyse the function and features of both psalm genres and candidate local ones."
+                },
+                {
+                  "id": "bali.06.focus.translation",
+                  "type": "glanceCard",
+                  "kicker": "Translation",
+                  "value": "Facilitate CLAT",
+                  "body": "Lead a contextualised version of the CLAT conversations, holding fidelity to the source and excellence in the target genre at the same time."
+                },
+                {
+                  "id": "bali.06.focus.consulting",
+                  "type": "glanceCard",
+                  "kicker": "Consulting",
+                  "value": "Run the conversation",
+                  "body": "Prepare questions suited to aesthetic content, then take a checking conversation from spotting an issue through to resolving it."
+                },
+                {
+                  "id": "bali.06.focus.community",
+                  "type": "glanceCard",
+                  "kicker": "Community",
+                  "value": "Make the case",
+                  "body": "Show community leaders inductively why a psalm in a local art form is still a faithful translation, and help artists and translators plan for it to be used."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "bali.07",
+          "type": "handbookSection",
+          "number": "07",
+          "anchor": "s07-team",
+          "kicker": "Who you will be working with",
+          "title": "Facilitators and organisers",
+          "body": "The workshop series is organised jointly by the Global Consultant Pool and SIL Orality Services.",
+          "items": [
+            {
+              "id": "bali.07.team",
+              "type": "glanceGrid",
+              "variant": "rows",
+              "items": [
+                {
+                  "id": "bali.07.team.josh",
+                  "type": "glanceCard",
+                  "value": "Josh Frost",
+                  "label": "Lead facilitator",
+                  "body": "josh_frost@sil.org. First point of contact for anything in this handbook."
+                },
+                {
+                  "id": "bali.07.team.viji",
+                  "type": "glanceCard",
+                  "value": "Viji Mathew",
+                  "label": "Coordination",
+                  "body": "Workshop logistics and participant coordination."
+                },
+                {
+                  "id": "bali.07.team.katie",
+                  "type": "glanceCard",
+                  "value": "Katie Frost",
+                  "label": "Teaching",
+                  "body": "Genre theory, the CLAT process, and translating aesthetic language."
+                },
+                {
+                  "id": "bali.07.team.nikki",
+                  "type": "glanceCard",
+                  "value": "Nikki Mustin",
+                  "label": "OBT consultant",
+                  "body": "Psalms exegesis and internalisation, and the checking sessions."
+                }
+              ]
+            },
+            {
+              "id": "bali.07.pending",
+              "type": "callout",
+              "variant": "coming-soon",
+              "title": "Full team list, mentor groups and on-site contacts",
+              "body": "Additional facilitators, mentors, translators, artists and local partners are still being confirmed. They get listed here as roles are settled."
+            }
+          ]
+        },
+        {
+          "id": "bali.08",
+          "type": "handbookSection",
+          "number": "08",
+          "anchor": "s08-travel",
+          "kicker": "Getting there and back",
+          "title": "Travel plans",
+          "items": [
+            {
+              "id": "bali.08.arrive",
+              "type": "subsection",
+              "title": "When to arrive",
+              "body": "If you are joining the crash course, plan to be in Bali on Monday 17 August, during the afternoon. If you are coming only for the Psalms workshop, be on the base by Sunday 23 August.\n\nYou are very welcome to come a couple of days early and stay at the base beforehand. We especially encourage that for anyone crossing four or five time zones or more. A day or two lets your body catch up so you can work properly from the first session instead of pushing through jet lag."
+            },
+            {
+              "id": "bali.08.depart",
+              "type": "subsection",
+              "title": "When to leave",
+              "body": "The workshop ends at 5:00 PM on Friday 4 September. Choose a late-evening flight that day, or leave on the 5th or later. Leave real time for the drive to the airport, check-in, security and immigration."
+            },
+            {
+              "id": "bali.08.action",
+              "type": "callout",
+              "variant": "action-required",
+              "title": "Fill in the registration form, and add your flight details as soon as they are booked",
+              "body": "One form covers the whole event, so if you are attending both weeks you fill it in once. We use it to arrange visas, accommodation and airport pickups.\n\nIf you are travelling on a passport that does not get visa on arrival and you will need an invitation letter, say so on the form as early as you can. Those take time to arrange."
+            },
+            {
+              "id": "bali.08.form",
+              "type": "linkGrid",
+              "items": [
+                {
+                  "id": "bali.08.form.form",
+                  "type": "cta",
+                  "label": "OBT-CDT Bali 2026 registration form",
+                  "href": "https://docs.google.com/forms/d/e/1FAIpQLScaCO6WMIDHAgui1qofDhFlK9UWL9pGKWS7LvjumtflpGivHg/viewform",
+                  "body": "Airline, flight number, arrival and departure dates and times, and a mobile or WhatsApp number we can reach you on.",
+                  "note": "Google Form"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "bali.09",
+          "type": "handbookSection",
+          "number": "09",
+          "anchor": "s09-transfers",
+          "kicker": "Getting to the base",
+          "title": "Airport transfers",
+          "body": "We have budgeted to cover your transport between the airport and the base, and we arrange it from the flight details on the registration form. Getting yours in early is what lets us group arrivals so nobody waits long after landing.",
+          "items": [
+            {
+              "id": "bali.09.confirm",
+              "type": "callout",
+              "variant": "note",
+              "title": "Wait for a direct confirmation before you assume your pickup is booked",
+              "body": "If your flight changes, tell us. We re-plan pickups around actual landing times, but only if we know about the change."
+            },
+            {
+              "id": "bali.09.pending",
+              "type": "callout",
+              "variant": "coming-soon",
+              "title": "Driver details and pickup times",
+              "body": "These go out closer to the date, once itineraries are in."
+            }
+          ]
+        },
+        {
+          "id": "bali.10",
+          "type": "handbookSection",
+          "number": "10",
+          "anchor": "s10-before-you-fly",
+          "kicker": "Practical checks",
+          "title": "Before you fly",
+          "items": [
+            {
+              "id": "bali.10.list",
+              "type": "checklist",
+              "title": "Worth doing while you are still at home",
+              "items": [
+                {
+                  "id": "bali.10.list.1",
+                  "type": "checklistItem",
+                  "label": "Check that the name on your ticket matches your passport exactly."
+                },
+                {
+                  "id": "bali.10.list.2",
+                  "type": "checklistItem",
+                  "label": "Keep passport, visa or entry approval, return ticket, insurance and accommodation details together and easy to reach."
+                },
+                {
+                  "id": "bali.10.list.3",
+                  "type": "checklistItem",
+                  "label": "Save offline copies of key documents and workshop contacts, and carry one on paper."
+                },
+                {
+                  "id": "bali.10.list.4",
+                  "type": "checklistItem",
+                  "label": "Tell the organisers promptly about itinerary changes, accessibility needs, allergies or medical needs."
+                },
+                {
+                  "id": "bali.10.list.5",
+                  "type": "checklistItem",
+                  "label": "Check baggage limits for every airline in your itinerary, including domestic and regional legs."
+                },
+                {
+                  "id": "bali.10.list.6",
+                  "type": "checklistItem",
+                  "label": "Carry essential medicines in their original packaging, with a prescription or doctor's letter where that helps."
+                },
+                {
+                  "id": "bali.10.list.7",
+                  "type": "checklistItem",
+                  "label": "Tell your bank you are travelling, and take more than one way to pay."
+                }
+              ]
+            },
+            {
+              "id": "bali.10.holiday",
+              "type": "callout",
+              "variant": "note",
+              "label": "Travel day",
+              "title": "17 August is Indonesia's Independence Day",
+              "body": "Expect a festive atmosphere, red-and-white decorations, and slower movement around the island. Allow extra time on your arrival day."
+            }
+          ]
+        },
+        {
+          "id": "bali.11",
+          "type": "handbookSection",
+          "number": "11",
+          "anchor": "s11-entry",
+          "kicker": "Visas and arrival",
+          "title": "Indonesian entry requirements",
+          "items": [
+            {
+              "id": "bali.11.responsibility",
+              "type": "callout",
+              "variant": "action-required",
+              "label": "Check before you travel",
+              "title": "Entry rules depend on your nationality and they change",
+              "body": "Every participant is responsible for checking official Indonesian immigration guidance for the passport they will actually travel on."
+            },
+            {
+              "id": "bali.11.list",
+              "type": "checklist",
+              "title": "The current checklist",
+              "items": [
+                {
+                  "id": "bali.11.list.1",
+                  "type": "checklistItem",
+                  "label": "Passport",
+                  "body": "Official guidance commonly asks for at least six months' validity."
+                },
+                {
+                  "id": "bali.11.list.2",
+                  "type": "checklistItem",
+                  "label": "Visa",
+                  "body": "Work out whether you need an e-Visa, a Visa on Arrival or e-VOA, another visa type, or whether you are exempt."
+                },
+                {
+                  "id": "bali.11.list.3",
+                  "type": "checklistItem",
+                  "label": "Arrival declaration",
+                  "body": "The immigration portal requires an arrival card, submitted within the three days before you arrive."
+                },
+                {
+                  "id": "bali.11.list.4",
+                  "type": "checklistItem",
+                  "label": "Onward travel",
+                  "body": "Carry evidence of a return or onward ticket in case it is asked for."
+                },
+                {
+                  "id": "bali.11.list.5",
+                  "type": "checklistItem",
+                  "label": "Bali levy",
+                  "body": "International tourists generally pay the Bali Tourism Levy of IDR 150,000 per person. Keep the voucher."
+                }
+              ]
+            },
+            {
+              "id": "bali.11.official",
+              "type": "linkGrid",
+              "body": "Use government portals only. Do not use agents, or links forwarded to you without checking where they go.",
+              "items": [
+                {
+                  "id": "bali.11.official.evisa",
+                  "type": "cta",
+                  "label": "Indonesia e-Visa and arrival information",
+                  "href": "https://evisa.imigrasi.go.id/",
+                  "note": "Official government portal"
+                },
+                {
+                  "id": "bali.11.official.levy",
+                  "type": "cta",
+                  "label": "Bali Tourism Levy portal",
+                  "href": "https://lovebali.baliprov.go.id/",
+                  "note": "Official government portal"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "bali.12",
+          "type": "handbookSection",
+          "number": "12",
+          "anchor": "s12-packing",
+          "kicker": "What to bring",
+          "title": "Packing suggestions",
+          "items": [
+            {
+              "id": "bali.12.work",
+              "type": "checklist",
+              "title": "Workshop essentials",
+              "items": [
+                {
+                  "id": "bali.12.work.1",
+                  "type": "checklistItem",
+                  "label": "Laptop and charger, notebook and pens, plus anything the facilitators specifically ask for."
+                },
+                {
+                  "id": "bali.12.work.2",
+                  "type": "checklistItem",
+                  "label": "Headphones or earphones good enough for careful listening to audio."
+                },
+                {
+                  "id": "bali.12.work.3",
+                  "type": "checklistItem",
+                  "label": "A refillable water bottle and a small day bag."
+                },
+                {
+                  "id": "bali.12.work.4",
+                  "type": "checklistItem",
+                  "label": "A universal travel adapter. A compact extension lead only if it is safely rated."
+                }
+              ]
+            },
+            {
+              "id": "bali.12.bali",
+              "type": "checklist",
+              "title": "For Bali in August and September",
+              "items": [
+                {
+                  "id": "bali.12.bali.1",
+                  "type": "checklistItem",
+                  "label": "Light, breathable clothing, plus one layer for strong air-conditioning and cooler evenings."
+                },
+                {
+                  "id": "bali.12.bali.2",
+                  "type": "checklistItem",
+                  "label": "Modest clothing for worship, community interaction and visits to religious or cultural sites."
+                },
+                {
+                  "id": "bali.12.bali.3",
+                  "type": "checklistItem",
+                  "label": "Shoes or sandals you can walk and stand in all day."
+                },
+                {
+                  "id": "bali.12.bali.4",
+                  "type": "checklistItem",
+                  "label": "Hat, sunglasses and sunscreen."
+                },
+                {
+                  "id": "bali.12.bali.5",
+                  "type": "checklistItem",
+                  "label": "A compact umbrella or light rain layer. Showers happen even in the drier season."
+                },
+                {
+                  "id": "bali.12.bali.6",
+                  "type": "checklistItem",
+                  "label": "Toiletries, insect repellent, and any medicine you take regularly."
+                }
+              ]
+            },
+            {
+              "id": "bali.12.dont",
+              "type": "checklist",
+              "title": "Please do not forget",
+              "items": [
+                {
+                  "id": "bali.12.dont.1",
+                  "type": "checklistItem",
+                  "label": "Passport and travel documents in your hand luggage, not your checked bag."
+                },
+                {
+                  "id": "bali.12.dont.2",
+                  "type": "checklistItem",
+                  "label": "A curious and respectful posture. Bali has deep religious and cultural traditions and you will be a guest in them."
+                }
+              ]
+            },
+            {
+              "id": "bali.12.pending",
+              "type": "callout",
+              "variant": "coming-soon",
+              "title": "The final resource and equipment list",
+              "body": "Facilitators may ask for specific Psalms materials, recording gear, software or pre-work items. Treat the lists above as practical guidance rather than the final academic kit list."
+            }
+          ]
+        },
+        {
+          "id": "bali.13",
+          "type": "handbookSection",
+          "number": "13",
+          "anchor": "s13-accommodation",
+          "kicker": "Where you will stay",
+          "title": "Venue and accommodation",
+          "body": "You are welcome to stay at the base for the workshop, and accommodation has been planned for confirmed participants.",
+          "items": [
+            {
+              "id": "bali.13.rooming",
+              "type": "subsection",
+              "title": "Rooming",
+              "body": "We are working from the base's own rooming layout. Where we can, we are pairing people who share a language, because over three weeks that makes a real difference."
+            },
+            {
+              "id": "bali.13.space",
+              "type": "subsection",
+              "title": "The teaching space",
+              "body": "The base is setting up the main teaching room with a projector and screen, a whiteboard, and a sound system with microphones, which matters for the music work. Reliable internet in that room is part of the request."
+            },
+            {
+              "id": "bali.13.pending",
+              "type": "callout",
+              "variant": "coming-soon",
+              "title": "Room allocation, check-in time, linen, accessibility, quiet hours and on-site contacts",
+              "body": "These come in the official venue message. Please wait for it before arranging independent transport or booking your own accommodation."
+            }
+          ]
+        },
+        {
+          "id": "bali.14",
+          "type": "handbookSection",
+          "number": "14",
+          "anchor": "s14-meals",
+          "kicker": "Eating together",
+          "title": "Meals and dietary needs",
+          "body": "Meals come through the base kitchen on working days. Part of what keeps the cost low enough for fifty people to attend is the generosity of our hosts, and one of the ways the base runs efficiently is by having large visiting groups help with meal preparation and cleanup.\n\nWe will organise that so those who are able-bodied share the work and it finishes quickly together, rather than anyone losing half an afternoon session to it.",
+          "mediaId": "bali-meals",
+          "caption": "Nasi campur: rice with a ring of small dishes around it, the everyday shape of a meal in Bali.",
+          "items": [
+            {
+              "id": "bali.14.weekend",
+              "type": "subsection",
+              "title": "Weekends",
+              "body": "The base kitchen does not serve as many meals at the weekend, so we provide a meal stipend and you buy your own nearby. To be honest about the size of it: sensible rather than lavish, enough to eat well at places that follow normal food-safety practice."
+            },
+            {
+              "id": "bali.14.action",
+              "type": "callout",
+              "variant": "action-required",
+              "title": "Tell us about allergies and medically necessary dietary requirements, in writing",
+              "body": "If you have not already done so, put it on the registration form or email it. An informal conversation is not something the kitchen can work from."
+            }
+          ]
+        },
+        {
+          "id": "bali.15",
+          "type": "handbookSection",
+          "number": "15",
+          "anchor": "s15-connectivity",
+          "kicker": "Staying online",
+          "title": "Wi-Fi and mobile connectivity",
+          "items": [
+            {
+              "id": "bali.15.list",
+              "type": "checklist",
+              "title": "Plan for less bandwidth than you have at home",
+              "items": [
+                {
+                  "id": "bali.15.list.1",
+                  "type": "checklistItem",
+                  "label": "Download the documents you need before you travel, and keep an offline copy."
+                },
+                {
+                  "id": "bali.15.list.2",
+                  "type": "checklistItem",
+                  "label": "Do not count on workshop Wi-Fi for large uploads or continuous video calls."
+                },
+                {
+                  "id": "bali.15.list.3",
+                  "type": "checklistItem",
+                  "label": "A local SIM or eSIM is worth considering if you need reliable data of your own."
+                },
+                {
+                  "id": "bali.15.list.4",
+                  "type": "checklistItem",
+                  "label": "Take normal care on shared networks, and do not post the Wi-Fi password anywhere public."
+                }
+              ]
+            },
+            {
+              "id": "bali.15.pending",
+              "type": "callout",
+              "variant": "coming-soon",
+              "title": "Network name, password, and what the bandwidth will actually take",
+              "body": "These come with the venue message."
+            }
+          ]
+        },
+        {
+          "id": "bali.16",
+          "type": "handbookSection",
+          "number": "16",
+          "anchor": "s16-laundry",
+          "kicker": "Three weeks of clothes",
+          "title": "Laundry",
+          "body": "The workshop runs close to three weeks, so pack with laundry in mind. A small amount of travel detergent may be useful, but wait for guidance from the base before planning to hand-wash or dry things in your room.",
+          "items": [
+            {
+              "id": "bali.16.pending",
+              "type": "callout",
+              "variant": "coming-soon",
+              "title": "On-site facilities, external service, turnaround, cost, and how collection works",
+              "body": "Not confirmed yet. This is the one section where we have nothing to add."
+            }
+          ]
+        },
+        {
+          "id": "bali.17",
+          "type": "handbookSection",
+          "number": "17",
+          "anchor": "s17-preparation",
+          "kicker": "The prework",
+          "title": "Participant preparation",
+          "body": "The workshop is most fruitful when people arrive having already done the preparatory work. We consider it foundational: it shapes what you understand when you walk in, and how much help you can be to the translation teams. If you have hit obstacles, tell us. We would much rather talk it through than have you arrive feeling behind.",
+          "mediaId": "psalms-hebrew",
+          "caption": "The Leningrad Codex, the oldest complete manuscript of the Hebrew Bible and the base text behind the Hebrew you will be reading.",
+          "items": [
+            {
+              "id": "bali.17.exegesis",
+              "type": "subsection",
+              "title": "Exegesis of the two psalms",
+              "body": "Study Psalm 1 first, then Psalm 13, using the Exegetical Guide. Psalm 1 is a wisdom psalm; Psalm 13 is a lament. The cohort schedule asked for Psalm 1 by 20 May and Psalm 13 by 8 June."
+            },
+            {
+              "id": "bali.17.late",
+              "type": "subsection",
+              "title": "If you joined late",
+              "body": "Do not try to recover the original dates. Start now and count from today: roughly two weeks on Psalm 1, then three on Psalm 13, with Hebrew reading practice running alongside in small amounts. If you are joining very close to the workshop, begin with Psalm 1 and ask us to help you prioritise the rest."
+            },
+            {
+              "id": "bali.17.hebrew",
+              "type": "subsection",
+              "title": "Hebrew reading fluency",
+              "body": "Keep your Hebrew reading moving. Listening while following the Hebrew text is a good way to stay motivated and to get the rhythm of the poetry into your ear. The resources below were Katie's suggestions to the cohort."
+            },
+            {
+              "id": "bali.17.resources",
+              "type": "linkGrid",
+              "title": "Prework resources",
+              "items": [
+                {
+                  "id": "bali.17.resources.guide",
+                  "type": "cta",
+                  "label": "Exegetical Guide",
+                  "href": "https://docs.google.com/document/d/1xIydxY3SDQWVn7vEpvwRL-AdBdlStZJ4WFFBPFmE5PE/edit?usp=sharing",
+                  "body": "The guide the exegesis prework follows, for both psalms.",
+                  "note": "Google Doc"
+                },
+                {
+                  "id": "bali.17.resources.miqedem13",
+                  "type": "cta",
+                  "label": "MiQedem: Psalm 13",
+                  "href": "https://www.youtube.com/watch?v=a52X1Xl4XgA",
+                  "body": "The full text, sung in Hebrew.",
+                  "note": "Sung Hebrew"
+                },
+                {
+                  "id": "bali.17.resources.miqedem1",
+                  "type": "cta",
+                  "label": "MiQedem: Psalm 1",
+                  "href": "https://www.youtube.com/watch?v=Djoo9IMMGgI",
+                  "body": "The first half of the psalm.",
+                  "note": "Sung Hebrew"
+                },
+                {
+                  "id": "bali.17.resources.pmp13",
+                  "type": "cta",
+                  "label": "Psalms Music Project: Psalm 13",
+                  "href": "https://www.youtube.com/watch?v=vcsvg-kjnQQ",
+                  "note": "Musical setting"
+                },
+                {
+                  "id": "bali.17.resources.pmp1",
+                  "type": "cta",
+                  "label": "Psalms Music Project: Psalm 1",
+                  "href": "https://www.youtube.com/watch?v=UajItgKPxug",
+                  "note": "Musical setting"
+                },
+                {
+                  "id": "bali.17.resources.mamre",
+                  "type": "cta",
+                  "label": "Mechon Mamre audio",
+                  "href": "https://www.mechon-mamre.org/p/pt/ptmp3prq.htm",
+                  "body": "Read recordings covering all the passages.",
+                  "note": "Audio"
+                },
+                {
+                  "id": "bali.17.resources.bel1",
+                  "type": "cta",
+                  "label": "Biblical eLearning: Psalm 1",
+                  "href": "https://www.youtube.com/watch?v=MefbYShCNCs",
+                  "body": "Hebrew read aloud with English subtitles.",
+                  "note": "Video"
+                },
+                {
+                  "id": "bali.17.resources.bel13",
+                  "type": "cta",
+                  "label": "Biblical eLearning: Psalm 13",
+                  "href": "https://www.youtube.com/watch?v=ztjRMK5yVG4",
+                  "body": "Hebrew read aloud with English subtitles.",
+                  "note": "Video"
+                }
+              ]
+            },
+            {
+              "id": "bali.17.heart",
+              "type": "subsection",
+              "title": "Prepare your posture as well as your notes",
+              "body": "Pray for humility, attentiveness, creativity and a servant-hearted way of consulting. Come ready to learn from mother-tongue translators, from artists, from peers and from mentors, and expect feedback to change both your thinking and your work.\n\nIt also helps to notice, before you arrive, how poetry, song, lament, praise and wisdom already function in your own cultural setting."
+            },
+            {
+              "id": "bali.17.prereq",
+              "type": "callout",
+              "variant": "note",
+              "label": "Prerequisite",
+              "title": "This prework assumes you have already done an OBT crash course, or have equivalent experience",
+              "body": "If you have not, the crash course from 18 to 22 August is the route in, and it changes how you prepare. Check with Josh so you are pointed the right way."
+            }
+          ]
+        },
+        {
+          "id": "bali.18",
+          "type": "handbookSection",
+          "number": "18",
+          "anchor": "s18-documents",
+          "kicker": "Where things live",
+          "title": "Documents and shared resources",
+          "items": [
+            {
+              "id": "bali.18.live",
+              "type": "linkGrid",
+              "title": "Available now",
+              "items": [
+                {
+                  "id": "bali.18.live.form",
+                  "type": "cta",
+                  "label": "Registration and travel form",
+                  "href": "https://docs.google.com/forms/d/e/1FAIpQLScaCO6WMIDHAgui1qofDhFlK9UWL9pGKWS7LvjumtflpGivHg/viewform",
+                  "body": "Also the place to update flight details when they change.",
+                  "note": "Google Form"
+                },
+                {
+                  "id": "bali.18.live.guide",
+                  "type": "cta",
+                  "label": "Exegetical Guide",
+                  "href": "https://docs.google.com/document/d/1xIydxY3SDQWVn7vEpvwRL-AdBdlStZJ4WFFBPFmE5PE/edit?usp=sharing",
+                  "body": "For the Psalm 1 and Psalm 13 prework.",
+                  "note": "Google Doc"
+                }
+              ]
+            },
+            {
+              "id": "bali.18.pending",
+              "type": "callout",
+              "variant": "coming-soon",
+              "title": "Shared folder and group messaging",
+              "body": "A shared folder for presentations, readings and templates, and a WhatsApp or email group for essential workshop communication, are still to be set up. Links appear here when they exist."
+            },
+            {
+              "id": "bali.18.conduct",
+              "type": "subsection",
+              "title": "When the shared folder does exist",
+              "body": "Upload only workshop-relevant material and use filenames someone else can understand. Do not circulate participant information, recordings or community materials beyond the permissions you have been given."
+            }
+          ]
+        },
+        {
+          "id": "bali.19",
+          "type": "handbookSection",
+          "number": "19",
+          "anchor": "s19-health",
+          "kicker": "Looking after each other",
+          "title": "Health, safety and contacts",
+          "items": [
+            {
+              "id": "bali.19.before",
+              "type": "checklist",
+              "title": "Before you leave home",
+              "items": [
+                {
+                  "id": "bali.19.before.1",
+                  "type": "checklistItem",
+                  "label": "Arrange international travel and medical insurance."
+                },
+                {
+                  "id": "bali.19.before.2",
+                  "type": "checklistItem",
+                  "label": "Talk to a travel-health professional about your own needs, early enough for any course of treatment they recommend."
+                },
+                {
+                  "id": "bali.19.before.3",
+                  "type": "checklistItem",
+                  "label": "Bring enough prescribed medication for the whole trip plus a reasonable delay."
+                },
+                {
+                  "id": "bali.19.before.4",
+                  "type": "checklistItem",
+                  "label": "Tell the organisers, confidentially, anything we need to know in order to support you safely."
+                }
+              ]
+            },
+            {
+              "id": "bali.19.during",
+              "type": "checklist",
+              "title": "While you are there",
+              "items": [
+                {
+                  "id": "bali.19.during.1",
+                  "type": "checklistItem",
+                  "label": "Drink water, use sun protection, and take care in unfamiliar traffic."
+                },
+                {
+                  "id": "bali.19.during.2",
+                  "type": "checklistItem",
+                  "label": "Use reputable transport. Do not ride a scooter unless you are properly licensed, insured and experienced."
+                },
+                {
+                  "id": "bali.19.during.3",
+                  "type": "checklistItem",
+                  "label": "Respect local customs, sacred spaces and community instructions."
+                },
+                {
+                  "id": "bali.19.during.4",
+                  "type": "checklistItem",
+                  "label": "Report illness, injury, safeguarding concerns or urgent practical problems straight away."
+                }
+              ]
+            },
+            {
+              "id": "bali.19.contacts",
+              "type": "glanceGrid",
+              "title": "Numbers to have on you",
+              "variant": "rows",
+              "items": [
+                {
+                  "id": "bali.19.contacts.emergency",
+                  "type": "glanceCard",
+                  "value": "112",
+                  "label": "Indonesia emergency",
+                  "body": "The national emergency line, reachable from any phone."
+                },
+                {
+                  "id": "bali.19.contacts.workshop",
+                  "type": "glanceCard",
+                  "value": "josh_frost@sil.org",
+                  "label": "Workshop contact",
+                  "body": "Josh Frost, lead facilitator."
+                }
+              ]
+            },
+            {
+              "id": "bali.19.pending",
+              "type": "callout",
+              "variant": "coming-soon",
+              "title": "Venue contact, nearest clinic and hospital, and the safeguarding contact",
+              "body": "These come with the venue message. In a life-threatening emergency, get local help first, then contact the workshop team and your insurer or embassy."
+            }
+          ]
+        },
+        {
+          "id": "bali.20",
+          "type": "handbookSection",
+          "number": "20",
+          "anchor": "s20-departure",
+          "kicker": "Leaving well",
+          "title": "Departure and check-out",
+          "mediaId": "bali-departure",
+          "caption": "The international terminal at I Gusti Ngurah Rai, built in Balinese style.",
+          "items": [
+            {
+              "id": "bali.20.before",
+              "type": "checklist",
+              "title": "Before you leave the base",
+              "items": [
+                {
+                  "id": "bali.20.before.1",
+                  "type": "checklistItem",
+                  "label": "Confirm your departure transfer and meeting time. Do not rely on an earlier draft schedule."
+                },
+                {
+                  "id": "bali.20.before.2",
+                  "type": "checklistItem",
+                  "label": "Settle personal expenses and follow the base's check-out instructions for your room."
+                },
+                {
+                  "id": "bali.20.before.3",
+                  "type": "checklistItem",
+                  "label": "Return keys, access cards, borrowed equipment and workshop materials."
+                },
+                {
+                  "id": "bali.20.before.4",
+                  "type": "checklistItem",
+                  "label": "Check drawers, charging points and the bathroom, and label all your luggage."
+                },
+                {
+                  "id": "bali.20.before.5",
+                  "type": "checklistItem",
+                  "label": "Leave generous time for the airport and keep your passport where you can reach it."
+                }
+              ]
+            },
+            {
+              "id": "bali.20.closing",
+              "type": "checklist",
+              "title": "Closing well",
+              "items": [
+                {
+                  "id": "bali.20.closing.1",
+                  "type": "checklistItem",
+                  "label": "Complete the workshop evaluation and any consultant-development follow-up."
+                },
+                {
+                  "id": "bali.20.closing.2",
+                  "type": "checklistItem",
+                  "label": "Save the final shared resources, and note the permissions attached before you use community materials."
+                },
+                {
+                  "id": "bali.20.closing.3",
+                  "type": "checklistItem",
+                  "label": "Stay in touch with mentors and peers through whatever channels the group agrees on."
+                }
+              ]
+            },
+            {
+              "id": "bali.20.thanks",
+              "type": "callout",
+              "variant": "thanks",
+              "title": "May this shared work strengthen the translation of the Psalms into forms communities will actually sing."
+            }
+          ]
+        },
+        {
+          "id": "bali.21",
+          "type": "handbookSection",
+          "number": "21",
+          "anchor": "s21-free-time",
+          "kicker": "Beyond the sessions",
+          "title": "Free time and exploring together",
+          "body": "Bali has a great deal to offer and you are warmly welcome to enjoy it. To be clear, the facilitators are not organising or sponsoring outings.\n\nIn past workshops participants decided together where they wanted to go, pooled money for a van, and went as a group. Some very good memories came out of that. We would love it to happen again, organised among yourselves.",
+          "items": []
+        }
+      ]
     }
   ],
   "workshops": [
@@ -829,6 +2234,23 @@
           "body": "Every place for the Psalms workshop has been filled. If you hoped to join, we would still love to hear from you: expressing interest now puts you in view for the remaining workshops in the series and for future rounds of the track."
         },
         {
+          "id": "psalms.handbook",
+          "type": "linkGrid",
+          "kicker": "Confirmed participants",
+          "title": "Your participant handbook",
+          "body": "Dates, the base in Jimbaran, travel and visas, what to pack, the prework, and who to contact. It is updated as details are confirmed.",
+          "items": [
+            {
+              "id": "psalms.handbook.open",
+              "type": "cta",
+              "label": "Open the Bali 2026 handbook",
+              "route": "/workshops/psalms-bali-2026/handbook",
+              "body": "For confirmed participants and facilitators.",
+              "note": "21 sections"
+            }
+          ]
+        },
+        {
           "id": "psalms.what",
           "type": "prose",
           "kicker": "The vision",
@@ -861,7 +2283,7 @@
           "id": "psalms.prep",
           "type": "prose",
           "title": "How participants are preparing",
-          "body": "Everyone arrives having already studied the psalms the workshop will translate and check. Prework covers basic Hebrew reading, the foundations of genre theory, the CLAT framework, and practice in crafting consultant checking questions, so the two weeks can be spent on formation rather than first exposure.\n\nThe teaching team brings together deep expertise in Hebrew poetry, ethnoarts, and OBT consulting."
+          "body": "Everyone arrives having already studied the psalms the workshop will translate and check. Prework covers basic Hebrew reading, the foundations of genre theory, the CLAT framework, and practice in crafting consultant checking questions, so the two weeks can be spent on formation rather than first exposure.\n\nThe teaching team brings together deep expertise in Hebrew poetry, ethnoarts, and OBT consulting.\n\nThe one-week experiential OBT Crash Course runs on the base from 18 to 22 August, immediately before the workshop, for participants who need those shared foundations first."
         },
         {
           "id": "psalms.image",

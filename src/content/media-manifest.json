@@ -40,11 +40,66 @@
     "credit": null
   },
   "workshop-psalms": {
-    "kind": "placeholder",
-    "alt": "Local artists crafting a psalm as a song in their community's musical genre",
+    "kind": "image",
+    "alt": "A Balinese musician seated on the floor at night, playing a bamboo tingklik by candlelight",
     "aspect": "16/9",
-    "placeholder": { "style": "gradient", "hue": "amber", "label": "Photo slot: Psalms workshop, Bali 2026" },
-    "src": null,
-    "credit": null
+    "src": "media/bali-tingklik-musician.jpg",
+    "credit": "Photo: Schnobby (CC BY-SA 3.0, via Wikimedia Commons)"
+  },
+  "bali-hero": {
+    "kind": "image",
+    "alt": "Wide view of the Tegallalang rice terraces in Bali, flooded paddies stepping down a palm-covered valley",
+    "aspect": "21/9",
+    "src": "media/bali-hero-rice-terraces.jpg",
+    "credit": "Photo: Stefan Fussan (CC BY-SA 4.0, via Wikimedia Commons)"
+  },
+  "bali-location": {
+    "kind": "image",
+    "alt": "Jimbaran beach on Bali's Bukit peninsula at sunset, with fishing boats drawn up on the sand",
+    "aspect": "16/9",
+    "src": "media/bali-jimbaran-sunset.jpg",
+    "credit": "Photo: Akmaie Ajam (CC BY-SA 4.0, via Wikimedia Commons)"
+  },
+  "bali-journey": {
+    "kind": "image",
+    "alt": "The candi bentar split gate of Pura Ulun Danu Bratan, a Balinese temple entrance of carved stone",
+    "aspect": "16/9",
+    "src": "media/bali-split-gate.jpg",
+    "credit": "Photo: rheins (CC BY 3.0, via Wikimedia Commons)"
+  },
+  "bali-gamelan": {
+    "kind": "image",
+    "alt": "Two hands striking the bamboo keys of a Balinese tingklik with padded mallets",
+    "aspect": "16/9",
+    "src": "media/bali-gamelan-hands.jpg",
+    "credit": "Photo: Schnobby (CC BY-SA 3.0, via Wikimedia Commons)"
+  },
+  "bali-artistry": {
+    "kind": "image",
+    "alt": "Canang sari offerings on a stone step in Bali: woven palm trays filled with flowers, petals and incense",
+    "aspect": "16/9",
+    "src": "media/bali-canang-sari.jpg",
+    "credit": "Photo: Dennis Sylvester Hurd (CC0, via Wikimedia Commons)"
+  },
+  "bali-meals": {
+    "kind": "image",
+    "alt": "A plate of nasi campur in Ubud: rice ringed by small portions of vegetables, satay and sambal",
+    "aspect": "16/9",
+    "src": "media/bali-nasi-campur.jpg",
+    "credit": "Photo: Vyacheslav Argenberg (CC BY 4.0, via Wikimedia Commons)"
+  },
+  "psalms-hebrew": {
+    "kind": "image",
+    "alt": "An illuminated carpet page from the Leningrad Codex, the oldest complete Hebrew Bible manuscript, with micrographic Hebrew script worked into geometric ornament",
+    "aspect": "16/9",
+    "src": "media/psalms-leningrad-codex.jpg",
+    "credit": "Leningrad Codex folio 474a, copied by Shmuel ben Ya'akov (public domain, via Wikimedia Commons)"
+  },
+  "bali-departure": {
+    "kind": "image",
+    "alt": "The international terminal of I Gusti Ngurah Rai airport in Bali, its roofline built in Balinese style",
+    "aspect": "16/9",
+    "src": "media/bali-airport.jpg",
+    "credit": "Photo: Ardfeb (CC BY-SA 4.0, via Wikimedia Commons)"
   }
 }
