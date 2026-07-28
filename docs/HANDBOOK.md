@@ -2,128 +2,200 @@
 
 A handbook is a per-workshop reference document for confirmed participants:
 dates, venue, travel, visas, packing, prework, contacts. The first one is
-**Bali 2026** at `/workshops/psalms-bali-2026/handbook`.
+**Bali 2026**, and it is part of the Psalms workshop page at
+`/workshops/psalms-bali-2026`.
 
 It is a different kind of page from the rest of the site. The marketing pages
 argue a case; a handbook answers questions, in a hurry, on a phone, sometimes
 on airport Wi-Fi, and often on paper. So it gets its own layout and its own
 block types.
 
+## One page, not two
+
+The handbook used to be a separate unlisted page at
+`/workshops/psalms-bali-2026/handbook`. On 2026-07-28 Joshua asked for the two to
+be merged: "just merge the handbook page with this page. It should tell people
+that it is fully booked and then give the rest of the information down beneath."
+
+So a **workshop** can now carry `"layout": "handbook"`, exactly as a page can.
+`WorkshopPage` sees that and delegates to `HandbookLayout`, which sorts the
+block list into three zones:
+
+| Zone | What it is | On the Psalms page |
+| --- | --- | --- |
+| intro | blocks before the first `handbookSection` | the fully-booked notice, the vision prose, one photo |
+| sections | the `handbookSection` blocks, with the rail and progress bar | the five handbook sections |
+| outro | blocks after the last `handbookSection` | the "Missed this one?" call to action |
+
+The workshop's own header (kicker, title, facts panel) is not rendered in this
+mode; the handbook hero replaces it and shows the `StatusBadge` from
+`facts.status` instead, so the page still says "Fully booked" at the top.
+
+The old URL keeps working. `redirects()` in `src/lib/content/loader.ts` maps it to
+the merged page; the prerender writes a meta-refresh page and `App.tsx` handles
+client-side navigation to it.
+
 ## Unlisted, not private
 
-The handbook page is marked `"hidden": true` in `site-content.json`. That gives
-it three things:
+The merged page is **indexed**, because it is also the public page for the
+workshop. That was a deliberate call: it publishes the facilitators' names,
+roles and qualifications, the venue address, and the read-only Exegetical Guide
+link. See the named exception in `README.md` under Content rules.
 
-- no entry in the top nav (`navItems()` filters hidden pages)
-- no entry in `sitemap.xml`
-- `<meta name="robots" content="noindex, nofollow">` in the prerendered head
-
-It is still prerendered, so anyone with the link gets the full document as HTML.
+`"hidden": true` still exists for pages and now also for workshops, and still
+means no nav entry, no `sitemap.xml` entry, and `noindex, nofollow` in the head.
 
 **This repo is public.** Unlisted controls search engines and site navigation,
-nothing more. Every word of handbook copy, including the venue address and any
-form links, is readable in `src/content/site-content.json` on github.com and in
-the commit history. Do not put anything in a handbook that would be a problem
-world-readable. Personal data stays out entirely, same as the rest of the site.
+nothing more. Every word of handbook copy is readable in `site-content.json` on
+github.com and in the commit history. Do not put anything in a handbook that
+would be a problem world-readable.
 
 ### Deliberately absent: the registration form link
 
 The registration and travel form is **not** linked from the handbook, by decision
 (2026-07-28). An open Google Form on a URL that anyone can reach collects junk
 submissions, and the form is the one link here that writes data rather than
-reads it. Sections 08 and 18 tell participants the link came by email and to
+reads it. The travel section tells participants the link came by email and to
 write to Josh if they lost it. Do not add it back as a convenience.
 
 The Exegetical Guide link is fine to keep: it is read-only and already
 circulated to the cohort.
 
+## Five sections, not twenty-one
+
+The handbook shipped with 21 top-level sections. A reviewer read that as a sign
+the document had been machine-generated, and he was right about the cause:
+nobody divides a document into 21 parts on purpose. On 2026-07-28 it became five,
+each holding the old sections as subsections.
+
+| Section | Absorbs |
+| --- | --- |
+| 01 Welcome to Workshop 3 | old 01 welcome, 06 learning outcomes |
+| 02 Dates and programme | 02 dates, 04 how the weeks build, 05 programme |
+| 03 Your preparation and your team | 17 prework, 18 documents, 07 facilitators |
+| 04 Travel, visas and packing | 08 travel, 09 transfers, 10 before you fly, 11 entry, 12 packing, 20 departure |
+| 05 Life on the base | 03 location, 13 venue, 14 meals, 15 Wi-Fi, 16 laundry, 21 free time, 19 health |
+
+**Every one of the 21 old anchors still resolves.** Section anchors are
+`s01-welcome` through `s05-base`; the other 20 (`s08-travel`, `s16-laundry`, and
+so on) live on the subsection, checklist, glanceGrid or linkGrid they were folded
+into. Participants have those fragment links in email. Keep them working: the
+`anchor` field renders as an `id` on all of those block types.
+
 ## Where the copy lives
 
-One page node in `src/content/site-content.json`, `id: "bali-2026-handbook"`,
+One workshop node in `src/content/site-content.json`, `id: "psalms-bali-2026"`,
 with `"layout": "handbook"`. Its `blocks` array is:
 
 1. one `hero` (with `mediaId` for the full-bleed photo, and `labelToken` items
    for the date chips)
-2. one `sectionNav` (the contents grid; also what the desktop rail is built
-   from, via the section list)
-3. one `handbookSection` per section, in order
+2. the intro blocks, ordinary page blocks like `prose` and `imageSlot`
+3. one `sectionNav` (the contents grid, five entries)
+4. five `handbookSection` blocks
+5. the outro `ctaGroup`
 
 ## Adding or editing a section
 
-A section looks like this:
-
 ```jsonc
 {
-  "id": "bali.03",
+  "id": "bali.s5",
   "type": "handbookSection",
-  "number": "03",                    // chip, and the rail's numbering
-  "anchor": "s03-location",          // fragment id; keep it stable, people link to it
-  "kicker": "Location",
-  "title": "Where we will be",
+  "number": "05",                    // chip, and the rail's numbering
+  "anchor": "s05-base",              // fragment id; keep it stable, people link to it
+  "kicker": "While you are there",
+  "title": "Life on the base",
   "body": "Paragraphs separated by blank lines. **bold** works.",
   "mediaId": "bali-location",        // optional photo band
   "caption": "Caption under the band.",
+  "variant": "plain",                // optional: skip the duotone wash
   "items": [ /* child blocks */ ]
 }
 ```
 
-Then add a matching entry to the `sectionNav` items so it appears in the
-contents grid (`number`, `anchor`, `label`). The desktop rail is generated from
-the sections themselves, so it needs nothing.
+Then update the matching `sectionNav` item (`number`, `anchor`, `label`). The
+desktop rail is generated from the sections themselves, so it needs nothing.
 
 ## The handbook block types
 
 All of these are valid as children of a `handbookSection`. They are written
 container-free, and `BlockRenderer` adds the standard column wrapper if one is
-used at the top level of an ordinary page (the handbook link card on the Psalms
-workshop page is a `linkGrid` used that way).
+used at the top level of an ordinary page. All of them accept `anchor`.
 
 | Type | What it is | Fields it uses |
 | --- | --- | --- |
 | `subsection` | A headed paragraph inside a section | `kicker`, `title`, `body` |
 | `callout` | Status panel | `variant`, `label`, `title`, `body` |
 | `checklist` | Ticked cards, two columns | `kicker`, `title`, `body`, `items[].label`, `items[].body` |
-| `glanceGrid` | Cards, or a fact table with `variant: "rows"` | `items[].kicker`, `.value`, `.label`, `.body` |
+| `list` | A quiet bulleted list, same shape as `checklist` | as `checklist`, with `listItem` children |
+| `glanceGrid` | Cards, a fact table with `variant: "rows"`, or a credits table with `variant: "people"` | `items[].kicker`, `.value`, `.label`, `.body` |
 | `linkGrid` | Resource cards | `items[].label`, `.href` or `.route`, `.body`, `.note` |
+
+`variant: "people"` on a `glanceGrid` renders the rows table with the left column
+as a person's name in the display face rather than a small-caps field label, so
+the row reads name, then role, then qualification.
 
 ### Callout variants
 
-- `action-required` — clay, with a slow pulse on the chip. Something the reader
-  must do. Use sparingly; it stops meaning anything if every section has one.
-- `coming-soon` — muted. A detail that is genuinely not settled yet.
-- `note` — teal. Context worth knowing.
-- `thanks` — gold. Closing note.
+- `action-required` — orange, with a slow pulse on the chip. Something the reader
+  must do, with a deadline behind it. There are four: dates, flights, visa,
+  dietary needs. Do not add a fifth without removing one.
+- `coming-soon` — muted. A detail that is genuinely not settled yet. **One per
+  section, consolidated.** Eleven of these across the document was the single
+  biggest source of panel fatigue.
+- `note` — SIL blue. Context worth knowing. Two, and both are load-bearing.
+- `thanks` — cyan. The closing note. One, at the very end.
 
 The default chip text comes from the variant; `label` overrides it.
+
+## Highlighting discipline
+
+Counts as of 2026-07-28, after the restructure, and worth re-checking after any
+substantial edit:
+
+| | Before | After |
+| --- | --- | --- |
+| Top-level sections | 21 | 5 |
+| Callout panels | 21 | 11 |
+| Ticked checklists | 13 | 5 |
+| Photographs | 8 | 5 |
+| Words | 3,775 | ~3,700 |
+
+A tick means "you do this, then confirm you did". A callout means "stop and read
+this". Both stop meaning anything when every section has one. Ticks now belong to
+five lists a participant genuinely works through (before you fly, entry
+requirements, packing, before you leave the base, health before you leave home);
+everything else is a `list`.
 
 ## The "coming soon" discipline
 
 About a third of the source document for Bali 2026 was blank when it arrived.
 Most of those blanks got filled from material that already existed elsewhere.
-The ones that remain are marked with a `coming-soon` callout that says **what**
-is missing and **who** will send it, so a reader can tell a tracked gap from an
+The ones that remain are gathered into one panel per section that says **what** is
+missing and **who** will send it, so a reader can tell a tracked gap from an
 oversight.
 
-Open gaps in the Bali 2026 handbook as of the initial build:
+Open gaps as of 2026-07-28:
 
-- **16 Laundry** — nothing known at all.
-- **13 Venue** — room allocation, check-in time, linen, accessibility, quiet
-  hours, on-site contacts.
-- **15 Wi-Fi** — network name, password, real bandwidth.
-- **19 Health** — venue contact, nearest clinic and hospital, safeguarding
-  contact.
-- **07 Team** — full facilitator list, mentor groups, on-site coordination.
-- **09 Transfers** — driver details and pickup times.
-- **18 Documents** — shared folder, WhatsApp or email group.
-- **12 Packing** — the final resource and equipment list.
+- **02** daily hours, meal times, devotional slots, and the week-two day-four
+  choice between Proverbs and ambassador practice.
+- **03** the rest of the facilitation team, the shared folder, the group
+  messaging channel. Also Josh's own qualification line, which is the one entry
+  in the team table without one; ask rather than invent it.
+- **04** driver details and pickup times, and the final resource and equipment
+  list.
+- **05** venue arrival details and reception number, room allocation, check-in,
+  linen, accessibility, quiet hours, Wi-Fi network and password, laundry, nearest
+  clinic and hospital, safeguarding contact.
 
-When one is settled, replace the `coming-soon` callout with real content and
-delete the entry above.
+When one is settled, move it into real content and delete it from the panel and
+from this list.
 
 ## Print
 
 The handbook has `@media print` rules in `src/index.css`: nav, footer, rail,
-progress bar and photo bands are hidden, headings stay with their text,
-callouts and list items do not split across pages, and external link targets
-are printed after the link text. Check the print view after any layout change
-to the handbook — participants do print this.
+progress bar and photographs are hidden, headings stay with their text, callouts
+and list items do not split across pages, and external link targets are printed
+after the link text. `imageSlot` figures carry `hb-band` so they drop out of
+print along with the section photo bands. Check the print view after any layout
+change to the handbook: participants do print this, and it currently runs to
+about 20 pages.

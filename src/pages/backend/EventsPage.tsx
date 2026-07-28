@@ -72,7 +72,7 @@ function EventsBody({ session }: { session: Session }) {
                   <h3 className="font-display text-lg font-semibold text-ink">{event.title}</h3>
                   <span
                     className={`rounded-full px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wide ${
-                      event.status === 'open' ? 'bg-teal-soft text-teal' : 'bg-clay text-white'
+                      event.status === 'open' ? 'bg-brand-soft text-brand' : 'bg-accent-deep text-white'
                     }`}
                   >
                     {STATUS_LABEL[event.status]}
@@ -85,7 +85,7 @@ function EventsBody({ session }: { session: Session }) {
                 <div className="mt-3 flex items-center gap-3">
                   {mine ? (
                     <>
-                      <span className="text-sm font-semibold text-teal">
+                      <span className="text-sm font-semibold text-brand">
                         {mine.status === 'waitlist' ? 'You are on the waitlist' : 'You are registered'}
                       </span>
                       <button
@@ -102,7 +102,7 @@ function EventsBody({ session }: { session: Session }) {
                       type="button"
                       disabled={busy === event.id}
                       onClick={() => void act(() => register(session.user.id, event), event.id)}
-                      className="rounded-full bg-clay px-4 py-2 text-sm font-semibold text-white hover:bg-clay-deep disabled:opacity-40"
+                      className="rounded-full bg-brand px-4 py-2 text-sm font-semibold text-white hover:bg-accent disabled:opacity-40"
                     >
                       {event.status === 'fully-booked' ? 'Join the waitlist' : 'Register'}
                     </button>
@@ -126,7 +126,7 @@ function EventsBody({ session }: { session: Session }) {
                   <span className="text-sm text-ink-faint">
                     {[event.location, shortRange(event.start_date, event.end_date)].filter(Boolean).join(' · ')}
                   </span>
-                  {mine?.status === 'attended' && <span className="text-xs font-semibold uppercase tracking-wide text-teal">Attended</span>}
+                  {mine?.status === 'attended' && <span className="text-xs font-semibold uppercase tracking-wide text-brand">Attended</span>}
                 </li>
               )
             })}

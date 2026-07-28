@@ -33,9 +33,9 @@ export function HomePage() {
 function Hero({ block }: { block: Block }) {
   const ref = useReveal<HTMLDivElement>()
   return (
-    <section className="bg-night text-paper">
+    <section className="bg-navy text-paper">
       <div ref={ref} className="reveal mx-auto flex max-w-6xl flex-col justify-center px-5 pb-20 pt-20 md:min-h-[82vh] md:pb-28 md:pt-24">
-        <Txt node={block} field="kicker" as="p" className="text-xs font-semibold uppercase tracking-[0.24em] text-gold" />
+        <Txt node={block} field="kicker" as="p" className="text-xs font-semibold uppercase tracking-[0.24em] text-brand-light" />
         <Txt
           node={block}
           field="title"
@@ -92,9 +92,9 @@ function Scene({ scene, index, count }: { scene: Block; index: number; count: nu
     <div data-scene className="flex min-h-[70vh] items-center py-14 lg:min-h-[92vh]">
       <div ref={ref} className="reveal">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-ink-faint">
-          <span className="text-clay">{String(index + 1).padStart(2, '0')}</span> / {String(count).padStart(2, '0')}
+          <span className="text-accent-deep">{String(index + 1).padStart(2, '0')}</span> / {String(count).padStart(2, '0')}
         </p>
-        <Txt node={scene} field="kicker" as="p" className="mt-4 text-xs font-semibold uppercase tracking-[0.18em] text-teal" />
+        <Txt node={scene} field="kicker" as="p" className="mt-4 text-xs font-semibold uppercase tracking-[0.18em] text-brand" />
         <Txt node={scene} field="title" as="h2" className="mt-2 font-display text-3xl font-semibold tracking-tight text-ink md:text-4xl" />
         <Body node={scene} className="mt-5 max-w-xl space-y-4 text-[1.05rem] leading-relaxed text-ink-soft" />
       </div>

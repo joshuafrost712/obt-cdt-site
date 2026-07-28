@@ -22,9 +22,10 @@ function ensureFonts(): void {
   vfsReady = true
 }
 
-const INK = '#211a13'
-const CLAY = '#8f3f12'
-const FAINT = '#8b7d6e'
+// Kept in step with the SIL tokens in index.css: ink, accent-deep, ink-faint.
+const INK = '#000000'
+const ACCENT = '#c24e00'
+const FAINT = '#727272'
 
 export interface CertificateData {
   participantName: string
@@ -41,7 +42,7 @@ export function downloadCertificate(data: CertificateData): void {
     pageOrientation: 'landscape',
     pageMargins: [64, 56, 64, 56],
     content: [
-      { text: 'OBT CONSULTANT DEVELOPMENT TRACK', alignment: 'center', fontSize: 11, characterSpacing: 2, color: CLAY, margin: [0, 24, 0, 6] },
+      { text: 'OBT CONSULTANT DEVELOPMENT TRACK', alignment: 'center', fontSize: 11, characterSpacing: 2, color: ACCENT, margin: [0, 24, 0, 6] },
       { text: 'Certificate of Completion', alignment: 'center', fontSize: 30, bold: true, color: INK, margin: [0, 0, 0, 26] },
       { text: 'This certifies that', alignment: 'center', fontSize: 12, color: FAINT, margin: [0, 0, 0, 8] },
       { text: data.participantName, alignment: 'center', fontSize: 24, bold: true, color: INK, margin: [0, 0, 0, 8] },

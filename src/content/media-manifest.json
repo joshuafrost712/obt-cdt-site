@@ -3,7 +3,11 @@
     "kind": "placeholder",
     "alt": "Workshop participants seated in a circle, internalizing a Bible passage together",
     "aspect": "21/9",
-    "placeholder": { "style": "gradient", "hue": "amber", "label": "Photo slot: workshop internalization circle" },
+    "placeholder": {
+      "style": "gradient",
+      "hue": "accent",
+      "label": "Photo slot: workshop internalization circle"
+    },
     "src": null,
     "credit": null
   },
@@ -11,7 +15,11 @@
     "kind": "placeholder",
     "alt": "A translator performing an oral Scripture passage for community members",
     "aspect": "16/9",
-    "placeholder": { "style": "gradient", "hue": "teal", "label": "Photo slot: oral performance / community checking" },
+    "placeholder": {
+      "style": "gradient",
+      "hue": "brand",
+      "label": "Photo slot: oral performance / community checking"
+    },
     "src": null,
     "credit": null
   },
@@ -19,7 +27,11 @@
     "kind": "placeholder",
     "alt": "A cohort of participants studying together around a table",
     "aspect": "16/9",
-    "placeholder": { "style": "gradient", "hue": "amber", "label": "Photo slot: cohort study session" },
+    "placeholder": {
+      "style": "gradient",
+      "hue": "accent",
+      "label": "Photo slot: cohort study session"
+    },
     "src": null,
     "credit": null
   },
@@ -27,7 +39,11 @@
     "kind": "placeholder",
     "alt": "Participants acting out a narrative passage during internalization",
     "aspect": "16/9",
-    "placeholder": { "style": "gradient", "hue": "amber", "label": "Photo slot: Narrative workshop, Bangalore 2025" },
+    "placeholder": {
+      "style": "gradient",
+      "hue": "accent",
+      "label": "Photo slot: Narrative workshop, Bangalore 2025"
+    },
     "src": null,
     "credit": null
   },
@@ -35,7 +51,11 @@
     "kind": "placeholder",
     "alt": "A team mapping the argument structure of an epistle on a whiteboard",
     "aspect": "16/9",
-    "placeholder": { "style": "gradient", "hue": "teal", "label": "Photo slot: Epistles workshop, Chiang Mai 2025" },
+    "placeholder": {
+      "style": "gradient",
+      "hue": "brand",
+      "label": "Photo slot: Epistles workshop, Chiang Mai 2025"
+    },
     "src": null,
     "credit": null
   },
@@ -52,6 +72,13 @@
     "aspect": "21/9",
     "src": "media/bali-hero-rice-terraces.jpg",
     "credit": "Photo: Stefan Fussan (CC BY-SA 4.0, via Wikimedia Commons)"
+  },
+  "worship-singing": {
+    "kind": "image",
+    "alt": "A robed church choir standing to sing in a church in Suwon, South Korea, with a soloist at a microphone in the foreground",
+    "aspect": "3/2",
+    "src": "media/choir-singing-suwon.jpg",
+    "credit": "Photo: 칼빈500 (CC BY-SA 3.0, via Wikimedia Commons), cropped"
   },
   "bali-location": {
     "kind": "image",

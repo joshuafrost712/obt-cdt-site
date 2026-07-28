@@ -1,6 +1,6 @@
-import { Route, Routes, useLocation } from 'react-router-dom'
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { lazy, Suspense, useEffect, type ReactNode } from 'react'
-import { getContent } from './lib/content/loader'
+import { getContent, redirects } from './lib/content/loader'
 import { getRouteMeta } from './lib/meta'
 import { backendEnabled } from './lib/backend/config'
 import { SiteLayout } from './components/layout/SiteLayout'
@@ -47,6 +47,11 @@ export default function App() {
               element={p.layout === 'handbook' ? <HandbookPage pageId={p.id} /> : <ContentPage pageId={p.id} />}
             />
           ))}
+        {/* Retired routes. The prerender writes a static meta-refresh page for
+            each; these handle the same URLs during client-side navigation. */}
+        {Object.entries(redirects()).map(([from, to]) => (
+          <Route key={from} path={from} element={<Navigate replace to={to} />} />
+        ))}
         <Route path="/workshops" element={<WorkshopsIndexPage />} />
         <Route path="/workshops/:slug" element={<WorkshopPage />} />
         {backendEnabled && (

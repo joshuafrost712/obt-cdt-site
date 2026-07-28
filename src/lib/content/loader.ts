@@ -95,7 +95,23 @@ export function allRoutes(): string[] {
 /**
  * Routes that are prerendered but unlisted: no sitemap entry, noindex in the
  * head, no nav link. The prerender script reads this to decide both.
+ *
+ * Workshops are included as well as pages. A workshop is never in the top nav
+ * anyway, but `hidden` also has to keep it out of the sitemap and put noindex in
+ * its head, and reading only `pages` here would have failed silently.
  */
 export function hiddenRoutes(): string[] {
-  return content.pages.filter((p) => p.hidden).map((p) => p.route)
+  return [...content.pages, ...content.workshops].filter((p) => p.hidden).map((p) => p.route)
+}
+
+/**
+ * Routes that no longer exist and redirect to a live one. The prerender script
+ * writes a small meta-refresh page for each, so a link already in someone's
+ * inbox keeps working.
+ */
+export function redirects(): Record<string, string> {
+  return {
+    // The Bali 2026 handbook became part of the Psalms workshop page (2026-07-28).
+    '/workshops/psalms-bali-2026/handbook': '/workshops/psalms-bali-2026',
+  }
 }

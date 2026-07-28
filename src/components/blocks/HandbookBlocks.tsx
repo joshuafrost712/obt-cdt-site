@@ -34,7 +34,7 @@ export function HandbookSection({ block }: { block: Block }) {
             node={block}
             field="number"
             as="span"
-            className="font-display text-sm font-semibold tabular-nums text-clay/70"
+            className="font-display text-sm font-semibold tabular-nums text-accent-deep"
           />
           <Txt
             node={block}
@@ -62,8 +62,10 @@ export function HandbookSection({ block }: { block: Block }) {
                 style={{ aspectRatio: media.aspect }}
               />
               {/* Duotone wash: keeps openly-licensed photography inside the
-                  site's palette so it reads as designed, not dropped in. */}
-              <div aria-hidden className="hb-duotone absolute inset-0" />
+                  site's palette so it reads as designed, not dropped in.
+                  `variant: "plain"` opts out, for a photo whose subject is
+                  people's faces — the wash flattens exactly what carries it. */}
+              {block.variant !== 'plain' && <div aria-hidden className="hb-duotone absolute inset-0" />}
             </div>
             <figcaption className="mt-2 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
               <Txt node={block} field="caption" as="span" className="min-w-0 text-sm text-ink-faint" />
@@ -88,15 +90,19 @@ export function HandbookSection({ block }: { block: Block }) {
  * A headed paragraph inside a handbook section. Deliberately container-free:
  * the section already owns the column width, and `prose` would nest a second
  * max-width wrapper inside it.
+ *
+ * `anchor` gives the subsection a fragment id. The 2026-07-28 restructure folded
+ * 21 sections into 5, and each old section survives as a subsection carrying its
+ * old anchor, so `#s08-travel` and friends still land where a participant expects.
  */
 export function Subsection({ block }: { block: Block }) {
   return (
-    <div className="mt-6">
+    <div id={block.anchor} className={`mt-6${block.anchor ? ' scroll-mt-24' : ''}`}>
       <Txt
         node={block}
         field="kicker"
         as="p"
-        className="mb-1 text-xs font-semibold uppercase tracking-[0.18em] text-clay"
+        className="mb-1 text-xs font-semibold uppercase tracking-[0.18em] text-accent-deep"
       />
       <Txt node={block} field="title" as="h3" className="font-display text-xl font-semibold text-ink" />
       <Body node={block} className="mt-2 max-w-2xl space-y-3 text-[0.98rem] leading-relaxed text-ink-soft" />
@@ -108,8 +114,8 @@ export function Subsection({ block }: { block: Block }) {
 
 const CALLOUT: Record<string, { wrap: string; chip: string; label: string }> = {
   'action-required': {
-    wrap: 'border-clay/35 bg-clay/[0.07]',
-    chip: 'bg-clay text-white',
+    wrap: 'border-accent/35 bg-accent/[0.07]',
+    chip: 'bg-accent-deep text-white',
     label: 'Action required',
   },
   'coming-soon': {
@@ -118,13 +124,13 @@ const CALLOUT: Record<string, { wrap: string; chip: string; label: string }> = {
     label: 'Coming soon',
   },
   note: {
-    wrap: 'border-teal/30 bg-teal-soft/45',
-    chip: 'bg-teal text-white',
+    wrap: 'border-brand/30 bg-brand-soft/45',
+    chip: 'bg-brand text-white',
     label: 'Good to know',
   },
   thanks: {
-    wrap: 'border-gold/40 bg-gold/[0.09]',
-    chip: 'bg-gold text-night',
+    wrap: 'border-brand-light/40 bg-brand-light/[0.09]',
+    chip: 'bg-brand-light text-navy',
     label: 'Thank you',
   },
 }
@@ -151,19 +157,19 @@ export function Callout({ block }: { block: Block }) {
 /** Ticked cards. Each item carries a `label` and optional `body`. */
 export function Checklist({ block }: { block: Block }) {
   return (
-    <div className="mt-6">
+    <div id={block.anchor} className={`mt-6${block.anchor ? ' scroll-mt-24' : ''}`}>
       <Txt
         node={block}
         field="kicker"
         as="p"
-        className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-clay"
+        className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-accent-deep"
       />
       <Txt node={block} field="title" as="h3" className="font-display text-xl font-semibold text-ink" />
       <Body node={block} className="mt-2 max-w-2xl space-y-2 text-[0.95rem] leading-relaxed text-ink-soft" />
       <ul className="mt-4 grid gap-2.5 sm:grid-cols-2">
         {(block.items ?? []).map((item) => (
           <li key={item.id} className="flex gap-3 rounded-xl border border-ink/10 bg-white/60 px-4 py-3">
-            <span aria-hidden className="mt-0.5 shrink-0 text-clay">
+            <span aria-hidden className="mt-0.5 shrink-0 text-accent-deep">
               ✓
             </span>
             <span>
@@ -177,22 +183,61 @@ export function Checklist({ block }: { block: Block }) {
   )
 }
 
+/* ------------------------------------------------------------------ list */
+
+/**
+ * A quiet bulleted list. Same shape as `checklist` without the ticks and cards.
+ *
+ * It exists because a tick is a highlighting device: it says "you must do this
+ * and then confirm you did". Thirteen ticked lists in one document taught the
+ * reader to ignore all of them (feedback, 2026-07-28). Ticks now belong only to
+ * lists a participant genuinely works through; everything else is a `list`.
+ */
+export function PlainList({ block }: { block: Block }) {
+  return (
+    <div id={block.anchor} className={`mt-6${block.anchor ? ' scroll-mt-24' : ''}`}>
+      <Txt
+        node={block}
+        field="kicker"
+        as="p"
+        className="mb-1 text-xs font-semibold uppercase tracking-[0.18em] text-accent-deep"
+      />
+      <Txt node={block} field="title" as="h3" className="font-display text-xl font-semibold text-ink" />
+      <Body node={block} className="mt-2 max-w-2xl space-y-2 text-[0.95rem] leading-relaxed text-ink-soft" />
+      <ul className="mt-3 max-w-2xl list-disc space-y-1.5 pl-5 font-body text-[0.98rem] leading-relaxed text-ink-soft marker:text-accent-deep">
+        {(block.items ?? []).map((item) => (
+          <li key={item.id}>
+            <Txt node={item} field="label" as="span" />
+            <Body node={item} className="mt-0.5 space-y-1 text-[0.88rem] leading-relaxed text-ink-faint" />
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
+
 /* ------------------------------------------------------------ glanceGrid */
 
 /**
  * Cards from `items` (kicker / value / label / body). `variant: "rows"` renders
  * the same items as a label-and-value fact table instead, which is what the
  * venue and contact sections want.
+ *
+ * `variant: "people"` is the rows table with the left column set as a name
+ * rather than a field label: sentence case, display face, full size. A person's
+ * name in small caps reads as a form field, and the facilitator credits are
+ * meant to read name, then role, then qualification (feedback, 2026-07-28).
  */
 export function GlanceGrid({ block }: { block: Block }) {
-  const rows = block.variant === 'rows'
+  const people = block.variant === 'people'
+  const rows = people || block.variant === 'rows'
   return (
-    <div className="mt-6">
+    <div id={block.anchor} className={`mt-6${block.anchor ? ' scroll-mt-24' : ''}`}>
       <Txt
         node={block}
         field="kicker"
         as="p"
-        className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-clay"
+        className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-accent-deep"
       />
       <Txt node={block} field="title" as="h3" className="font-display text-xl font-semibold text-ink" />
       <Body node={block} className="mt-2 max-w-2xl space-y-2 text-[0.95rem] leading-relaxed text-ink-soft" />
@@ -200,17 +245,29 @@ export function GlanceGrid({ block }: { block: Block }) {
       {rows ? (
         <dl className="mt-4 divide-y divide-ink/10 rounded-2xl border border-ink/10 bg-white/60 px-6 py-2">
           {(block.items ?? []).map((item) => (
-            <div key={item.id} className="grid gap-1 py-3.5 sm:grid-cols-[9rem_1fr] sm:gap-6">
+            <div
+              key={item.id}
+              className={`grid gap-1 py-3.5 sm:gap-6 ${people ? 'sm:grid-cols-[11rem_1fr]' : 'sm:grid-cols-[9rem_1fr]'}`}
+            >
               <dt>
                 <Txt
                   node={item}
                   field="label"
                   as="span"
-                  className="text-xs font-semibold uppercase tracking-wide text-ink-faint"
+                  className={
+                    people
+                      ? 'font-display text-base font-semibold text-ink'
+                      : 'text-xs font-semibold uppercase tracking-wide text-ink-faint'
+                  }
                 />
               </dt>
               <dd>
-                <Txt node={item} field="value" as="span" className="font-medium text-ink" />
+                <Txt
+                  node={item}
+                  field="value"
+                  as="span"
+                  className={people ? 'font-medium text-brand' : 'font-medium text-ink'}
+                />
                 <Body node={item} className="mt-1 space-y-1 text-[0.9rem] leading-relaxed text-ink-soft" />
               </dd>
             </div>
@@ -221,16 +278,16 @@ export function GlanceGrid({ block }: { block: Block }) {
           {(block.items ?? []).map((item) => (
             <div
               key={item.id}
-              className="rounded-2xl border border-ink/10 bg-white/60 p-5 transition-colors hover:border-clay/40"
+              className="rounded-2xl border border-ink/10 bg-white/60 p-5 transition-colors hover:border-accent/40"
             >
               <Txt
                 node={item}
                 field="kicker"
                 as="p"
-                className="text-[0.7rem] font-semibold uppercase tracking-[0.16em] text-teal"
+                className="text-[0.7rem] font-semibold uppercase tracking-[0.16em] text-brand"
               />
               <Txt node={item} field="value" as="p" className="mt-1 font-display text-2xl font-semibold text-ink" />
-              <Txt node={item} field="label" as="p" className="mt-0.5 text-sm font-medium text-clay" />
+              <Txt node={item} field="label" as="p" className="mt-0.5 text-sm font-medium text-accent-deep" />
               <Body node={item} className="mt-2 space-y-2 text-[0.9rem] leading-relaxed text-ink-soft" />
             </div>
           ))}
@@ -247,12 +304,12 @@ const external = (href?: string) => !!href && !href.startsWith('mailto:') && !hr
 /** Resource cards. Each item has `label`, optional `body`/`note`, and href or route. */
 export function LinkGrid({ block }: { block: Block }) {
   return (
-    <div className="mt-6">
+    <div id={block.anchor} className={`mt-6${block.anchor ? ' scroll-mt-24' : ''}`}>
       <Txt
         node={block}
         field="kicker"
         as="p"
-        className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-clay"
+        className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-accent-deep"
       />
       <Txt node={block} field="title" as="h3" className="font-display text-xl font-semibold text-ink" />
       <Body node={block} className="mt-2 max-w-2xl space-y-2 text-[0.95rem] leading-relaxed text-ink-soft" />
@@ -264,7 +321,7 @@ export function LinkGrid({ block }: { block: Block }) {
               <span className="flex items-baseline justify-between gap-3">
                 <Txt node={item} field="label" as="span" className="font-display text-lg font-semibold text-ink" />
                 {href && (
-                  <span aria-hidden className="shrink-0 text-clay transition-transform group-hover:translate-x-0.5">
+                  <span aria-hidden className="shrink-0 text-accent-deep transition-transform group-hover:translate-x-0.5">
                     {external(item.href) ? '↗' : '→'}
                   </span>
                 )}
@@ -284,7 +341,7 @@ export function LinkGrid({ block }: { block: Block }) {
               key={item.id}
               href={href}
               {...(external(item.href) ? { target: '_blank', rel: 'noreferrer noopener' } : {})}
-              className={`${shell} hover:border-clay/45 hover:bg-white`}
+              className={`${shell} hover:border-accent/45 hover:bg-white`}
             >
               {inner}
             </a>
@@ -312,7 +369,7 @@ export function SectionNav({ block }: { block: Block }) {
         node={block}
         field="kicker"
         as="p"
-        className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-clay"
+        className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-accent-deep"
       />
       <Txt node={block} field="title" as="h2" className="font-display text-2xl font-semibold text-ink" />
       <ol className="mt-5 grid gap-x-6 gap-y-1 sm:grid-cols-2">
@@ -322,12 +379,12 @@ export function SectionNav({ block }: { block: Block }) {
               href={`#${item.anchor ?? ''}`}
               className="group flex items-baseline gap-3 border-b border-ink/[0.07] py-2.5 no-underline"
             >
-              <span className="font-display text-xs font-semibold tabular-nums text-clay/60">{item.number}</span>
+              <span className="font-display text-xs font-semibold tabular-nums text-accent-deep">{item.number}</span>
               <Txt
                 node={item}
                 field="label"
                 as="span"
-                className="text-[0.95rem] text-ink-soft transition-colors group-hover:text-clay"
+                className="text-[0.95rem] text-ink-soft transition-colors group-hover:text-accent-deep"
               />
             </a>
           </li>

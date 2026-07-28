@@ -25,7 +25,7 @@ function SiteHeader() {
     <header className="sticky top-0 z-40 border-b border-ink/10 bg-paper/90 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center gap-6 px-5 py-3">
         <Link to="/" className="flex items-baseline gap-2 no-underline" onClick={() => setOpen(false)}>
-          <span aria-hidden className="inline-block size-3.5 translate-y-px rounded-full border-[3px] border-clay" />
+          <span aria-hidden className="inline-block size-3.5 translate-y-px rounded-full border-[3px] border-accent" />
           <Txt node={site} field="title" as="span" className="font-display text-lg font-semibold tracking-tight text-ink" />
         </Link>
         <nav aria-label="Site" className="ml-auto hidden items-center gap-1 md:flex">
@@ -113,7 +113,7 @@ function SiteHeader() {
 function SiteFooter() {
   const site = getContent().site
   return (
-    <footer className="bg-night text-paper">
+    <footer className="bg-navy text-paper">
       <div className="mx-auto max-w-6xl px-5 py-12">
         <div className="flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
           <div className="max-w-md">
@@ -122,7 +122,7 @@ function SiteFooter() {
           </div>
           <a
             href="mailto:josh_frost@sil.org"
-            className="inline-block rounded-full bg-clay px-5 py-2.5 text-sm font-semibold text-white no-underline transition-colors hover:bg-clay-deep"
+            className="inline-block rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-white no-underline transition-colors hover:bg-accent"
           >
             josh_frost@sil.org
           </a>

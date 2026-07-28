@@ -43,12 +43,17 @@ export function Txt({ node, field, as, className }: TxtProps) {
 /**
  * Renders a body string as paragraphs (split on blank lines), all tagged as
  * one editable node+field so an edit round-trips the whole body faithfully.
+ *
+ * Every paragraph of reading copy on the site passes through here, which is why
+ * `font-body` (Lora, SIL's body face) is applied at this one point rather than
+ * in every caller's className. Interface text — nav, buttons, kickers, badges —
+ * does not come through here and stays on Source Sans 3 via the body default.
  */
 export function Body({ node, field = 'body', className }: { node: TextNode; field?: string; className?: string }) {
   const value = (node as unknown as Record<string, unknown>)[field]
   if (typeof value !== 'string' || !value) return null
   return (
-    <div className={className} data-dfb-node={node.id} data-dfb-field={field}>
+    <div className={`font-body ${className ?? ''}`} data-dfb-node={node.id} data-dfb-field={field}>
       {value.split(/\n\s*\n/).map((para, i) => (
         <p key={i}>{inline(para.trim())}</p>
       ))}

@@ -36,9 +36,9 @@ export function StatusBadge({ status, size = 'md' }: { status: WorkshopDef['fact
         : siteLabel('site.badge.planned', 'Planned')
   const tone =
     status === 'complete'
-      ? 'bg-teal-soft text-teal'
+      ? 'bg-brand-soft text-brand'
       : status === 'fully-booked'
-        ? 'bg-clay text-white'
+        ? 'bg-accent-deep text-white'
         : 'bg-paper-deep text-ink-soft'
   const pad = size === 'lg' ? 'px-4 py-1.5 text-sm' : 'px-3 py-1 text-xs'
   return <span className={`inline-block rounded-full font-semibold uppercase tracking-wide ${tone} ${pad}`}>{label}</span>

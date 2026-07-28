@@ -3,9 +3,9 @@ import { getMedia } from '../../lib/media'
 import { Txt } from '../text'
 
 const HUES: Record<string, string> = {
-  amber: 'from-clay/85 via-gold/70 to-clay-deep/90',
-  teal: 'from-teal/90 via-teal/60 to-night/90',
-  ink: 'from-night via-night-soft to-ink',
+  accent: 'from-accent/85 via-brand-light/70 to-accent-deep/90',
+  brand: 'from-brand/90 via-brand/60 to-navy/90',
+  ink: 'from-navy via-navy-soft to-ink',
 }
 
 /**
@@ -41,7 +41,10 @@ export function ImageSlot({ block, framed = true }: { block: Block; framed?: boo
   if (!framed) return panel
 
   return (
-    <figure className="mx-auto max-w-5xl px-5 py-8">
+    // hb-band so the print stylesheet drops it along with the handbook's photo
+    // bands. The Psalms page is a document participants print; a full-page
+    // photograph on paper is wasted ink either way.
+    <figure className="hb-band mx-auto max-w-5xl px-5 py-8">
       <div className="overflow-hidden rounded-2xl">{panel}</div>
       <figcaption className="mt-2.5 flex items-baseline justify-between gap-4">
         <Txt node={block} field="caption" as="span" className="text-sm text-ink-faint" />

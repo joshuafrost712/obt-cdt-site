@@ -12,7 +12,7 @@ export interface MediaEntry {
   alt: string
   /** CSS aspect-ratio value, e.g. "16/9". */
   aspect: string
-  placeholder?: { style: 'gradient' | 'ring' | 'weave'; hue: 'amber' | 'teal' | 'ink'; label: string }
+  placeholder?: { style: 'gradient' | 'ring' | 'weave'; hue: 'accent' | 'brand' | 'ink'; label: string }
   src?: string | null
   credit?: string | null
 }

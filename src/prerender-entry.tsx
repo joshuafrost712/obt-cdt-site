@@ -9,7 +9,7 @@ import { renderToString } from 'react-dom/server'
 import { StaticRouter } from 'react-router'
 import App from './App'
 import { getRouteMeta } from './lib/meta'
-import { allRoutes, hiddenRoutes as unlistedRoutes } from './lib/content/loader'
+import { allRoutes, hiddenRoutes as unlistedRoutes, redirects as movedRoutes } from './lib/content/loader'
 
 export function render(url: string): { html: string; title: string; description: string } {
   // Same basename as the client BrowserRouter, so hrefs match at hydration.
@@ -34,4 +34,9 @@ export function routes(): string[] {
 /** Prerendered but unlisted: noindex in the head, no sitemap entry. */
 export function hiddenRoutes(): string[] {
   return unlistedRoutes()
+}
+
+/** Retired route → live route. The prerender writes a meta-refresh page for each. */
+export function redirects(): Record<string, string> {
+  return movedRoutes()
 }

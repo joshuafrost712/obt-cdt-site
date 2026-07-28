@@ -26,7 +26,7 @@ export function WorkshopsIndexPage() {
                 node={w}
                 field="title"
                 as="h2"
-                className="mt-3 font-display text-2xl font-semibold tracking-tight text-ink group-hover:text-clay-deep"
+                className="mt-3 font-display text-2xl font-semibold tracking-tight text-ink group-hover:text-accent-deep"
               />
               <p className="mt-2 text-sm font-medium text-ink-soft">{w.facts.location}</p>
               <p className="text-sm text-ink-faint">{w.facts.dateLabel ?? formatDateRange(w.facts.startDate, w.facts.endDate)}</p>

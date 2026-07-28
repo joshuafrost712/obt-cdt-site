@@ -32,6 +32,8 @@ export type BlockType =
   | 'callout'
   | 'checklist'
   | 'checklistItem'
+  | 'list'
+  | 'listItem'
   | 'glanceGrid'
   | 'glanceCard'
   | 'linkGrid'
@@ -64,12 +66,18 @@ export interface Block {
   /**
    * Rendering variant hint. CTAs use 'primary' | 'ghost'; callouts use
    * 'action-required' | 'coming-soon' | 'note' | 'thanks'; a glanceGrid uses
-   * 'rows' to render as a label/value fact table instead of cards.
+   * 'rows' to render as a label/value fact table instead of cards; a
+   * handbookSection uses 'plain' to skip the duotone wash over its photo, which
+   * a picture of people's faces needs.
    */
   variant?: string
   /** Scene index for the home visual essay (drives the roundabout diagram). */
   stage?: number
-  /** Fragment id a handbookSection is scrolled to, and the rail links against. */
+  /**
+   * Fragment id this block is scrolled to. handbookSections use it for the rail;
+   * subsections carry the anchors of the sections they were merged out of, so
+   * links already sent to participants keep landing.
+   */
   anchor?: string
   /** Display number on a handbook section chip, e.g. "03". */
   number?: string

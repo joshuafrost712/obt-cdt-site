@@ -5,6 +5,25 @@ Every image on the site is a **slot** referenced by id in
 as a designed gradient panel carrying its label, so reviewers can see what
 photo belongs where.
 
+## Image selection discipline
+
+Source of truth: **`_Meta/Visual-Media-Protocol.md`** in Joshua's vault. Read it
+before choosing any image. The short version:
+
+- An image earns its place by helping a reader process the text it sits beside.
+  It is a visual lead-in to the next point, not decoration keyed to the general
+  subject. "Beautiful but distracting" is the failure mode (feedback, 2026-07-28).
+- Choose images **after** the prose is final, never alongside it. Write, find the
+  main points, decide which points a visual actually helps, then search.
+- Budget from length before searching: roughly **one visual per 800–1,000 words**,
+  and never more than one per section. A hero counts.
+- Derive the search query from the specific point, not from the document's
+  subject. That is also what makes the search succeed.
+- Some points want no picture. A schedule does not want a picture.
+
+The Psalms page carries 5 visuals across ~3,700 words, down from 8, and each one
+leads into the section it opens.
+
 ## Swapping in a real image
 
 1. Drop the file into `public/media/` (e.g. `public/media/bangalore-circle.jpg`).
@@ -52,8 +71,20 @@ Credit format, so the manifest stays consistent:
 Photo: <creator> (<license>, via Wikimedia Commons)
 ```
 
+Append `, cropped` (or the relevant alteration) when the file has been changed.
+CC BY-SA requires that the change be flagged, and the crop is often the point:
+`choir-singing-suwon.jpg` is a tight crop of a wide balcony shot, taken to bring
+the singers' faces up to a size that carries the section.
+
 Captions describe the photograph, not the workshop. A stock photo of Balinese
-musicians must not be captioned so that it reads as a picture of OBT work.
+musicians must not be captioned so that it reads as a picture of OBT work. A
+caption may name the connection to the point after describing the photo:
+"A tingklik player in Bali. The workshop's work is psalms carried in genres a
+community already plays."
+
+When both sources come up empty, say so and offer the real options rather than
+settling for a pretty near-miss. About 25 queries across Commons and Openverse
+for "joyful Asian congregation singing" produced one usable candidate.
 
 ## Consent and sourcing rules
 

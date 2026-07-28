@@ -11,6 +11,10 @@ React 19 + TypeScript + Vite + Tailwind CSS v4. Static site, prerendered at
 build time (`scripts/prerender.mjs`) so every route is crawlable HTML on
 GitHub Pages. Deploys automatically from `main` via GitHub Actions.
 
+Visual identity follows SIL Global's, read off `global.sil.org`: Playfair
+Display headings, Lora body, Source Sans 3 interface, SIL's eight-step palette.
+All of it lives in the `@theme` block in `src/index.css`. See `docs/STYLE.md`.
+
 ## Editing content
 
 All user-visible copy lives in **`src/content/site-content.json`** as nodes
@@ -56,7 +60,16 @@ Unlisted is not private. **This repo is public**, so hidden-page copy is
 readable in `site-content.json` on github.com and in the history regardless.
 Treat `hidden` as "don't index, don't advertise", never as access control.
 
-Currently unlisted: `/workshops/psalms-bali-2026/handbook`.
+Nothing is unlisted at present. The Bali 2026 handbook used to be; on 2026-07-28
+it was merged into the Psalms workshop page at Joshua's request, so
+`/workshops/psalms-bali-2026` is now both the public workshop page and the
+participant handbook, and it is indexed.
+
+Retired routes are declared in `redirects()` in `src/lib/content/loader.ts`. The
+prerender writes a real meta-refresh page for each (`scripts/prerender.mjs`) and
+`App.tsx` maps the same URLs for client-side navigation, so
+`/workshops/psalms-bali-2026/handbook` still works for anyone who has the link
+from an email. Add to that map rather than deleting a URL outright.
 
 ## Development
 
@@ -71,8 +84,15 @@ npm run preview   # serve the built site
 
 - No participant names, emails, or other personal data anywhere on the site.
   Aggregate figures only.
+- **Named exception: facilitator credits.** The Psalms page lists the four people
+  running the workshop by name, with role and professional qualification, at
+  Joshua's explicit direction (2026-07-28) and on an indexed page. Participants
+  are still aggregate-only. Do not "fix" the facilitator block back out; if it
+  needs to change, that is Joshua's call.
 - No identification of partner organizations or projects in sensitive
   contexts.
+- Images follow `docs/MEDIA.md` and, behind it,
+  `_Meta/Visual-Media-Protocol.md` in Joshua's vault.
 - The accounts backend (sign-in, event sign-up, evaluations, certificates) is
   built behind feature flags and appears only once Supabase is provisioned:
   see `docs/PHASE-2-BACKEND.md` for the 5-step activation.
@@ -83,6 +103,22 @@ All body/marketing copy on the site must read as human-written. When editing
 `site-content.json` (directly or by applying a feedback batch), run this
 checklist. It does not apply to UI micro-copy (nav labels, buttons, form
 labels), only to sentences and paragraphs a reader reads.
+
+**Structure is part of this, not just sentences.** A reader identified the
+handbook as AI-generated from its shape before its prose: 21 top-level sections
+and a highlighted callout in every one. So:
+
+- **No more than about five to seven top-level sections.** Past that, nest.
+  People do not naturally divide a document into twenty parts, because they
+  cannot hold twenty in working memory. The 21-section handbook became five
+  sections with subsections on 2026-07-28.
+- **A highlighting device only works while it is rare.** Ticked checklists,
+  callout panels, badges, bold runs, pull quotes. Twenty-one callouts taught the
+  reader to skip all of them. Ticks now belong only to lists a participant works
+  through; everything else is a plain `list`. Consolidate "still to be confirmed"
+  notes to one per section.
+- **Say a thing once.** Three descriptions of the same two weeks in three
+  different formats is the same failure as three paragraphs of filler.
 
 - **No AI vocabulary.** Drive these to zero: leverage, delve, foster,
   underscore, harness, streamline, robust, seamless, pivotal, crucial,

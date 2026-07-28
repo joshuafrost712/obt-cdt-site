@@ -14,7 +14,7 @@ export function AuthGate({ title, children }: { title: string; children: (sessio
 
   return (
     <div className="mx-auto max-w-3xl px-5 pb-16 pt-12">
-      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-clay">Participant area</p>
+      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent-deep">Participant area</p>
       <h1 className="mt-2 font-display text-4xl font-semibold tracking-tight text-ink">{title}</h1>
 
       {session === undefined && <p className="mt-8 text-ink-faint">Checking your session…</p>}
@@ -79,7 +79,7 @@ function SignInCard() {
         Enter the email address you use with the track and we will send you a one-time sign-in link. No password needed.
       </p>
       {state === 'sent' ? (
-        <p className="mt-4 rounded-lg bg-teal-soft px-4 py-3 text-sm font-medium text-teal">
+        <p className="mt-4 rounded-lg bg-brand-soft px-4 py-3 text-sm font-medium text-brand">
           Check your email for the sign-in link, then return to this tab.
         </p>
       ) : (
@@ -94,18 +94,18 @@ function SignInCard() {
             autoComplete="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="rounded-lg border border-ink/20 bg-white px-3 py-2.5 text-ink outline-none focus:border-clay"
+            className="rounded-lg border border-ink/20 bg-white px-3 py-2.5 text-ink outline-none focus:border-accent"
             placeholder="you@example.org"
           />
           <button
             type="submit"
             disabled={state === 'sending'}
-            className="rounded-full bg-clay px-5 py-2.5 text-sm font-semibold text-white hover:bg-clay-deep disabled:opacity-50"
+            className="rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-white hover:bg-accent disabled:opacity-50"
           >
             {state === 'sending' ? 'Sending…' : 'Email me a sign-in link'}
           </button>
           {state === 'error' && (
-            <p className="text-sm text-clay-deep">That didn't work. Check the address and try again, or contact josh_frost@sil.org.</p>
+            <p className="text-sm text-accent-deep">That didn't work. Check the address and try again, or contact josh_frost@sil.org.</p>
           )}
         </form>
       )}
@@ -114,7 +114,7 @@ function SignInCard() {
 }
 
 export function ErrorNote({ error }: { error: string }) {
-  return <p className="mt-6 rounded-lg bg-clay-soft/50 px-4 py-3 text-sm text-clay-deep">{error}</p>
+  return <p className="mt-6 rounded-lg bg-accent-soft/50 px-4 py-3 text-sm text-accent-deep">{error}</p>
 }
 
 /** "2026-08-24" (+ optional end) → "24 Aug 2026" / "24 Aug – 4 Sep 2026". */

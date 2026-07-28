@@ -17,7 +17,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url'
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
 const dist = join(root, 'dist')
 
-const { render, routes, hiddenRoutes } = await import(
+const { render, routes, hiddenRoutes, redirects } = await import(
   pathToFileURL(join(root, 'dist-ssr', 'prerender-entry.js')).href
 )
 
@@ -57,6 +57,31 @@ for (const route of routeList) {
   writeFileSync(join(outDir, 'index.html'), page)
 }
 
+// Retired routes. A link that has already gone out by email has to keep
+// working, so each one gets a real page: meta refresh for browsers, canonical
+// and noindex for crawlers, and a visible link for anyone with JS off or a
+// refresh they can't follow.
+for (const [from, to] of Object.entries(redirects())) {
+  const target = base.replace(/\/$/, '') + to + '/'
+  const page = `<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="refresh" content="0; url=${target}" />
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="canonical" href="${site + to + '/'}" />
+    <title>Moved · OBT Consultant Development Track</title>
+  </head>
+  <body>
+    <p>This page has moved. <a href="${target}">Continue to the Psalms workshop and handbook</a>.</p>
+  </body>
+</html>
+`
+  const outDir = join(dist, ...from.split('/').filter(Boolean))
+  mkdirSync(outDir, { recursive: true })
+  writeFileSync(join(outDir, 'index.html'), page)
+}
+
 // Developer-version entry: opening <site>/dev/ turns the review tools on for
 // this device (same as ?dev=1) and lands on the home page. Memorable link for
 // Josh & reviewers; not in the sitemap or nav.
@@ -91,4 +116,7 @@ const sitemap = [
 writeFileSync(join(dist, 'sitemap.xml'), sitemap)
 writeFileSync(join(dist, 'robots.txt'), `User-agent: *\nAllow: /\n\nSitemap: ${site}/sitemap.xml\n`)
 
-console.log(`prerendered ${routeList.length} routes → dist/ (${unlisted.size} unlisted)`)
+console.log(
+  `prerendered ${routeList.length} routes → dist/ (${unlisted.size} unlisted, ` +
+    `${Object.keys(redirects()).length} redirected)`,
+)

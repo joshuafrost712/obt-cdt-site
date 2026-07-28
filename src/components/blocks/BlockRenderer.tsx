@@ -3,7 +3,7 @@ import type { Block } from '../../schema/types'
 import { Body, Txt } from '../text'
 import { ImageSlot } from './ImageSlot'
 import { useReveal } from '../scrolly/useReveal'
-import { Callout, Checklist, GlanceGrid, HandbookSection, LinkGrid, SectionNav, Subsection } from './HandbookBlocks'
+import { Callout, Checklist, GlanceGrid, HandbookSection, LinkGrid, PlainList, SectionNav, Subsection } from './HandbookBlocks'
 
 /**
  * Renders a list of content blocks. Every text element is tagged (via Txt/Body)
@@ -30,7 +30,7 @@ export function BlockRenderer({ blocks, nested = false }: { blocks: Block[]; nes
   )
 }
 
-const HANDBOOK_LEAF = new Set(['subsection', 'callout', 'checklist', 'glanceGrid', 'linkGrid'])
+const HANDBOOK_LEAF = new Set(['subsection', 'callout', 'checklist', 'list', 'glanceGrid', 'linkGrid'])
 
 function BlockView({ block, nested }: { block: Block; nested: boolean }) {
   if (!nested && HANDBOOK_LEAF.has(block.type)) {
@@ -69,6 +69,8 @@ function BlockView({ block, nested }: { block: Block; nested: boolean }) {
       return <Callout block={block} />
     case 'checklist':
       return <Checklist block={block} />
+    case 'list':
+      return <PlainList block={block} />
     case 'glanceGrid':
       return <GlanceGrid block={block} />
     case 'linkGrid':
@@ -93,7 +95,7 @@ function Prose({ block }: { block: Block }) {
   return (
     <section className="py-8">
       <Section>
-        <Txt node={block} field="kicker" as="p" className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-clay" />
+        <Txt node={block} field="kicker" as="p" className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-accent-deep" />
         <Txt node={block} field="title" as="h2" className="font-display text-3xl font-semibold tracking-tight text-ink" />
         <Body node={block} className="mt-4 space-y-4 text-[1.05rem] leading-relaxed text-ink-soft" />
       </Section>
@@ -105,9 +107,11 @@ function Quote({ block }: { block: Block }) {
   return (
     <section className="py-10">
       <Section>
-        <figure className="rounded-2xl border-l-4 border-clay bg-paper-deep/70 px-7 py-6">
+        <figure className="rounded-2xl border-l-4 border-accent bg-paper-deep/70 px-7 py-6">
           <blockquote>
-            <Txt node={block} field="body" as="p" className="font-display text-xl leading-snug text-ink md:text-2xl" />
+            {/* Caveat, the one place SIL's handwriting face earns its keep. It
+                runs small for its point size, hence the step up. */}
+            <Txt node={block} field="body" as="p" className="font-script text-2xl leading-snug text-ink md:text-3xl" />
           </blockquote>
           <figcaption>
             <Txt node={block} field="attribution" as="p" className="mt-3 text-sm font-medium text-ink-faint" />
@@ -124,8 +128,8 @@ export function StatRow({ block }: { block: Block }) {
       <Section wide>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {(block.items ?? []).map((stat) => (
-            <div key={stat.id} className="rounded-2xl bg-night px-6 py-6 text-paper">
-              <Txt node={stat} field="value" as="p" className="font-display text-4xl font-semibold text-gold" />
+            <div key={stat.id} className="rounded-2xl bg-navy px-6 py-6 text-paper">
+              <Txt node={stat} field="value" as="p" className="font-display text-4xl font-semibold text-brand-light" />
               <Txt node={stat} field="label" as="p" className="mt-1.5 text-sm font-medium leading-snug text-paper/85" />
               <Txt node={stat} field="note" as="p" className="mt-2 text-xs leading-relaxed text-paper/55" />
             </div>
@@ -141,7 +145,7 @@ function CardGrid({ block }: { block: Block }) {
   return (
     <section className="py-8">
       <Section wide>
-        <Txt node={block} field="kicker" as="p" className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-clay" />
+        <Txt node={block} field="kicker" as="p" className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-accent-deep" />
         <Txt node={block} field="title" as="h2" className="font-display text-3xl font-semibold tracking-tight text-ink" />
         <Body node={block} className="mt-3 max-w-3xl space-y-3 leading-relaxed text-ink-soft" />
         <div className={`mt-8 grid gap-5 ${threads ? 'md:grid-cols-2 lg:grid-cols-3' : 'md:grid-cols-2'}`}>
@@ -152,7 +156,7 @@ function CardGrid({ block }: { block: Block }) {
               <div key={card.id} className="rounded-2xl border border-ink/10 bg-white/60 p-6">
                 <Txt node={card} field="title" as="h3" className="font-display text-xl font-semibold text-ink" />
                 <Body node={card} className="mt-2.5 space-y-3 text-[0.95rem] leading-relaxed text-ink-soft" />
-                <Txt node={card} field="note" as="p" className="mt-3 text-xs font-medium uppercase tracking-wide text-clay" />
+                <Txt node={card} field="note" as="p" className="mt-3 text-xs font-medium uppercase tracking-wide text-accent-deep" />
               </div>
             ),
           )}
@@ -165,10 +169,10 @@ function CardGrid({ block }: { block: Block }) {
 function ThreadCard({ block, index }: { block: Block; index: number }) {
   return (
     <div className="relative overflow-hidden rounded-2xl border border-ink/10 bg-white/60 p-6">
-      <span aria-hidden className="font-display absolute -right-2 -top-5 text-[5.5rem] font-semibold leading-none text-clay/10">
+      <span aria-hidden className="font-display absolute -right-2 -top-5 text-[5.5rem] font-semibold leading-none text-accent/10">
         {index + 1}
       </span>
-      <Txt node={block} field="kicker" as="p" className="text-xs font-semibold uppercase tracking-[0.18em] text-teal" />
+      <Txt node={block} field="kicker" as="p" className="text-xs font-semibold uppercase tracking-[0.18em] text-brand" />
       <Txt node={block} field="title" as="h3" className="mt-1 font-display text-xl font-semibold text-ink" />
       <Body node={block} className="mt-2.5 space-y-3 text-[0.95rem] leading-relaxed text-ink-soft" />
     </div>
@@ -179,12 +183,12 @@ function Timeline({ block }: { block: Block }) {
   return (
     <section className="py-8">
       <Section>
-        <Txt node={block} field="kicker" as="p" className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-clay" />
+        <Txt node={block} field="kicker" as="p" className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-accent-deep" />
         <Txt node={block} field="title" as="h2" className="font-display text-3xl font-semibold tracking-tight text-ink" />
-        <ol className="mt-8 space-y-0 border-l-2 border-clay-soft pl-6">
+        <ol className="mt-8 space-y-0 border-l-2 border-accent-soft pl-6">
           {(block.items ?? []).map((item) => (
             <li key={item.id} className="relative pb-8 last:pb-0">
-              <span aria-hidden className="absolute -left-[31px] top-1.5 size-3 rounded-full border-2 border-clay bg-paper" />
+              <span aria-hidden className="absolute -left-[31px] top-1.5 size-3 rounded-full border-2 border-accent bg-paper" />
               <Txt node={item} field="kicker" as="p" className="text-xs font-semibold uppercase tracking-wide text-ink-faint" />
               <Txt node={item} field="title" as="h3" className="mt-0.5 font-display text-lg font-semibold text-ink" />
               <Body node={item} className="mt-1.5 space-y-2 text-[0.95rem] leading-relaxed text-ink-soft" />
@@ -200,13 +204,13 @@ export function RubricScale({ block }: { block: Block }) {
   return (
     <section className="py-8">
       <Section wide>
-        <Txt node={block} field="kicker" as="p" className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-clay" />
+        <Txt node={block} field="kicker" as="p" className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-accent-deep" />
         <Txt node={block} field="title" as="h2" className="font-display text-3xl font-semibold tracking-tight text-ink" />
         <Body node={block} className="mt-3 max-w-3xl space-y-3 leading-relaxed text-ink-soft" />
         <ol className="mt-8 grid gap-4 md:grid-cols-4">
           {(block.items ?? []).map((step) => (
             <li key={step.id} className="rounded-2xl border border-ink/10 bg-white/60 p-5">
-              <Txt node={step} field="value" as="p" className="font-display text-3xl font-semibold text-teal" />
+              <Txt node={step} field="value" as="p" className="font-display text-3xl font-semibold text-brand" />
               <Txt node={step} field="label" as="p" className="mt-1 text-sm font-semibold text-ink" />
               <Txt node={step} field="body" as="p" className="mt-2 text-[0.85rem] leading-relaxed text-ink-soft" />
             </li>
@@ -239,7 +243,9 @@ export function Cta({ block, onDark = false }: { block: Block; onDark?: boolean 
     ? 'border border-paper/35 text-paper hover:border-paper/70 hover:bg-paper/10'
     : 'border border-ink/20 text-ink hover:border-ink/40 hover:bg-paper-deep'
   const className = `inline-block rounded-full px-5 py-2.5 text-sm font-semibold no-underline transition-colors ${
-    primary ? 'bg-clay text-white hover:bg-clay-deep' : ghost
+    // SIL blue at rest, orange on hover: their own link behaviour, and blue
+    // clears AA with white text where their orange does not.
+    primary ? 'bg-brand text-white hover:bg-accent' : ghost
   }`
   const label = <Txt node={block} field="label" as="span" />
   if (block.href) {

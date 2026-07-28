@@ -1,26 +1,34 @@
 @import 'tailwindcss';
 
 /*
- * OBT-CDT design tokens. Warm editorial palette: paper field, deep ink,
- * terracotta accent (the roundabout), muted teal secondary.
+ * OBT-CDT design tokens, taken from SIL's own style guide (global.sil.org).
+ * Type: Playfair Display headings, Lora body, Source Sans 3 for interface,
+ * Caveat for pull quotes. Colour: SIL's eight-step palette, where blue is the
+ * brand, orange is the accent, and navy carries the dark surfaces.
+ *
+ * Two values are darkened rather than copied. SIL's orange is 2.9:1 on white,
+ * so `accent-deep` exists for anything small enough to need AA contrast, and
+ * `ink-soft` sits between SIL's black text and its #727272 grey.
  */
 @theme {
-  --font-display: 'Fraunces', 'Iowan Old Style', Georgia, serif;
-  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body: 'Lora', Georgia, serif;
+  --font-sans: 'Source Sans 3', system-ui, -apple-system, sans-serif;
+  --font-script: 'Caveat', 'Segoe Script', cursive;
 
-  --color-paper: #faf6f0;
-  --color-paper-deep: #f1e9de;
-  --color-ink: #211a13;
-  --color-ink-soft: #57493c;
-  --color-ink-faint: #8b7d6e;
-  --color-clay: #b4551f;
-  --color-clay-deep: #8f3f12;
-  --color-clay-soft: #e8c9b4;
-  --color-teal: #1e5f5b;
-  --color-teal-soft: #cfe3e0;
-  --color-gold: #c9972c;
-  --color-night: #201a14;
-  --color-night-soft: #35291d;
+  --color-paper: #ffffff;
+  --color-paper-deep: #f9fafb;
+  --color-ink: #000000;
+  --color-ink-soft: #3f4a52;
+  --color-ink-faint: #727272;
+  --color-accent: #ff6b00;
+  --color-accent-deep: #c24e00;
+  --color-accent-soft: #ffd9bf;
+  --color-brand: #005cb9;
+  --color-brand-soft: #cfe8f7;
+  --color-brand-light: #00a7e1;
+  --color-navy: #003049;
+  --color-navy-soft: #013c5c;
 }
 
 html {
@@ -63,13 +71,16 @@ body {
 
 /*
  * Handbook: a duotone wash over openly-licensed photography so it sits inside
- * the palette instead of reading as dropped-in stock. Multiply the clay accent
+ * the palette instead of reading as dropped-in stock. Multiply the orange accent
  * over the shadows, lift the highlights toward paper.
+ *
+ * A photograph whose subject is people's faces is exempt: the wash flattens
+ * exactly what such a photo is there for. Those bands set `variant: "plain"`.
  */
 .hb-duotone {
   background:
-    linear-gradient(200deg, color-mix(in oklab, var(--color-clay) 26%, transparent), transparent 62%),
-    linear-gradient(20deg, color-mix(in oklab, var(--color-teal) 22%, transparent), transparent 58%);
+    linear-gradient(200deg, color-mix(in oklab, var(--color-accent) 22%, transparent), transparent 62%),
+    linear-gradient(20deg, color-mix(in oklab, var(--color-brand) 20%, transparent), transparent 58%);
   mix-blend-mode: multiply;
 }
 
@@ -84,7 +95,7 @@ body {
 @keyframes hb-pulse {
   0%,
   100% {
-    box-shadow: 0 0 0 0 color-mix(in oklab, var(--color-clay) 45%, transparent);
+    box-shadow: 0 0 0 0 color-mix(in oklab, var(--color-accent) 45%, transparent);
   }
   60% {
     box-shadow: 0 0 0 6px transparent;

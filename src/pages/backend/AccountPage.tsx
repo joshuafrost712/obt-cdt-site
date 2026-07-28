@@ -78,7 +78,7 @@ function ProfileCard({ userId, profile }: { userId: string; profile: Profile | n
               setName(e.target.value)
               setState('idle')
             }}
-            className="mt-1 w-full rounded-lg border border-ink/20 bg-white px-3 py-2 text-sm font-normal normal-case tracking-normal text-ink outline-none focus:border-clay"
+            className="mt-1 w-full rounded-lg border border-ink/20 bg-white px-3 py-2 text-sm font-normal normal-case tracking-normal text-ink outline-none focus:border-accent"
           />
         </label>
         <label className="text-xs font-semibold uppercase tracking-wide text-ink-faint">
@@ -89,7 +89,7 @@ function ProfileCard({ userId, profile }: { userId: string; profile: Profile | n
               setOrg(e.target.value)
               setState('idle')
             }}
-            className="mt-1 w-full rounded-lg border border-ink/20 bg-white px-3 py-2 text-sm font-normal normal-case tracking-normal text-ink outline-none focus:border-clay"
+            className="mt-1 w-full rounded-lg border border-ink/20 bg-white px-3 py-2 text-sm font-normal normal-case tracking-normal text-ink outline-none focus:border-accent"
           />
         </label>
       </div>
@@ -98,12 +98,12 @@ function ProfileCard({ userId, profile }: { userId: string; profile: Profile | n
           type="button"
           disabled={!dirty || state === 'saving'}
           onClick={() => void save()}
-          className="rounded-full bg-clay px-4 py-2 text-sm font-semibold text-white hover:bg-clay-deep disabled:opacity-40"
+          className="rounded-full bg-brand px-4 py-2 text-sm font-semibold text-white hover:bg-accent disabled:opacity-40"
         >
           {state === 'saving' ? 'Saving…' : 'Save profile'}
         </button>
-        {state === 'saved' && <span className="text-sm font-medium text-teal">Saved.</span>}
-        {state === 'error' && <span className="text-sm text-clay-deep">Could not save; try again.</span>}
+        {state === 'saved' && <span className="text-sm font-medium text-brand">Saved.</span>}
+        {state === 'error' && <span className="text-sm text-accent-deep">Could not save; try again.</span>}
       </div>
     </section>
   )
@@ -146,7 +146,7 @@ function EvaluationsSection({ evals }: { evals: EvaluationRow[] | null }) {
                 <li key={e.id} className="flex gap-4 border-t border-ink/5 pt-3 first:border-t-0 first:pt-0">
                   <span
                     aria-label={`Score ${e.score} of 3`}
-                    className="mt-0.5 inline-flex size-8 shrink-0 items-center justify-center rounded-full bg-teal font-display text-base font-semibold text-white"
+                    className="mt-0.5 inline-flex size-8 shrink-0 items-center justify-center rounded-full bg-brand font-display text-base font-semibold text-white"
                   >
                     {e.score}
                   </span>

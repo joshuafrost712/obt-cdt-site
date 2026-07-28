@@ -64,7 +64,7 @@ export function RoundaboutDiagram({ stage, progress }: Props) {
           return (
             <g key={angle} className="ra-part" style={{ opacity: stage === 2 ? 1 : 0.75 }}>
               <line x1={x1} y1={y1} x2={x2} y2={y2} stroke="var(--color-ink-soft)" strokeWidth="14" strokeLinecap="round" opacity="0.28" />
-              <circle cx={x1} cy={y1} r="5.5" fill={on(2) ? 'var(--color-teal)' : 'var(--color-ink-faint)'}>
+              <circle cx={x1} cy={y1} r="5.5" fill={on(2) ? 'var(--color-brand)' : 'var(--color-ink-faint)'}>
                 {on(2, 3) && <animate attributeName="r" values="5.5;7;5.5" dur={`${2 + i * 0.3}s`} repeatCount="indefinite" />}
               </circle>
             </g>
@@ -74,13 +74,13 @@ export function RoundaboutDiagram({ stage, progress }: Props) {
 
       {/* ---- the roundabout ring ---- */}
       <g className="ra-part" style={{ opacity: stage >= 2 ? 1 : 0.15 }}>
-        <circle cx={CX} cy={CY} r={R} fill="none" stroke="var(--color-clay-soft)" strokeWidth="24" opacity="0.5" />
+        <circle cx={CX} cy={CY} r={R} fill="none" stroke="var(--color-accent-soft)" strokeWidth="24" opacity="0.5" />
         <circle
           cx={CX}
           cy={CY}
           r={R}
           fill="none"
-          stroke="var(--color-clay)"
+          stroke="var(--color-accent)"
           strokeWidth="5"
           strokeLinecap="round"
           strokeDasharray={RING_C}
@@ -89,7 +89,7 @@ export function RoundaboutDiagram({ stage, progress }: Props) {
           transform={`rotate(-90 ${CX} ${CY})`}
         />
         <circle cx={CX} cy={CY} r={R - 34} fill="var(--color-paper-deep)" opacity="0.9" />
-        <circle cx={CX} cy={CY} r={R - 34} fill="none" stroke="var(--color-clay)" strokeWidth="1.5" opacity="0.5" />
+        <circle cx={CX} cy={CY} r={R - 34} fill="none" stroke="var(--color-accent)" strokeWidth="1.5" opacity="0.5" />
       </g>
 
       {/* ---- five thread nodes on the ring ---- */}
@@ -98,8 +98,8 @@ export function RoundaboutDiagram({ stage, progress }: Props) {
           const [x, y] = polar(angle, R)
           return (
             <g key={angle}>
-              <circle cx={x} cy={y} r="12" fill="var(--color-paper)" stroke="var(--color-clay)" strokeWidth="2.5" />
-              <text x={x} y={y + 4} fontSize="11" fontWeight="700" textAnchor="middle" fill="var(--color-clay-deep)" fontFamily="var(--font-sans)">
+              <circle cx={x} cy={y} r="12" fill="var(--color-paper)" stroke="var(--color-accent)" strokeWidth="2.5" />
+              <text x={x} y={y + 4} fontSize="11" fontWeight="700" textAnchor="middle" fill="var(--color-accent-deep)" fontFamily="var(--font-sans)">
                 {i + 1}
               </text>
             </g>
@@ -114,7 +114,7 @@ export function RoundaboutDiagram({ stage, progress }: Props) {
       >
         {[30, 105, 170, 250, 320].map((angle, i) => {
           const [x, y] = polar(angle, R - 18)
-          return <circle key={angle} cx={x} cy={y} r={3.5 + (i % 3)} fill="var(--color-gold)" />
+          return <circle key={angle} cx={x} cy={y} r={3.5 + (i % 3)} fill="var(--color-brand-light)" />
         })}
       </g>
 
@@ -122,14 +122,14 @@ export function RoundaboutDiagram({ stage, progress }: Props) {
       <g className="ra-part" style={{ opacity: dim(stage === 4, 1, stage > 4 ? 0.35 : 0) }}>
         {[0, 1, 2, 3].map((n) => (
           <g key={n}>
-            <circle cx={CX - 36 + n * 24} cy={CY} r="9" fill={n <= 2 ? 'var(--color-teal)' : 'var(--color-paper)'} stroke="var(--color-teal)" strokeWidth="2" />
+            <circle cx={CX - 36 + n * 24} cy={CY} r="9" fill={n <= 2 ? 'var(--color-brand)' : 'var(--color-paper)'} stroke="var(--color-brand)" strokeWidth="2" />
             <text
               x={CX - 36 + n * 24}
               y={CY + 3.5}
               fontSize="10"
               fontWeight="700"
               textAnchor="middle"
-              fill={n <= 2 ? 'var(--color-paper)' : 'var(--color-teal)'}
+              fill={n <= 2 ? 'var(--color-paper)' : 'var(--color-brand)'}
               fontFamily="var(--font-sans)"
             >
               {n}
@@ -154,10 +154,10 @@ export function RoundaboutDiagram({ stage, progress }: Props) {
           const [x2, y2] = polar(62, 196)
           return (
             <>
-              <line x1={x1} y1={y1} x2={x2} y2={y2} stroke="var(--color-teal)" strokeWidth="14" strokeLinecap="round" opacity="0.3" />
-              <line x1={x1} y1={y1} x2={x2} y2={y2} stroke="var(--color-teal)" strokeWidth="4" strokeLinecap="round" />
+              <line x1={x1} y1={y1} x2={x2} y2={y2} stroke="var(--color-brand)" strokeWidth="14" strokeLinecap="round" opacity="0.3" />
+              <line x1={x1} y1={y1} x2={x2} y2={y2} stroke="var(--color-brand)" strokeWidth="4" strokeLinecap="round" />
               <g transform={`translate(${x2} ${y2 - 14})`}>
-                <circle r="16" fill="var(--color-teal)" />
+                <circle r="16" fill="var(--color-brand)" />
                 <path d="M -5 0 L 1 0 M -1.5 -4 L 3 0 L -1.5 4" stroke="var(--color-paper)" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" transform="rotate(-52)" />
               </g>
             </>
