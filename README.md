@@ -60,10 +60,16 @@ Unlisted is not private. **This repo is public**, so hidden-page copy is
 readable in `site-content.json` on github.com and in the history regardless.
 Treat `hidden` as "don't index, don't advertise", never as access control.
 
-Nothing is unlisted at present. The Bali 2026 handbook used to be; on 2026-07-28
-it was merged into the Psalms workshop page at Joshua's request, so
-`/workshops/psalms-bali-2026` is now both the public workshop page and the
-participant handbook, and it is indexed.
+One page is unlisted: `/general-travel-advice`, the generic pre-flight and
+departure checks that came out of the Bali handbook on 2026-07-28. It is linked
+from the workshop travel section and from nowhere else, deliberately: it is a
+reference for the few who want it, not a claim the track has anything original
+to say about airport queues.
+
+The Bali 2026 handbook used to be unlisted too; on 2026-07-28 it was merged into
+the Psalms workshop page at Joshua's request, so `/workshops/psalms-bali-2026` is
+now both the public workshop page and the participant handbook, and it is
+indexed.
 
 Retired routes are declared in `redirects()` in `src/lib/content/loader.ts`. The
 prerender writes a real meta-refresh page for each (`scripts/prerender.mjs`) and

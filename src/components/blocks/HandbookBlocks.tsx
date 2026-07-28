@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import type { Block } from '../../schema/types'
 import { getMedia } from '../../lib/media'
 import { Body, Txt } from '../text'
@@ -192,8 +193,18 @@ export function Checklist({ block }: { block: Block }) {
  * and then confirm you did". Thirteen ticked lists in one document taught the
  * reader to ignore all of them (feedback, 2026-07-28). Ticks now belong only to
  * lists a participant genuinely works through; everything else is a `list`.
+ *
+ * `variant: "numbered"` renders an ordered list. Use it where the sequence or
+ * the count is the point, as with the Indonesian entry requirements, which a
+ * participant works down item by item and needs to be able to refer to by
+ * number (feedback, 2026-07-28).
  */
 export function PlainList({ block }: { block: Block }) {
+  const numbered = block.variant === 'numbered'
+  const Tag = numbered ? 'ol' : 'ul'
+  const marker = numbered
+    ? 'list-decimal marker:font-semibold marker:tabular-nums'
+    : 'list-disc'
   return (
     <div id={block.anchor} className={`mt-6${block.anchor ? ' scroll-mt-24' : ''}`}>
       <Txt
@@ -204,14 +215,65 @@ export function PlainList({ block }: { block: Block }) {
       />
       <Txt node={block} field="title" as="h3" className="font-display text-xl font-semibold text-ink" />
       <Body node={block} className="mt-2 max-w-2xl space-y-2 text-[0.95rem] leading-relaxed text-ink-soft" />
-      <ul className="mt-3 max-w-2xl list-disc space-y-1.5 pl-5 font-body text-[0.98rem] leading-relaxed text-ink-soft marker:text-accent-deep">
+      <Tag
+        className={`mt-3 max-w-2xl space-y-1.5 pl-5 font-body text-[0.98rem] leading-relaxed text-ink-soft marker:text-accent-deep ${marker}`}
+      >
         {(block.items ?? []).map((item) => (
           <li key={item.id}>
-            <Txt node={item} field="label" as="span" />
+            {/* A label with a body under it is a heading for that body, so it
+                takes the darker weight. A label on its own is the content. */}
+            <Txt node={item} field="label" as="span" className={item.body ? 'font-medium text-ink' : undefined} />
             <Body node={item} className="mt-0.5 space-y-1 text-[0.88rem] leading-relaxed text-ink-faint" />
           </li>
         ))}
-      </ul>
+      </Tag>
+    </div>
+  )
+}
+
+/* -------------------------------------------------------- handbookTimeline */
+
+/**
+ * A dated spine. Same item fields as a `glanceGrid` (kicker / value / label /
+ * body) so a grid can become a timeline without renaming a single node field,
+ * but read as one sequence rather than five separate cards.
+ *
+ * The trip dates were a card grid until 2026-07-28, when Joshua pointed out that
+ * a sequence of days is a timeline: the cards made five equal-weight facts out
+ * of what is actually one line through three weeks.
+ */
+export function HandbookTimeline({ block }: { block: Block }) {
+  return (
+    <div id={block.anchor} className={`mt-6${block.anchor ? ' scroll-mt-24' : ''}`}>
+      <Txt
+        node={block}
+        field="kicker"
+        as="p"
+        className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-accent-deep"
+      />
+      <Txt node={block} field="title" as="h3" className="font-display text-xl font-semibold text-ink" />
+      <Body node={block} className="mt-2 max-w-2xl space-y-2 text-[0.95rem] leading-relaxed text-ink-soft" />
+      <ol className="mt-5 max-w-2xl border-l-2 border-brand/25 pl-6">
+        {(block.items ?? []).map((item) => (
+          <li key={item.id} className="relative pb-7 last:pb-0">
+            <span
+              aria-hidden
+              className="absolute -left-[31px] top-1 size-3 rounded-full border-2 border-brand bg-paper"
+            />
+            <Txt
+              node={item}
+              field="kicker"
+              as="p"
+              className="text-xs font-semibold uppercase tracking-[0.14em] text-ink-faint"
+            />
+            <p className="mt-0.5 flex flex-wrap items-baseline gap-x-3">
+              <Txt node={item} field="value" as="span" className="font-display text-lg font-semibold text-ink" />
+              <Txt node={item} field="label" as="span" className="text-sm font-medium text-accent-deep" />
+            </p>
+            <Body node={item} className="mt-1.5 space-y-2 text-[0.93rem] leading-relaxed text-ink-soft" />
+          </li>
+        ))}
+      </ol>
     </div>
   )
 }
@@ -336,6 +398,16 @@ export function LinkGrid({ block }: { block: Block }) {
             </>
           )
           const shell = 'group block rounded-2xl border border-ink/10 bg-white/60 p-5 no-underline transition-colors'
+          // An internal `route` has to go through react-router: the site is
+          // served from a base path on Pages, and a raw <a href="/x"> would
+          // drop it and 404.
+          if (item.route && !item.href) {
+            return (
+              <Link key={item.id} to={item.route} className={`${shell} hover:border-accent/45 hover:bg-white`}>
+                {inner}
+              </Link>
+            )
+          }
           return href ? (
             <a
               key={item.id}

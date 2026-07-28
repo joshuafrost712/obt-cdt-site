@@ -21,13 +21,26 @@ function Deferred({ children }: { children: ReactNode }) {
   return <Suspense fallback={<p className="mx-auto max-w-3xl px-5 py-16 text-ink-faint">Loading…</p>}>{children}</Suspense>
 }
 
-/** Keeps the tab title in sync with the content store on client navigation. */
+/**
+ * Keeps the tab title in sync with the content store on client navigation, and
+ * owns scroll position across it.
+ *
+ * The hash check is load-bearing. Participants hold deep links into the Bali
+ * handbook (`#s08-travel` and 20 others) in email, and the browser's own jump to
+ * the anchor happens before React mounts: an unconditional scrollTo(0, 0) here
+ * undid it on every one of them, landing the reader at the top of a 20-page
+ * document instead.
+ */
 function TitleSync() {
-  const { pathname } = useLocation()
+  const { pathname, hash } = useLocation()
   useEffect(() => {
     document.title = getRouteMeta(pathname).title
+    if (hash) {
+      document.getElementById(decodeURIComponent(hash.slice(1)))?.scrollIntoView()
+      return
+    }
     window.scrollTo(0, 0)
-  }, [pathname])
+  }, [pathname, hash])
   return null
 }
 

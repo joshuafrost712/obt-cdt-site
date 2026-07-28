@@ -3,7 +3,17 @@ import type { Block } from '../../schema/types'
 import { Body, Txt } from '../text'
 import { ImageSlot } from './ImageSlot'
 import { useReveal } from '../scrolly/useReveal'
-import { Callout, Checklist, GlanceGrid, HandbookSection, LinkGrid, PlainList, SectionNav, Subsection } from './HandbookBlocks'
+import {
+  Callout,
+  Checklist,
+  GlanceGrid,
+  HandbookSection,
+  HandbookTimeline,
+  LinkGrid,
+  PlainList,
+  SectionNav,
+  Subsection,
+} from './HandbookBlocks'
 
 /**
  * Renders a list of content blocks. Every text element is tagged (via Txt/Body)
@@ -54,7 +64,10 @@ function BlockView({ block, nested }: { block: Block; nested: boolean }) {
     case 'threadCard':
       return <ThreadCard block={block} index={0} />
     case 'timeline':
-      return <Timeline block={block} />
+      // Inside a handbook section the column width is already owned, and the
+      // handbook timeline also reads glanceGrid's item fields, so a dated grid
+      // can become a spine without renaming nodes.
+      return nested ? <HandbookTimeline block={block} /> : <Timeline block={block} />
     case 'imageSlot':
       return <ImageSlot block={block} />
     case 'rubricScale':

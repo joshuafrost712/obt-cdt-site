@@ -82,6 +82,16 @@ so on) live on the subsection, checklist, glanceGrid or linkGrid they were folde
 into. Participants have those fragment links in email. Keep them working: the
 `anchor` field renders as an `id` on all of those block types.
 
+Two of them moved on 2026-07-28 when their content left the page.
+`s10-before-you-fly` now sits on the card linking to General travel advice, and
+`s20-departure` on "Closing well". When you delete a block, check whether it was
+carrying an anchor and rehome it on whatever now stands in that place.
+
+`TitleSync` in `App.tsx` scrolls to the top on navigation and **must** keep its
+hash guard. Without it, the browser's own jump to the fragment is undone the
+moment React hydrates, and every one of those emailed links lands the reader at
+the top of a twenty-page document.
+
 ## Where the copy lives
 
 One workshop node in `src/content/site-content.json`, `id: "psalms-bali-2026"`,
@@ -126,9 +136,19 @@ used at the top level of an ordinary page. All of them accept `anchor`.
 | `subsection` | A headed paragraph inside a section | `kicker`, `title`, `body` |
 | `callout` | Status panel | `variant`, `label`, `title`, `body` |
 | `checklist` | Ticked cards, two columns | `kicker`, `title`, `body`, `items[].label`, `items[].body` |
-| `list` | A quiet bulleted list, same shape as `checklist` | as `checklist`, with `listItem` children |
+| `list` | A quiet bulleted list, or numbered with `variant: "numbered"` | as `checklist`, with `listItem` children |
 | `glanceGrid` | Cards, a fact table with `variant: "rows"`, or a credits table with `variant: "people"` | `items[].kicker`, `.value`, `.label`, `.body` |
+| `timeline` | A dated spine: one line through a sequence of days | same item fields as `glanceGrid` |
 | `linkGrid` | Resource cards | `items[].label`, `.href` or `.route`, `.body`, `.note` |
+
+`timeline` reads exactly the item fields a `glanceGrid` does, so a dated card
+grid becomes a spine by changing one `type` and renaming nothing. Inside a
+handbook section `BlockRenderer` picks the handbook version; at the top level of
+a marketing page the original essay timeline still renders.
+
+A `linkGrid` item with `route` (rather than `href`) goes through react-router.
+The site is served from a base path on Pages, so a raw `<a href="/x">` would drop
+it and 404.
 
 `variant: "people"` on a `glanceGrid` renders the rows table with the left column
 as a person's name in the display face rather than a small-caps field label, so
@@ -139,9 +159,10 @@ the row reads name, then role, then qualification.
 - `action-required` — orange, with a slow pulse on the chip. Something the reader
   must do, with a deadline behind it. There are four: dates, flights, visa,
   dietary needs. Do not add a fifth without removing one.
-- `coming-soon` — muted. A detail that is genuinely not settled yet. **One per
-  section, consolidated.** Eleven of these across the document was the single
-  biggest source of panel fatigue.
+- `coming-soon` — muted. A detail that is genuinely not settled yet. **At most
+  one per section, consolidated, and only where something really is outstanding.**
+  Eleven of these across the document was the single biggest source of panel
+  fatigue; two remain.
 - `note` — SIL blue. Context worth knowing. Two, and both are load-bearing.
 - `thanks` — cyan. The closing note. One, at the very end.
 
@@ -149,22 +170,29 @@ The default chip text comes from the variant; `label` overrides it.
 
 ## Highlighting discipline
 
-Counts as of 2026-07-28, after the restructure, and worth re-checking after any
-substantial edit:
+Counts as of 2026-07-28, after the restructure and the review round that
+followed it, and worth re-checking after any substantial edit:
 
-| | Before | After |
-| --- | --- | --- |
-| Top-level sections | 21 | 5 |
-| Callout panels | 21 | 11 |
-| Ticked checklists | 13 | 5 |
-| Photographs | 8 | 5 |
-| Words | 3,775 | ~3,700 |
+| | Original | Restructure | After review |
+| --- | --- | --- | --- |
+| Top-level sections | 21 | 5 | 5 |
+| Callout panels | 21 | 11 | 9 |
+| Ticked checklists | 13 | 5 | 1 |
+| Photographs | 8 | 5 | 5 |
+| Words | 3,775 | ~3,700 | ~3,500 |
 
 A tick means "you do this, then confirm you did". A callout means "stop and read
-this". Both stop meaning anything when every section has one. Ticks now belong to
-five lists a participant genuinely works through (before you fly, entry
-requirements, packing, before you leave the base, health before you leave home);
-everything else is a `list`.
+this". Both stop meaning anything when every section has one.
+
+The review round cut four of the five checklists. Joshua's note on it is the
+governing principle for this document: **the people coming are seasoned
+travellers.** Advice they have not needed since their first international trip
+reads as padding and makes the whole handbook less credible, so generic
+pre-flight, packing and departure advice was cut. What survived is either
+Bali-specific (entry requirements, the weather they are packing for) or
+workshop-specific (what to bring for the sessions). The generic material lives on
+the unlisted `/general-travel-advice` page, linked once from the travel section
+for whoever wants it.
 
 ## The "coming soon" discipline
 
@@ -174,13 +202,8 @@ The ones that remain are gathered into one panel per section that says **what** 
 missing and **who** will send it, so a reader can tell a tracked gap from an
 oversight.
 
-Open gaps as of 2026-07-28:
+Open gaps as of 2026-07-28, after the review round:
 
-- **02** daily hours, meal times, devotional slots, and the week-two day-four
-  choice between Proverbs and ambassador practice.
-- **03** the rest of the facilitation team, the shared folder, the group
-  messaging channel. Also Josh's own qualification line, which is the one entry
-  in the team table without one; ask rather than invent it.
 - **04** driver details and pickup times, and the final resource and equipment
   list.
 - **05** venue arrival details and reception number, room allocation, check-in,
@@ -189,6 +212,17 @@ Open gaps as of 2026-07-28:
 
 When one is settled, move it into real content and delete it from the panel and
 from this list.
+
+Sections 02 and 03 no longer carry a panel, and neither should get one back
+without a reason.
+
+- **02** asked participants to wait for meal times and daily hours. They do not
+  need the clock; they need the shape of a day, and that now lives in "The daily
+  rhythm" as prose. The one genuinely undecided session is already named on the
+  day it falls.
+- **03** listed the facilitators, mentors, translators and local partners still
+  to be confirmed. Naming local partners on an indexed public page can expose
+  them, so the panel went and the confirmed four stand on their own.
 
 ## Print
 
