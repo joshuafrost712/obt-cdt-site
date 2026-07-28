@@ -25,6 +25,16 @@ export type BlockType =
   | 'ctaGroup'
   | 'cta'
   | 'labelToken'
+  // Handbook blocks. Used by the participant handbook layout; see docs/HANDBOOK.md.
+  | 'sectionNav'
+  | 'handbookSection'
+  | 'subsection'
+  | 'callout'
+  | 'checklist'
+  | 'checklistItem'
+  | 'glanceGrid'
+  | 'glanceCard'
+  | 'linkGrid'
 
 export interface Block {
   id: string
@@ -51,10 +61,18 @@ export interface Block {
   route?: string
   /** External URL for a CTA (mailto: allowed). */
   href?: string
-  /** Rendering variant hint (e.g. 'primary' | 'ghost' for CTAs). */
+  /**
+   * Rendering variant hint. CTAs use 'primary' | 'ghost'; callouts use
+   * 'action-required' | 'coming-soon' | 'note' | 'thanks'; a glanceGrid uses
+   * 'rows' to render as a label/value fact table instead of cards.
+   */
   variant?: string
   /** Scene index for the home visual essay (drives the roundabout diagram). */
   stage?: number
+  /** Fragment id a handbookSection is scrolled to, and the rail links against. */
+  anchor?: string
+  /** Display number on a handbook section chip, e.g. "03". */
+  number?: string
   /** Child blocks (statRow items, timeline items, thread cards, CTAs...). */
   items?: Block[]
 }
@@ -79,6 +97,15 @@ export interface PageDef {
   title: string
   metaDescription: string
   kicker?: string
+  /**
+   * Unlisted: still prerendered and reachable by link, but kept out of the top
+   * nav and sitemap.xml and served with <meta name="robots" content="noindex">.
+   * This is site-level discoverability only — the repo is public, so it is not
+   * a way to keep content private.
+   */
+  hidden?: boolean
+  /** Which page component renders this page. Default is the generic ContentPage. */
+  layout?: 'default' | 'handbook'
   blocks: Block[]
 }
 

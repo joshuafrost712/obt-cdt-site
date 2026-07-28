@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useFeedback } from './feedbackContext'
 import { addComment, type Importance } from './db'
 
@@ -12,6 +12,14 @@ export function CommentWindow() {
   const [comment, setComment] = useState('')
   const [importance, setImportance] = useState<Importance>('medium')
   const [saving, setSaving] = useState(false)
+
+  // Singleton panel: reset the draft whenever the target selection changes, so a
+  // comment typed then cancelled on one selection doesn't leak into the next.
+  useEffect(() => {
+    setComment('')
+    setImportance('medium')
+    setSaving(false)
+  }, [draft?.route, draft?.selectionText, draft?.locationLabel])
 
   if (!draft) return null
 
