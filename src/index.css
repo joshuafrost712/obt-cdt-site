@@ -70,6 +70,24 @@ body {
 }
 
 /*
+ * The figure's caption is remounted on every scene change (keyed on stage), so
+ * it fades in rather than snapping. It must NOT be a .ra-part: that class
+ * transitions transform, and the circulating marker taught us what happens when
+ * a per-frame rotation meets a 0.8s transform transition (it wobbles off centre).
+ */
+.js .ra-note {
+  animation: ra-note-in 0.45s ease-out both;
+}
+@keyframes ra-note-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/*
  * Handbook: a duotone wash over openly-licensed photography so it sits inside
  * the palette instead of reading as dropped-in stock. Multiply the orange accent
  * over the shadows, lift the highlights toward paper.
@@ -116,6 +134,9 @@ body {
   }
   .ra-part {
     transition: none;
+  }
+  .js .ra-note {
+    animation: none;
   }
   .js .hb-pulse {
     animation: none;

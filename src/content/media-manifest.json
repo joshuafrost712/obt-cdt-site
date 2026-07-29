@@ -1,63 +1,57 @@
 {
+  "home-hero": {
+    "kind": "image",
+    "alt": "A recordist holds a field recorder toward a group gathered around a cluster of microphones, several of them following typed scripts",
+    "aspect": "21/9",
+    "src": "media/oral-history-recording.jpg",
+    "credit": "Photo: Lomoraronald (CC BY-SA 4.0, via Wikimedia Commons), cropped"
+  },
   "home-workshop": {
+    "kind": "image",
+    "alt": "Participants at a translation workshop discuss a slide defining the local word for translation, laptops and a picture book open on the table",
+    "aspect": "21/9",
+    "src": "media/translation-workshop-word.jpg",
+    "credit": "Photo: Filipinayzd (CC BY-SA 4.0, via Wikimedia Commons), cropped"
+  },
+  "threads-hero": {
+    "kind": "image",
+    "alt": "The warp of a handloom: hundreds of yellow silk threads running under tension through the heddles toward the weaver",
+    "aspect": "21/9",
+    "src": "media/handloom-warp-threads.jpg",
+    "credit": "Photo: McKay Savage (CC BY 2.0, via Wikimedia Commons), cropped"
+  },
+  "get-involved-hero": {
     "kind": "placeholder",
-    "alt": "Workshop participants seated in a circle, internalizing a Bible passage together",
+    "alt": "An experienced consultant working alongside a translator on a real project",
     "aspect": "21/9",
     "placeholder": {
       "style": "gradient",
-      "hue": "accent",
-      "label": "Photo slot: workshop internalization circle"
-    },
-    "src": null,
-    "credit": null
-  },
-  "philosophy-performance": {
-    "kind": "placeholder",
-    "alt": "A translator performing an oral Scripture passage for community members",
-    "aspect": "16/9",
-    "placeholder": {
-      "style": "gradient",
       "hue": "brand",
-      "label": "Photo slot: oral performance / community checking"
+      "label": "Photo slot: a mentor working alongside a translator"
     },
     "src": null,
     "credit": null
   },
-  "threads-cohort": {
-    "kind": "placeholder",
-    "alt": "A cohort of participants studying together around a table",
-    "aspect": "16/9",
-    "placeholder": {
-      "style": "gradient",
-      "hue": "accent",
-      "label": "Photo slot: cohort study session"
-    },
-    "src": null,
-    "credit": null
+  "workshops-hero": {
+    "kind": "image",
+    "alt": "A translation workshop in session around a long table, two participants seen from behind as a facilitator presents a newly translated book",
+    "aspect": "21/9",
+    "src": "media/translation-workshop-table.jpg",
+    "credit": "Photo: Filipinayzd (CC BY-SA 4.0, via Wikimedia Commons), cropped"
   },
   "workshop-narrative": {
-    "kind": "placeholder",
-    "alt": "Participants acting out a narrative passage during internalization",
-    "aspect": "16/9",
-    "placeholder": {
-      "style": "gradient",
-      "hue": "accent",
-      "label": "Photo slot: Narrative workshop, Bangalore 2025"
-    },
-    "src": null,
-    "credit": null
+    "kind": "image",
+    "alt": "The Vidhana Soudha in Bengaluru, its granite colonnade and gilded central dome under monsoon cloud",
+    "aspect": "21/9",
+    "src": "media/bangalore-vidhana-soudha.jpg",
+    "credit": "Photo: Moheen Reeyad (CC BY-SA 4.0, via Wikimedia Commons), cropped"
   },
   "workshop-epistles": {
-    "kind": "placeholder",
-    "alt": "A team mapping the argument structure of an epistle on a whiteboard",
-    "aspect": "16/9",
-    "placeholder": {
-      "style": "gradient",
-      "hue": "brand",
-      "label": "Photo slot: Epistles workshop, Chiang Mai 2025"
-    },
-    "src": null,
-    "credit": null
+    "kind": "image",
+    "alt": "The gilded chedi of Wat Phra That Doi Suthep above Chiang Mai, with a carved temple roofline and ceremonial parasol beside it",
+    "aspect": "21/9",
+    "src": "media/chiang-mai-doi-suthep.jpg",
+    "credit": "Photo: Philip Nalangan (CC BY 4.0, via Wikimedia Commons), cropped"
   },
   "workshop-psalms": {
     "kind": "image",

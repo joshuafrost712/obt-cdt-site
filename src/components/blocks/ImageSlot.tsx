@@ -14,7 +14,16 @@ const HUES: Record<string, string> = {
  * belongs there); real entries render the photo with alt text, a fixed aspect
  * ratio (no layout shift), and a credit line.
  */
-export function ImageSlot({ block, framed = true }: { block: Block; framed?: boolean }) {
+export function ImageSlot({
+  block,
+  framed = true,
+  nested = false,
+}: {
+  block: Block
+  framed?: boolean
+  /** Inside a handbookSection the column width is already owned; see Frame in BlockRenderer. */
+  nested?: boolean
+}) {
   const media = getMedia(block.mediaId ?? '')
   const panel =
     media.kind === 'image' && media.src ? (
@@ -44,7 +53,7 @@ export function ImageSlot({ block, framed = true }: { block: Block; framed?: boo
     // hb-band so the print stylesheet drops it along with the handbook's photo
     // bands. The Psalms page is a document participants print; a full-page
     // photograph on paper is wasted ink either way.
-    <figure className="hb-band mx-auto max-w-5xl px-5 py-8">
+    <figure className={`hb-band ${nested ? 'mt-6' : 'mx-auto max-w-5xl px-5 py-8'}`}>
       <div className="overflow-hidden rounded-2xl">{panel}</div>
       <figcaption className="mt-2.5 flex items-baseline justify-between gap-4">
         <Txt node={block} field="caption" as="span" className="text-sm text-ink-faint" />

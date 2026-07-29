@@ -55,8 +55,9 @@
           "id": "home.hero",
           "type": "hero",
           "kicker": "SIL Global Consulting Pool",
-          "title": "Consultants for a Bible that lives out loud",
+          "title": "Consultants for a Bible that is spoken, not read",
           "body": "Oral Bible translation is growing faster than any form of Bible translation ever has. The consultants who safeguard its quality are still far too few.\n\nThe OBT Consultant Development Track forms and certifies consultants for this work: in community, through real practice, at the pace of genuine readiness.",
+          "mediaId": "home-hero",
           "items": [
             {
               "id": "home.hero.cta-workshops",
@@ -78,7 +79,7 @@
           "type": "scene",
           "stage": 0,
           "kicker": "The idea",
-          "title": "Certification that follows readiness, not seat time",
+          "title": "Certification based on readiness, not seat time",
           "body": "This track certifies oral Bible translation consultants when they demonstrate the full set of consulting competencies, wherever and however they gained them.\n\nWe call it the roundabout model. Instead of a fixed sequence of required courses, the track is a circulation: people enter from different directions, keep moving while they grow, and exit when a mentor confirms they are ready."
         },
         {
@@ -103,7 +104,34 @@
           "stage": 3,
           "kicker": "Circulating",
           "title": "On the roundabout, five threads weave together",
-          "body": "Circulating means growing along five threads at once: genre-based workshops that act as catalysts, online trainings between them, biblical language cohorts, ongoing mentorship, and supervised practice on real translation projects.\n\nEvery lap adds evidence. A workshop evaluation here, a mentored consultant check there, a language milestone, a teaching assignment. The track keeps that evidence, competency by competency."
+          "body": "Circulating means growing along five threads at once: genre-based workshops that act as catalysts, online trainings between them, biblical language cohorts, ongoing mentorship, and supervised practice on real translation projects.\n\nEvery lap adds evidence. A workshop evaluation here, a mentored consultant check there, a language milestone, a teaching assignment. The track keeps that evidence, competency by competency.",
+          "items": [
+            {
+              "id": "home.essay.s4.t1",
+              "type": "labelToken",
+              "label": "Workshops"
+            },
+            {
+              "id": "home.essay.s4.t2",
+              "type": "labelToken",
+              "label": "Online training"
+            },
+            {
+              "id": "home.essay.s4.t3",
+              "type": "labelToken",
+              "label": "Language cohorts"
+            },
+            {
+              "id": "home.essay.s4.t4",
+              "type": "labelToken",
+              "label": "Mentorship"
+            },
+            {
+              "id": "home.essay.s4.t5",
+              "type": "labelToken",
+              "label": "Field practice"
+            }
+          ]
         },
         {
           "id": "home.essay.s5",
@@ -173,7 +201,7 @@
           "id": "home.cta",
           "type": "ctaGroup",
           "title": "Walk the loop yourself",
-          "body": "The pages below unpack each part of the model: why the track exists, how certification works, and what the five threads look like in practice.",
+          "body": "The pages below take each part of the model in turn: why the track exists, how certification works, and what the five threads look like in practice.",
           "items": [
             {
               "id": "home.cta.philosophy",
@@ -208,89 +236,107 @@
       "metaDescription": "Oral Bible translation has grown explosively, and the consultants who safeguard its quality are scarce. Why the OBT Consultant Development Track was built, and the principles that shape it.",
       "blocks": [
         {
-          "id": "philosophy.growth",
-          "type": "prose",
-          "kicker": "The moment we are in",
+          "id": "philosophy.hero",
+          "type": "hero",
+          "kicker": "Philosophy",
+          "title": "Why this track exists",
+          "body": "Oral Bible translation went from about 20 active projects to more than 1,200 in six years. The consultants who check that work did not multiply with it."
+        },
+        {
+          "id": "philosophy.s1",
+          "type": "handbookSection",
+          "number": "01",
+          "anchor": "s01-growth",
+          "kicker": "The problem",
           "title": "The fastest growth Bible translation has ever seen",
-          "body": "In roughly 120 years, written Bible translation grew from about 10 active projects to about 800. Oral Bible translation grew from about 20 active projects to more than 1,200 in six years.\n\nThe reason is impact. In an OBT project, a team of mature believers internalizes long sections of Scripture and translates them from memory, orally, into the heart language of their community. By the time a book is finished, the community has orally processed every passage many times over."
-        },
-        {
-          "id": "philosophy.quote",
-          "type": "quote",
-          "body": "These translators end up holding entire books of the Bible in memory. In their communities, they are often called walking Bibles.",
-          "attribution": "Why OBT projects multiply so quickly"
-        },
-        {
-          "id": "philosophy.gap",
-          "type": "prose",
-          "title": "Growth has outrun quality assurance",
-          "body": "Every Bible translation project needs consultants: experienced practitioners who check the translation with the team so that what the community receives is accurate, clear, and natural. OBT projects have multiplied faster than the consulting pool can sustain, and the pool of consultants equipped to evaluate specifically oral translation meets only a small fraction of the need.\n\nThere is a deeper problem than headcount. Nearly all existing consultant training was built around literacy: written commentaries, written drafts, written feedback. Oral Bible translation follows an oral method and produces an oral product, so its consultants need a substantially different repertoire of analytical, relational, and intuitive skills."
-        },
-        {
-          "id": "philosophy.different",
-          "type": "cardGrid",
-          "kicker": "What makes OBT consulting different",
-          "title": "Four realities shape the whole curriculum",
+          "body": "In roughly 120 years, written Bible translation grew from about 10 active projects to about 800. Oral Bible translation grew from about 20 active projects to more than 1,200 in six years.\n\nThe reason is impact. In an OBT project, a team of mature believers internalizes long sections of Scripture and translates them from memory, orally, into the heart language of their community. By the time a book is finished, the community has orally processed every passage many times over.",
           "items": [
             {
-              "id": "philosophy.different.performance",
-              "type": "card",
-              "title": "Performance carries meaning",
-              "body": "Intonation, pacing, and emotional expression all bear on whether a translation communicates faithfully. Consultants must evaluate dimensions of meaning that never appear in a written back translation."
-            },
-            {
-              "id": "philosophy.different.genre",
-              "type": "card",
-              "title": "Genre drives the challenges",
-              "body": "Checking a narrative means attending to story flow and participant reference; checking a psalm means understanding Hebrew poetics and local artistic genres. The skills differ so much by genre that the whole workshop series is organized around genres."
-            },
-            {
-              "id": "philosophy.different.contexts",
-              "type": "card",
-              "title": "Contexts vary enormously",
-              "body": "Some consultants work face to face with community performers; others work virtually with teams in restricted-access areas. Different workflows and checking technologies place very different demands on the consultant."
-            },
-            {
-              "id": "philosophy.different.languages",
-              "type": "card",
-              "title": "Consultants serve many languages",
-              "body": "Most OBT consultants serve multiple language communities without deep knowledge of any single one, so training focuses on transferable analytical frameworks and consulting postures rather than language-specific knowledge."
+              "id": "philosophy.quote",
+              "type": "quote",
+              "body": "These translators end up holding entire books of the Bible in memory. In their communities, they are often called walking Bibles.",
+              "attribution": "Why OBT projects multiply so quickly"
             }
           ]
         },
         {
-          "id": "philosophy.image",
-          "type": "imageSlot",
-          "mediaId": "philosophy-performance",
-          "caption": "Meaning in oral translation lives in performance: voice, pacing, expression, and local art forms."
+          "id": "philosophy.s2",
+          "type": "handbookSection",
+          "number": "02",
+          "anchor": "s02-gap",
+          "kicker": "What it costs",
+          "title": "Growth has outrun quality assurance",
+          "body": "Every Bible translation project needs consultants: experienced practitioners who check the translation with the team so that what the community receives is accurate, clear, and natural. OBT projects have multiplied faster than the consulting pool can sustain, and the pool of consultants equipped to evaluate specifically oral translation meets only a small fraction of the need.\n\nThere is a deeper problem than headcount. Nearly all existing consultant training was built around literacy: written commentaries, written drafts, written feedback. Oral Bible translation follows an oral method and produces an oral product, so its consultants need a substantially different repertoire of analytical, relational, and intuitive skills.",
+          "items": [
+            {
+              "id": "philosophy.different",
+              "type": "cardGrid",
+              "kicker": "What makes OBT consulting different",
+              "title": "Four realities shape the whole curriculum",
+              "items": [
+                {
+                  "id": "philosophy.different.performance",
+                  "type": "card",
+                  "title": "Performance carries meaning",
+                  "body": "Intonation, pacing, and emotional expression all bear on whether a translation communicates faithfully. Consultants must evaluate dimensions of meaning that never appear in a written back translation."
+                },
+                {
+                  "id": "philosophy.different.genre",
+                  "type": "card",
+                  "title": "Genre drives the challenges",
+                  "body": "Checking a narrative means attending to story flow and participant reference; checking a psalm means understanding Hebrew poetics and local artistic genres. The skills differ so much by genre that the whole workshop series is organized around genres."
+                },
+                {
+                  "id": "philosophy.different.contexts",
+                  "type": "card",
+                  "title": "Contexts vary enormously",
+                  "body": "Some consultants work face to face with community performers; others work virtually with teams in restricted-access areas. Different workflows and checking technologies place very different demands on the consultant."
+                },
+                {
+                  "id": "philosophy.different.languages",
+                  "type": "card",
+                  "title": "Consultants serve many languages",
+                  "body": "Most OBT consultants serve multiple language communities without deep knowledge of any single one, so training focuses on transferable analytical frameworks and consulting postures rather than language-specific knowledge."
+                }
+              ]
+            }
+          ]
         },
         {
-          "id": "philosophy.principles",
-          "type": "cardGrid",
-          "kicker": "Guiding principles",
+          "id": "philosophy.s3",
+          "type": "handbookSection",
+          "number": "03",
+          "anchor": "s03-principles",
+          "kicker": "What follows",
           "title": "Three principles decide what we teach",
           "body": "Everything in the track flows from a single commitment: start with orality, and design everything else around it. Three working principles carry that commitment into each workshop.",
           "items": [
             {
-              "id": "philosophy.principles.p1",
-              "type": "card",
-              "title": "Teach what cannot be gained elsewhere",
-              "body": "Excellent resources already cover biblical languages, linguistics, and Bible background, and we point participants to them. Precious in-person time goes to what those resources do not provide: OBT-specific exegesis, oral genre discovery, checking practice, and the formation of a consulting identity.",
-              "note": "Principle one"
-            },
-            {
-              "id": "philosophy.principles.p2",
-              "type": "card",
-              "title": "Practice first, theory layered on",
-              "body": "Participants exegete, internalize, draft, revise, and prepare for checking inside every workshop, with corrective feedback at each step. Having wrestled with a genre from the inside, they can later speak into its challenges with earned authority.",
-              "note": "Principle two"
-            },
-            {
-              "id": "philosophy.principles.p3",
-              "type": "card",
-              "title": "Model the methods consultants will use",
-              "body": "The workshops deliberately teach through oral, experiential, discussion-based methods that participants can turn around and use with their own translation teams, rather than defaulting to lecture.",
-              "note": "Principle three"
+              "id": "philosophy.principles",
+              "type": "cardGrid",
+              "items": [
+                {
+                  "id": "philosophy.principles.p1",
+                  "type": "card",
+                  "title": "Teach what cannot be gained elsewhere",
+                  "body": "Excellent resources already cover biblical languages, linguistics, and Bible background, and we point participants to them. Precious in-person time goes to what those resources do not provide: OBT-specific exegesis, oral genre discovery, checking practice, and the formation of a consulting identity.",
+                  "note": "Principle one"
+                },
+                {
+                  "id": "philosophy.principles.p2",
+                  "type": "card",
+                  "title": "Practice first, theory layered on",
+                  "body": "Participants exegete, internalize, draft, revise, and prepare for checking inside every workshop, with corrective feedback at each step. Having wrestled with a genre from the inside, they can later speak into its challenges with earned authority.",
+                  "note": "Principle two"
+                },
+                {
+                  "id": "philosophy.principles.p3",
+                  "type": "card",
+                  "title": "Model the methods consultants will use",
+                  "body": "The workshops deliberately teach through oral, experiential, discussion-based methods that participants can turn around and use with their own translation teams, rather than defaulting to lecture.",
+                  "note": "Principle three"
+                }
+              ]
             }
           ]
         },
@@ -314,7 +360,8 @@
             }
           ]
         }
-      ]
+      ],
+      "layout": "handbook"
     },
     {
       "id": "method",
@@ -325,100 +372,161 @@
       "metaDescription": "The OBT-CDT certifies consultants through the Competency-Based Consulting method: observable evidence, a 0 to 3 rubric, multiple evaluators, and a mentor who confirms readiness.",
       "blocks": [
         {
-          "id": "method.intro",
-          "type": "prose",
-          "kicker": "The method, not the software",
+          "id": "method.hero",
+          "type": "hero",
+          "kicker": "Competency-Based Consulting",
+          "title": "How certification works",
+          "body": "Certification here rests on what evaluators actually watched a participant do, scored against SIL's competency matrix and confirmed by a mentor who knows their work."
+        },
+        {
+          "id": "method.contents",
+          "type": "sectionNav",
+          "kicker": "On this page",
+          "title": "Contents",
+          "items": [
+            {
+              "id": "method.contents.1",
+              "type": "labelToken",
+              "number": "01",
+              "anchor": "s01-plain",
+              "label": "Competency-based consulting in plain terms"
+            },
+            {
+              "id": "method.contents.2",
+              "type": "labelToken",
+              "number": "02",
+              "anchor": "s02-evidence",
+              "label": "From observation to evidence"
+            },
+            {
+              "id": "method.contents.3",
+              "type": "labelToken",
+              "number": "03",
+              "anchor": "s03-arc",
+              "label": "Four moments in every workshop"
+            },
+            {
+              "id": "method.contents.4",
+              "type": "labelToken",
+              "number": "04",
+              "anchor": "s04-mentor",
+              "label": "The mentor decides"
+            }
+          ]
+        },
+        {
+          "id": "method.s1",
+          "type": "handbookSection",
+          "number": "01",
+          "anchor": "s01-plain",
+          "kicker": "In plain terms",
           "title": "Competency-based consulting in plain terms",
           "body": "SIL maintains a matrix of the competencies a Bible translation consultant needs: exegesis, discourse analysis, consulting process skills, interpersonal skills, technology, and more. Competency-Based Consulting (CBC) is the discipline of certifying people against that matrix using documented evidence, rather than against a list of courses attended.\n\nThe track is built on the method itself. The particular platform that stores the records may evolve, but the discipline stays the same: name the competency, observe real behavior, document the evidence, and let a mentor weigh it."
         },
         {
-          "id": "method.evidence",
-          "type": "prose",
+          "id": "method.s2",
+          "type": "handbookSection",
+          "number": "02",
+          "anchor": "s02-evidence",
+          "kicker": "Gathering evidence",
           "title": "From observation to evidence",
-          "body": "Before each workshop, every lesson and activity is tied to specific knowledge, skills, and attitudes (KSAs), each connected to observable phenomena, so evaluators know exactly what to watch and listen for.\n\nDuring the workshop, facilitators record descriptive notes on what they actually see each participant do. Observations from multiple facilitators across many activities come together in one structured record per participant, which makes the resulting picture far richer than any single observer could produce."
-        },
-        {
-          "id": "method.rubric",
-          "type": "rubricScale",
-          "kicker": "The shared scale",
-          "title": "Observations become simple 0 to 3 ratings",
-          "body": "Qualitative observation comes first; the numbers summarize it. Each rating is tied to a specific competency sub-point and is reviewed by facilitators who verify that it reflects what they saw.",
+          "body": "Before each workshop, every lesson and activity is tied to specific knowledge, skills, and attitudes (KSAs), each connected to observable phenomena, so evaluators know exactly what to watch and listen for.\n\nDuring the workshop, facilitators record descriptive notes on what they actually see each participant do. Observations from multiple facilitators across many activities come together in one structured record per participant, which makes the resulting picture far richer than any single observer could produce.",
           "items": [
             {
-              "id": "method.rubric.r0",
-              "type": "rubricStep",
-              "value": "0",
-              "label": "Not yet observed",
-              "body": "No evidence for this competency yet. A starting point, not a judgment."
+              "id": "method.rubric",
+              "type": "rubricScale",
+              "kicker": "The shared scale",
+              "title": "Observations become simple 0 to 3 ratings",
+              "body": "Qualitative observation comes first; the numbers summarize it. Each rating is tied to a specific competency sub-point and is reviewed by facilitators who verify that it reflects what they saw.",
+              "items": [
+                {
+                  "id": "method.rubric.r0",
+                  "type": "rubricStep",
+                  "value": "0",
+                  "label": "Not yet observed",
+                  "body": "No evidence for this competency yet. A starting point, not a judgment."
+                },
+                {
+                  "id": "method.rubric.r1",
+                  "type": "rubricStep",
+                  "value": "1",
+                  "label": "Emerging",
+                  "body": "Early evidence is present; the participant needs substantial support in this area."
+                },
+                {
+                  "id": "method.rubric.r2",
+                  "type": "rubricStep",
+                  "value": "2",
+                  "label": "Developing",
+                  "body": "Solid, repeated evidence; the participant works well with light support."
+                },
+                {
+                  "id": "method.rubric.r3",
+                  "type": "rubricStep",
+                  "value": "3",
+                  "label": "Established",
+                  "body": "Consistent, independent competence, confirmed across activities and evaluators."
+                }
+              ]
             },
             {
-              "id": "method.rubric.r1",
-              "type": "rubricStep",
-              "value": "1",
-              "label": "Emerging",
-              "body": "Early evidence is present; the participant needs substantial support in this area."
-            },
-            {
-              "id": "method.rubric.r2",
-              "type": "rubricStep",
-              "value": "2",
-              "label": "Developing",
-              "body": "Solid, repeated evidence; the participant works well with light support."
-            },
-            {
-              "id": "method.rubric.r3",
-              "type": "rubricStep",
-              "value": "3",
-              "label": "Established",
-              "body": "Consistent, independent competence, confirmed across activities and evaluators."
+              "id": "method.quote",
+              "type": "quote",
+              "body": "A workshop is both a fishbowl and a pressure cooker. Across weeks of intense multicultural teamwork, real strengths and real growth areas both come clearly into view.",
+              "attribution": "From the track's evaluation design"
             }
           ]
         },
         {
-          "id": "method.quote",
-          "type": "quote",
-          "body": "A workshop is both a fishbowl and a pressure cooker. Across weeks of intense multicultural teamwork, real strengths and real growth areas both come clearly into view.",
-          "attribution": "From the track's evaluation design"
-        },
-        {
-          "id": "method.arc",
-          "type": "timeline",
-          "kicker": "The evaluation arc",
+          "id": "method.s3",
+          "type": "handbookSection",
+          "number": "03",
+          "anchor": "s03-arc",
+          "kicker": "Inside a workshop",
           "title": "Four moments in every workshop",
           "items": [
             {
-              "id": "method.arc.sessions",
-              "type": "timelineItem",
-              "kicker": "During sessions",
-              "title": "Continuous observation",
-              "body": "Facilitators watch and note evidence throughout activities, tagged to the participant or group it belongs to."
-            },
-            {
-              "id": "method.arc.evenings",
-              "type": "timelineItem",
-              "kicker": "Each evening",
-              "title": "Processing the day",
-              "body": "The facilitation team reviews and consolidates the day's observations while they are fresh."
-            },
-            {
-              "id": "method.arc.end",
-              "type": "timelineItem",
-              "kicker": "End of workshop",
-              "title": "Holistic written evaluation",
-              "body": "Each participant receives a written evaluation, drafted from the shared record and verified by multiple facilitators."
-            },
-            {
-              "id": "method.arc.after",
-              "type": "timelineItem",
-              "kicker": "After the workshop",
-              "title": "Evidence enters the record",
-              "body": "Verified evidence is submitted into the participant's competency record, organized so their mentor can see what was observed, at what level, and by whom."
+              "id": "method.arc",
+              "type": "timeline",
+              "items": [
+                {
+                  "id": "method.arc.sessions",
+                  "type": "timelineItem",
+                  "kicker": "During sessions",
+                  "title": "Continuous observation",
+                  "body": "Facilitators watch and note evidence throughout activities, tagged to the participant or group it belongs to."
+                },
+                {
+                  "id": "method.arc.evenings",
+                  "type": "timelineItem",
+                  "kicker": "Each evening",
+                  "title": "Processing the day",
+                  "body": "The facilitation team reviews and consolidates the day's observations while they are fresh."
+                },
+                {
+                  "id": "method.arc.end",
+                  "type": "timelineItem",
+                  "kicker": "End of workshop",
+                  "title": "Holistic written evaluation",
+                  "body": "Each participant receives a written evaluation, drafted from the shared record and verified by multiple facilitators."
+                },
+                {
+                  "id": "method.arc.after",
+                  "type": "timelineItem",
+                  "kicker": "After the workshop",
+                  "title": "Evidence enters the record",
+                  "body": "Verified evidence is submitted into the participant's competency record, organized so their mentor can see what was observed, at what level, and by whom."
+                }
+              ]
             }
           ]
         },
         {
-          "id": "method.mentor",
-          "type": "prose",
+          "id": "method.s4",
+          "type": "handbookSection",
+          "number": "04",
+          "anchor": "s04-mentor",
+          "kicker": "The decision",
           "title": "The mentor decides",
           "body": "Workshop scores are evidence, never a verdict. Each participant's consultant-mentor talks the evidence through with them, weighs it alongside field experience, and assigns the final ratings at their own discretion. Certification happens when the mentor confirms the full competency set is in place.\n\nThis is what makes the roundabout model trustworthy: the track generates unusually rich, verified evidence, and a human being who knows the participant makes the call."
         },
@@ -442,7 +550,8 @@
             }
           ]
         }
-      ]
+      ],
+      "layout": "handbook"
     },
     {
       "id": "threads",
@@ -453,65 +562,81 @@
       "metaDescription": "Five interlocking threads form OBT consultants: genre-based workshops, online trainings, biblical language cohorts, ongoing mentorship, and field-based application.",
       "blocks": [
         {
-          "id": "threads.intro",
-          "type": "prose",
-          "kicker": "One fabric",
+          "id": "threads.hero",
+          "type": "hero",
+          "kicker": "How formation happens",
+          "title": "The Five Threads",
+          "body": "Workshops are the visible part, and on their own they would not be enough. Formation runs along five threads at once, and every one of them produces evidence.",
+          "mediaId": "threads-hero"
+        },
+        {
+          "id": "threads.s1",
+          "type": "handbookSection",
+          "number": "01",
+          "anchor": "s01-why",
+          "kicker": "Why five",
           "title": "Formation woven from five threads",
           "body": "Competency development in the track is distributed across five interlocking threads. Together they provide training and mentorship sufficient to meet the full set of consulting competencies.\n\nParticipants are not expected to engage every thread in equal measure. Each person draws most heavily on the threads that will most effectively advance their own readiness, which is exactly what the roundabout model is for."
         },
         {
-          "id": "threads.grid",
-          "type": "cardGrid",
+          "id": "threads.s2",
+          "type": "handbookSection",
+          "number": "02",
+          "anchor": "s02-threads",
+          "kicker": "The threads",
           "title": "The five threads",
           "items": [
             {
-              "id": "threads.grid.workshops",
-              "type": "threadCard",
-              "kicker": "Thread one",
-              "title": "Workshops as catalysts",
-              "body": "Five two-week intensives, each centered on a major biblical genre: Narrative, Epistles, Psalms, Legal Texts in the Torah, and Prophecy and Wisdom Literature. Participants practice most consulting competencies inside the genre at hand, with feedback at every step."
-            },
-            {
-              "id": "threads.grid.online",
-              "type": "threadCard",
-              "kicker": "Thread two",
-              "title": "Online trainings",
-              "body": "Between workshops, live virtual sessions target the competencies the previous workshop showed participants most need, alongside curated self-paced material. Wherever possible these run with cohort elements, so no one studies alone."
-            },
-            {
-              "id": "threads.grid.languages",
-              "type": "threadCard",
-              "kicker": "Thread three",
-              "title": "Biblical language cohorts",
-              "body": "Participants build Hebrew and Greek competence through structured coursework with guidance from a biblical-language mentor, cohort-style. The workshops apply that knowledge to oral translation; the cohorts build the foundation."
-            },
-            {
-              "id": "threads.grid.mentorship",
-              "type": "threadCard",
-              "kicker": "Thread four",
-              "title": "Ongoing mentorship",
-              "body": "Each consultant-in-training works with an assigned consultant-mentor who monitors development, guides growth, and ultimately validates readiness for certification, supported by feedback from many consultants and subject-matter experts along the way."
-            },
-            {
-              "id": "threads.grid.field",
-              "type": "threadCard",
-              "kicker": "Thread five",
-              "title": "Field-based application",
-              "body": "Participants observe practicing OBT consultants and conduct supervised consultant checks on real translation projects. Strong participants are also trained to lead crash-course sessions for the next round, deepening mastery by teaching."
+              "id": "threads.grid",
+              "type": "cardGrid",
+              "items": [
+                {
+                  "id": "threads.grid.workshops",
+                  "type": "threadCard",
+                  "kicker": "Thread one",
+                  "title": "Workshops as catalysts",
+                  "body": "Five two-week intensives, each centered on a major biblical genre: Narrative, Epistles, Psalms, Legal Texts in the Torah, and Prophecy and Wisdom Literature. Participants practice most consulting competencies inside the genre at hand, with feedback at every step."
+                },
+                {
+                  "id": "threads.grid.online",
+                  "type": "threadCard",
+                  "kicker": "Thread two",
+                  "title": "Online trainings",
+                  "body": "Between workshops, live virtual sessions target the competencies the previous workshop showed participants most need, alongside curated self-paced material. Wherever possible these run with cohort elements, so no one studies alone."
+                },
+                {
+                  "id": "threads.grid.languages",
+                  "type": "threadCard",
+                  "kicker": "Thread three",
+                  "title": "Biblical language cohorts",
+                  "body": "Participants build Hebrew and Greek competence through structured coursework with guidance from a biblical-language mentor, cohort-style. The workshops apply that knowledge to oral translation; the cohorts build the foundation."
+                },
+                {
+                  "id": "threads.grid.mentorship",
+                  "type": "threadCard",
+                  "kicker": "Thread four",
+                  "title": "Ongoing mentorship",
+                  "body": "Each consultant-in-training works with an assigned consultant-mentor who monitors development, guides growth, and ultimately validates readiness for certification, supported by feedback from many consultants and subject-matter experts along the way."
+                },
+                {
+                  "id": "threads.grid.field",
+                  "type": "threadCard",
+                  "kicker": "Thread five",
+                  "title": "Field-based application",
+                  "body": "Participants observe practicing OBT consultants and conduct supervised consultant checks on real translation projects. Strong participants are also trained to lead crash-course sessions for the next round, deepening mastery by teaching."
+                }
+              ]
             }
           ]
         },
         {
-          "id": "threads.between",
-          "type": "prose",
+          "id": "threads.s3",
+          "type": "handbookSection",
+          "number": "03",
+          "anchor": "s03-between",
+          "kicker": "Between the workshops",
           "title": "The workshops are the visible thread, not the whole fabric",
           "body": "Workshops act as catalysts: two weeks that ignite skills and expose exactly where each participant should grow next. But the track depends equally on what happens between them: the virtual sessions, the language cohorts, the mentor conversations, and the supervised checks on real projects.\n\nEvaluation data from each workshop feeds directly into what gets taught between workshops, so the track adapts to the actual cohort rather than to a fixed syllabus."
-        },
-        {
-          "id": "threads.image",
-          "type": "imageSlot",
-          "mediaId": "threads-cohort",
-          "caption": "Cohorts keep participants moving together between workshops."
         },
         {
           "id": "threads.cta",
@@ -533,7 +658,8 @@
             }
           ]
         }
-      ]
+      ],
+      "layout": "handbook"
     },
     {
       "id": "workshops-index",
@@ -543,6 +669,14 @@
       "kicker": "Five genres, five catalysts",
       "metaDescription": "Five two-week, genre-based workshops anchor the OBT Consultant Development Track: Narrative, Epistles, Psalms, Legal Texts in the Torah, and Prophecy and Wisdom Literature.",
       "blocks": [
+        {
+          "id": "workshops-index.hero",
+          "type": "hero",
+          "kicker": "Five genres, five catalysts",
+          "title": "The workshop series",
+          "body": "Five two-week workshops anchor the track, one for each genre. Each is a fortnight of real translation work with consultants watching.",
+          "mediaId": "workshops-hero"
+        },
         {
           "id": "workshops-index.rhythm",
           "type": "prose",
@@ -560,21 +694,21 @@
               "id": "workshops-index.series.narrative",
               "type": "timelineItem",
               "kicker": "June 2025 · Completed",
-              "title": "1 · Narrative — Bangalore, India",
+              "title": "1 · Narrative · Bangalore, India",
               "body": "Foundational OBT translation skills, OBT-specific exegesis, internalization, and introductory consulting awareness."
             },
             {
               "id": "workshops-index.series.epistles",
               "type": "timelineItem",
               "kicker": "November 2025 · Completed",
-              "title": "2 · Epistles — Chiang Mai, Thailand",
+              "title": "2 · Epistles · Chiang Mai, Thailand",
               "body": "Argument structure and prominence in the Epistles, with structured consulting practice on a real OBT translation."
             },
             {
               "id": "workshops-index.series.psalms",
               "type": "timelineItem",
               "kicker": "August to September 2026 · Fully booked",
-              "title": "3 · Psalms — Bali, Indonesia",
+              "title": "3 · Psalms · Bali, Indonesia",
               "body": "Hebrew poetry exegesis for OBT and the facilitation of Psalms translation into local artistic genres."
             },
             {
@@ -625,47 +759,69 @@
       "metaDescription": "The OBT Consultant Development Track needs OBT consultant-mentors, mentors in linguistics and biblical languages, checking opportunities on real projects, and sponsorship partners.",
       "blocks": [
         {
-          "id": "involved.intro",
-          "type": "prose",
-          "kicker": "The honest ask",
+          "id": "get-involved.hero",
+          "type": "hero",
+          "kicker": "Get involved",
+          "title": "Help form the next OBT consultants",
+          "body": "Participants are already serving translation projects across more than eight nations. What most of them lack is someone experienced enough to check their work and walk with them.",
+          "mediaId": "get-involved-hero"
+        },
+        {
+          "id": "get-involved.s1",
+          "type": "handbookSection",
+          "number": "01",
+          "anchor": "s01-why",
+          "kicker": "Why it needs you",
           "title": "A track like this runs on people who give their skill away",
           "body": "Our participants are capable, motivated, and already serving oral Bible translation projects across more than eight nations. What stands between many of them and certification is not ability. It is access: to mentors, to supervised practice, and to the kind of sustained relationships that form consultants.\n\nIf you carry experience in Bible translation consulting, linguistics, or the biblical languages, there is a concrete place for you here."
         },
         {
-          "id": "involved.ways",
-          "type": "cardGrid",
+          "id": "get-involved.s2",
+          "type": "handbookSection",
+          "number": "02",
+          "anchor": "s02-ways",
+          "kicker": "Four ways",
           "title": "Four ways to serve",
           "items": [
             {
-              "id": "involved.ways.obt-mentors",
-              "type": "card",
-              "title": "Mentor as an OBT consultant",
-              "body": "Our most pressing need. Practicing OBT consultants who will take on one or more consultants-in-training: monitoring their development, guiding their growth, and ultimately confirming their readiness for certification.",
-              "note": "Most needed"
-            },
-            {
-              "id": "involved.ways.discipline-mentors",
-              "type": "card",
-              "title": "Mentor in linguistics or biblical languages",
-              "body": "Participants build linguistics and Hebrew or Greek competence through guided self-study and cohorts. Mentors in these disciplines answer questions, review progress, and keep cohorts moving with encouragement and accountability."
-            },
-            {
-              "id": "involved.ways.checking",
-              "type": "card",
-              "title": "Open a checking opportunity",
-              "body": "If you lead or advise an OBT project, hosting a supervised consultant check gives a consultant-in-training the real practice they cannot get any other way, under the eye of an experienced consultant, at no cost to your project's quality."
-            },
-            {
-              "id": "involved.ways.sponsor",
-              "type": "card",
-              "title": "Sponsor and partner",
-              "body": "Most participants serve with organizations of limited means, and the track actively seeks partners to keep workshops affordable for them. Sponsorship conversations, large or small, are warmly welcome."
+              "id": "involved.ways",
+              "type": "cardGrid",
+              "items": [
+                {
+                  "id": "involved.ways.obt-mentors",
+                  "type": "card",
+                  "title": "Mentor as an OBT consultant",
+                  "body": "Our most pressing need. Practicing OBT consultants who will take on one or more consultants-in-training: monitoring their development, guiding their growth, and ultimately confirming their readiness for certification.",
+                  "note": "Most needed"
+                },
+                {
+                  "id": "involved.ways.discipline-mentors",
+                  "type": "card",
+                  "title": "Mentor in linguistics or biblical languages",
+                  "body": "Participants build linguistics and Hebrew or Greek competence through guided self-study and cohorts. Mentors in these disciplines answer questions, review progress, and keep cohorts moving with encouragement and accountability."
+                },
+                {
+                  "id": "involved.ways.checking",
+                  "type": "card",
+                  "title": "Open a checking opportunity",
+                  "body": "If you lead or advise an OBT project, hosting a supervised consultant check gives a consultant-in-training the real practice they cannot get any other way, under the eye of an experienced consultant, at no cost to your project's quality."
+                },
+                {
+                  "id": "involved.ways.sponsor",
+                  "type": "card",
+                  "title": "Sponsor and partner",
+                  "body": "Most participants serve with organizations of limited means, and the track actively seeks partners to keep workshops affordable for them. Sponsorship conversations, large or small, are warmly welcome."
+                }
+              ]
             }
           ]
         },
         {
-          "id": "involved.who",
-          "type": "prose",
+          "id": "get-involved.s3",
+          "type": "handbookSection",
+          "number": "03",
+          "anchor": "s03-who",
+          "kicker": "Who you serve",
           "title": "Who you would be serving",
           "body": "The current cohort is drawn from over eight nations, and most participants serve with Asian organizations of limited means. They are field translators, exegetes, and translation advisors who bring years of real project experience and are pressing toward the consulting competencies their movements urgently need."
         },
@@ -690,7 +846,8 @@
             }
           ]
         }
-      ]
+      ],
+      "layout": "handbook"
     },
     {
       "id": "general-travel-advice",
@@ -702,88 +859,110 @@
       "hidden": true,
       "blocks": [
         {
-          "id": "travel.intro",
-          "type": "prose",
-          "title": "The ordinary checks, in one place",
-          "body": "Most people coming to an OBT-CDT workshop have travelled internationally many times and do not need to be told any of this. It lives here rather than in a workshop handbook for the few occasions when a reminder is useful: a first long-haul trip, an unfamiliar route, or a participant helping someone else prepare.\n\nAnything specific to a particular workshop, including dates, visas and airport transfers, is on that workshop's own page and takes precedence over what is here."
+          "id": "general-travel-advice.hero",
+          "type": "hero",
+          "kicker": "For anyone travelling to a workshop",
+          "title": "General travel advice",
+          "body": "Seasoned travellers will not need any of this. It sits here so that each workshop handbook does not have to repeat it."
         },
         {
-          "id": "bali.10.list",
-          "type": "checklist",
-          "title": "Before you fly",
+          "id": "general-travel-advice.s1",
+          "type": "handbookSection",
+          "number": "01",
+          "anchor": "s01-before",
+          "kicker": "Before you fly",
+          "title": "The ordinary checks, in one place",
+          "body": "Most people coming to an OBT-CDT workshop have travelled internationally many times and do not need to be told any of this. It lives here rather than in a workshop handbook for the few occasions when a reminder is useful: a first long-haul trip, an unfamiliar route, or a participant helping someone else prepare.\n\nAnything specific to a particular workshop, including dates, visas and airport transfers, is on that workshop's own page and takes precedence over what is here.",
           "items": [
             {
-              "id": "bali.10.list.1",
-              "type": "checklistItem",
-              "label": "Check that the name on your ticket matches your passport exactly."
-            },
-            {
-              "id": "bali.10.list.2",
-              "type": "checklistItem",
-              "label": "Keep passport, visa or entry approval, return ticket, insurance and accommodation details together and easy to reach."
-            },
-            {
-              "id": "bali.10.list.3",
-              "type": "checklistItem",
-              "label": "Save offline copies of key documents and workshop contacts, and carry one on paper."
-            },
-            {
-              "id": "bali.10.list.4",
-              "type": "checklistItem",
-              "label": "Tell the organisers promptly about itinerary changes, accessibility needs, allergies or medical needs."
-            },
-            {
-              "id": "bali.10.list.5",
-              "type": "checklistItem",
-              "label": "Check baggage limits for every airline in your itinerary, including domestic and regional legs."
-            },
-            {
-              "id": "bali.10.list.6",
-              "type": "checklistItem",
-              "label": "Carry essential medicines in their original packaging, with a prescription or doctor's letter where that helps."
-            },
-            {
-              "id": "bali.10.list.7",
-              "type": "checklistItem",
-              "label": "Tell your bank you are travelling, and take more than one way to pay."
+              "id": "bali.10.list",
+              "type": "checklist",
+              "title": "Before you fly",
+              "items": [
+                {
+                  "id": "bali.10.list.1",
+                  "type": "checklistItem",
+                  "label": "Check that the name on your ticket matches your passport exactly."
+                },
+                {
+                  "id": "bali.10.list.2",
+                  "type": "checklistItem",
+                  "label": "Keep passport, visa or entry approval, return ticket, insurance and accommodation details together and easy to reach."
+                },
+                {
+                  "id": "bali.10.list.3",
+                  "type": "checklistItem",
+                  "label": "Save offline copies of key documents and workshop contacts, and carry one on paper."
+                },
+                {
+                  "id": "bali.10.list.4",
+                  "type": "checklistItem",
+                  "label": "Tell the organisers promptly about itinerary changes, accessibility needs, allergies or medical needs."
+                },
+                {
+                  "id": "bali.10.list.5",
+                  "type": "checklistItem",
+                  "label": "Check baggage limits for every airline in your itinerary, including domestic and regional legs."
+                },
+                {
+                  "id": "bali.10.list.6",
+                  "type": "checklistItem",
+                  "label": "Carry essential medicines in their original packaging, with a prescription or doctor's letter where that helps."
+                },
+                {
+                  "id": "bali.10.list.7",
+                  "type": "checklistItem",
+                  "label": "Tell your bank you are travelling, and take more than one way to pay."
+                }
+              ],
+              "anchor": "s10-before-you-fly"
             }
-          ],
-          "anchor": "s10-before-you-fly"
+          ]
         },
         {
-          "id": "bali.20.before",
-          "type": "checklist",
+          "id": "general-travel-advice.s2",
+          "type": "handbookSection",
+          "number": "02",
+          "anchor": "s02-leaving",
+          "kicker": "Leaving",
           "title": "Before you leave a workshop base",
           "items": [
             {
-              "id": "bali.20.before.1",
-              "type": "checklistItem",
-              "label": "Confirm your departure transfer and meeting time. Do not rely on an earlier draft schedule."
-            },
-            {
-              "id": "bali.20.before.2",
-              "type": "checklistItem",
-              "label": "Settle personal expenses and follow the base's check-out instructions for your room."
-            },
-            {
-              "id": "bali.20.before.3",
-              "type": "checklistItem",
-              "label": "Return keys, access cards, borrowed equipment and workshop materials."
-            },
-            {
-              "id": "bali.20.before.4",
-              "type": "checklistItem",
-              "label": "Check drawers, charging points and the bathroom, and label all your luggage."
-            },
-            {
-              "id": "bali.20.before.5",
-              "type": "checklistItem",
-              "label": "Leave generous time for the airport and keep your passport where you can reach it."
+              "id": "bali.20.before",
+              "type": "checklist",
+              "items": [
+                {
+                  "id": "bali.20.before.1",
+                  "type": "checklistItem",
+                  "label": "Confirm your departure transfer and meeting time. Do not rely on an earlier draft schedule."
+                },
+                {
+                  "id": "bali.20.before.2",
+                  "type": "checklistItem",
+                  "label": "Settle personal expenses and follow the base's check-out instructions for your room."
+                },
+                {
+                  "id": "bali.20.before.3",
+                  "type": "checklistItem",
+                  "label": "Return keys, access cards, borrowed equipment and workshop materials."
+                },
+                {
+                  "id": "bali.20.before.4",
+                  "type": "checklistItem",
+                  "label": "Check drawers, charging points and the bathroom, and label all your luggage."
+                },
+                {
+                  "id": "bali.20.before.5",
+                  "type": "checklistItem",
+                  "label": "Leave generous time for the airport and keep your passport where you can reach it."
+                }
+              ],
+              "anchor": "s20-departure"
             }
-          ],
-          "anchor": "s20-departure"
+          ]
         }
-      ]
+      ],
+      "layout": "handbook"
     }
   ],
   "workshops": [
@@ -804,6 +983,14 @@
       },
       "blocks": [
         {
+          "id": "narrative-bangalore-2025.hero",
+          "type": "hero",
+          "kicker": "Workshop one",
+          "title": "Narrative",
+          "body": "Two weeks in Bangalore, working on story. The first workshop had to establish what OBT exegesis and internalization actually look like before any later genre could build on them.",
+          "mediaId": "workshop-narrative"
+        },
+        {
           "id": "narrative.story",
           "type": "prose",
           "kicker": "Where the track began",
@@ -815,12 +1002,6 @@
           "type": "prose",
           "title": "Who came",
           "body": "Around twenty participants gathered in Bangalore from partner organizations across the region: field translators, exegetes, and translation advisors, many already serving active OBT projects. A three-person facilitation team led the two weeks, joined by consultants who provided checking feedback on the teams' work.\n\nFor most participants, this workshop was their first step onto the track, and the cohort that formed in Bangalore has continued together through everything since."
-        },
-        {
-          "id": "narrative.image",
-          "type": "imageSlot",
-          "mediaId": "workshop-narrative",
-          "caption": "Oral devotions and embodied internalization set the tone for the first workshop."
         },
         {
           "id": "narrative.seeded",
@@ -860,6 +1041,14 @@
       },
       "blocks": [
         {
+          "id": "epistles-chiang-mai-2025.hero",
+          "type": "hero",
+          "kicker": "Workshop two",
+          "title": "Epistles",
+          "body": "Two weeks in Chiang Mai on argument rather than story, and the first time participants ran mentored consultant checks on a live oral translation.",
+          "mediaId": "workshop-epistles"
+        },
+        {
           "id": "epistles.story",
           "type": "prose",
           "kicker": "Raising the difficulty",
@@ -871,12 +1060,6 @@
           "type": "prose",
           "title": "A real check, not a simulation",
           "body": "The milestone of Chiang Mai was consulting practice with real stakes: participants took part in mentored consultant checking of an actual OBT Epistles translation, observed and guided by experienced consultants.\n\nMore than twenty consultants and consultants-in-training worked through the two weeks together, and each one left with a written evaluation grounded in what multiple facilitators had observed across the sessions."
-        },
-        {
-          "id": "epistles.image",
-          "type": "imageSlot",
-          "mediaId": "workshop-epistles",
-          "caption": "Teams mapping the argument structure of an epistle before drafting."
         },
         {
           "id": "epistles.after",

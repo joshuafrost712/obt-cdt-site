@@ -4,6 +4,9 @@ dist/
 dist-ssr/
 *.local
 
+# output of scripts/diagram-preview.tsx (regenerated on demand, see docs/MEDIA.md)
+.diagram-preview/
+
 # feedback inbox — transient working artifacts, handled then moved to processed/
 feedback/incoming/*
 !feedback/incoming/.gitkeep

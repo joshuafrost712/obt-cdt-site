@@ -41,6 +41,18 @@ export function HandbookLayout({ page }: { page: PageDef | WorkshopDef }) {
   const { containerRef, activeId, progress } = useScrollSpy(anchors)
   const status = 'facts' in page ? page.facts.status : undefined
 
+  /**
+   * The rail, the progress bar and the contents grid are navigation aids for a
+   * document too long to hold in your head. The Psalms handbook is 3,500 words
+   * over five sections and needs all three. When this layout became the whole
+   * site's default (2026-07-29) it also had to carry 300-word pages, where a
+   * sticky contents rail beside three headings is scaffolding around nothing —
+   * the same over-signposting the handbook itself was cut back for on 2026-07-28.
+   * So they appear from four sections up, and shorter pages simply read straight
+   * down in a full-width column.
+   */
+  const wayfinding = sections.length >= 4
+
   return (
     <article className="pb-20">
       {hero && <HandbookHero block={hero} status={status} />}
@@ -52,15 +64,31 @@ export function HandbookLayout({ page }: { page: PageDef | WorkshopDef }) {
       )}
 
       {/* Reading progress. Sits directly under the sticky site header. */}
-      <div aria-hidden className="hb-progress sticky top-[57px] z-30 h-0.5 bg-ink/[0.07]">
-        <div
-          className="h-full bg-accent transition-[width] duration-150 ease-out"
-          style={{ width: `${Math.round(progress * 100)}%` }}
-        />
-      </div>
+      {wayfinding && (
+        <div aria-hidden className="hb-progress sticky top-[57px] z-30 h-0.5 bg-ink/[0.07]">
+          <div
+            className="h-full bg-accent transition-[width] duration-150 ease-out"
+            style={{ width: `${Math.round(progress * 100)}%` }}
+          />
+        </div>
+      )}
 
-      <div ref={containerRef} className="mx-auto max-w-6xl px-5 lg:grid lg:grid-cols-[15rem_1fr] lg:gap-12">
-        {/* Desktop rail. Hidden on mobile, where sectionNav does the same job. */}
+      {/*
+       * With the rail, the reading column is what is left of max-w-6xl after a
+       * 15rem rail and a 3rem gap: about 54rem. Without it, the same max-w-6xl
+       * would let headings run the full 72rem and leave the text hugging the left
+       * edge of a mostly empty container, so a page with no rail gets max-w-4xl
+       * (56rem) instead and lands on the same measure.
+       */}
+      <div
+        ref={containerRef}
+        className={`mx-auto px-5 ${
+          wayfinding ? 'max-w-6xl lg:grid lg:grid-cols-[15rem_1fr] lg:gap-12' : 'max-w-4xl'
+        }`}
+      >
+        {/* Desktop rail. Hidden on mobile, where sectionNav does the same job,
+            and absent entirely on a page too short to need wayfinding. */}
+        {wayfinding && (
         <div className="hb-rail hidden lg:block">
           <nav aria-label="Handbook sections" className="sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto py-10">
             <p className="mb-3 text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-ink-faint">Contents</p>
@@ -90,9 +118,10 @@ export function HandbookLayout({ page }: { page: PageDef | WorkshopDef }) {
             </ol>
           </nav>
         </div>
+        )}
 
         <div className="min-w-0">
-          {nav && (
+          {nav && wayfinding && (
             <div className="lg:hidden">
               <BlockRenderer blocks={[nav]} />
             </div>
@@ -108,8 +137,9 @@ export function HandbookLayout({ page }: { page: PageDef | WorkshopDef }) {
       )}
 
       {/* Mobile: jump back to the contents grid without scrolling all the way
-          up. Appears only once the contents grid itself has scrolled away. */}
-      {progress > 0.04 && (
+          up. Appears only once the contents grid itself has scrolled away, and
+          only where there is a contents grid to go back to. */}
+      {wayfinding && progress > 0.04 && (
         <a
           href="#handbook-top"
           className="hb-noprint fixed bottom-5 right-5 z-30 rounded-full bg-navy px-4 py-2.5 text-sm font-semibold text-paper no-underline shadow-lg lg:hidden"
@@ -131,8 +161,14 @@ export function HandbookPage({ pageId }: { pageId: string }) {
 /**
  * Full-bleed photo hero. The date band lives in `items` as labelToken blocks so
  * the dates are editable content, not markup.
+ *
+ * Exported because this hero is what carries the handbook look, and since
+ * 2026-07-29 every page wears it: the marketing workshops and the workshops
+ * index call it directly rather than through `HandbookLayout`. It stands up
+ * without a photo — the navy-to-brand wash renders either way — so a page whose
+ * `mediaId` is missing or still a placeholder gets the same shape, just quieter.
  */
-function HandbookHero({ block, status }: { block: Block; status?: WorkshopDef['facts']['status'] }) {
+export function HandbookHero({ block, status }: { block: Block; status?: WorkshopDef['facts']['status'] }) {
   const media = getMedia(block.mediaId ?? '')
   return (
     <header id="handbook-top" className="hb-hero relative isolate overflow-hidden bg-navy text-paper">

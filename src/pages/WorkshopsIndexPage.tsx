@@ -4,14 +4,23 @@ import { BlockRenderer } from '../components/blocks/BlockRenderer'
 import { StatusBadge, formatDateRange } from '../components/blocks/WorkshopFactsPanel'
 import { Txt } from '../components/text'
 import { PageHeader } from './ContentPage'
+import { HandbookHero } from './HandbookPage'
 import { NotFoundPage } from './NotFoundPage'
 
 export function WorkshopsIndexPage() {
   const page = pageByRoute('/workshops')
   if (!page) return <NotFoundPage />
+
+  // This page cannot simply become `layout: "handbook"`: its cards are generated
+  // from the workshops list, not from content blocks, so the handbook layout
+  // would render a page with no workshops on it. It takes the hero instead and
+  // keeps the grid (2026-07-29).
+  const hero = page.blocks.find((b) => b.type === 'hero')
+  const rest = page.blocks.filter((b) => b !== hero)
+
   return (
     <article className="pb-16">
-      <PageHeader page={page} />
+      {hero ? <HandbookHero block={hero} /> : <PageHeader page={page} />}
 
       <section className="mx-auto max-w-5xl px-5 pt-10">
         <div className="grid gap-5 md:grid-cols-3">
@@ -37,7 +46,7 @@ export function WorkshopsIndexPage() {
       </section>
 
       <div className="pt-6">
-        <BlockRenderer blocks={page.blocks} />
+        <BlockRenderer blocks={rest} />
       </div>
     </article>
   )

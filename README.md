@@ -46,15 +46,24 @@ Images: every image is a manifest-keyed slot; see `docs/MEDIA.md`.
 
 ## Page kinds
 
-Most pages are a header plus a stream of content blocks. Two page fields change
-that:
+Nearly every page is now `"layout": "handbook"`: a photo hero, numbered sections,
+and the handbook block vocabulary. Joshua asked for the whole site to look like
+the Bali handbook page on 2026-07-29. See `docs/HANDBOOK.md`, including the rule
+that the contents rail and progress bar only appear from four sections up, so a
+300-word page does not get scaffolding it has no use for.
 
-- `"layout": "handbook"` renders the page with the participant-handbook shell
-  (photo hero, reading progress, sticky section rail, print stylesheet) instead
-  of the generic one. See `docs/HANDBOOK.md`.
+- `"layout": "handbook"` renders the page with the participant-handbook shell.
+  The generic `ContentPage` (header band plus an undifferentiated block stream) is
+  still there as the fallback for a page that does not opt in, but nothing uses
+  it today.
 - `"hidden": true` makes a page **unlisted**: still prerendered and reachable by
   link, but absent from the top nav and `sitemap.xml`, and served with
   `noindex, nofollow`.
+
+The home page and `/workshops` are the two exceptions, because each has a job the
+handbook layout cannot do. Home is the scroll-driven roundabout essay; the
+workshops index generates its cards from the workshops list rather than from
+content blocks. Both wear the handbook photo hero and nothing else of it.
 
 Unlisted is not private. **This repo is public**, so hidden-page copy is
 readable in `site-content.json` on github.com and in the history regardless.

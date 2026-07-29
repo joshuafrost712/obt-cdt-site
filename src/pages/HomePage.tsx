@@ -1,4 +1,5 @@
 import { pageById } from '../lib/content/loader'
+import { getMedia } from '../lib/media'
 import { BlockRenderer, Cta } from '../components/blocks/BlockRenderer'
 import { RoundaboutDiagram } from '../components/scrolly/RoundaboutDiagram'
 import { useSceneProgress } from '../components/scrolly/useSceneProgress'
@@ -30,10 +31,28 @@ export function HomePage() {
   )
 }
 
+/**
+ * The home hero wears the handbook hero's treatment (full-bleed photograph under
+ * a navy-to-brand wash) rather than the flat navy it had before 2026-07-29, since
+ * that photo layer is most of what made the handbook page look richer than the
+ * rest of the site.
+ *
+ * It stays its own component rather than reusing `HandbookHero`: its `items` are
+ * CTAs, and the handbook hero renders items as label chips.
+ */
 function Hero({ block }: { block: Block }) {
   const ref = useReveal<HTMLDivElement>()
+  const media = getMedia(block.mediaId ?? '')
   return (
-    <section className="bg-navy text-paper">
+    <section className="hb-hero relative isolate overflow-hidden bg-navy text-paper">
+      {media.kind === 'image' && media.src && (
+        <img
+          src={`${import.meta.env.BASE_URL}${media.src.replace(/^\//, '')}`}
+          alt=""
+          className="absolute inset-0 -z-10 size-full object-cover"
+        />
+      )}
+      <div aria-hidden className="absolute inset-0 -z-10 bg-gradient-to-br from-navy/92 via-navy/78 to-brand/80" />
       <div ref={ref} className="reveal mx-auto flex max-w-6xl flex-col justify-center px-5 pb-20 pt-20 md:min-h-[82vh] md:pb-28 md:pt-24">
         <Txt node={block} field="kicker" as="p" className="text-xs font-semibold uppercase tracking-[0.24em] text-brand-light" />
         <Txt
@@ -51,6 +70,7 @@ function Hero({ block }: { block: Block }) {
         <p aria-hidden className="mt-16 hidden animate-bounce text-sm text-paper/40 md:block">
           ↓ scroll
         </p>
+        {media.credit && <p className="hb-credit mt-8 text-[0.7rem] text-paper/40">{media.credit}</p>}
       </div>
     </section>
   )
@@ -59,12 +79,20 @@ function Hero({ block }: { block: Block }) {
 function Essay({ scenes }: { scenes: Block[] }) {
   const { containerRef, stage, progress } = useSceneProgress()
 
+  // The figure annotates itself from the essay's own copy: the active scene's
+  // kicker becomes the caption the leader line points with, and the five thread
+  // names ride on the circulating scene as labelToken children. Neither is
+  // hardcoded in the diagram, so both stay editable in place.
+  const note = scenes[stage]?.kicker
+  const threads = scenes.flatMap((s) => (s.items ?? []).filter((i) => i.type === 'labelToken'))
+
   return (
     <section ref={containerRef} className="relative bg-paper">
-      {/* Mobile: compact sticky diagram pinned under the header. */}
+      {/* Mobile: compact sticky diagram pinned under the header. Text
+          annotations are dropped — at 176px wide they render around 4px. */}
       <div className="sticky top-[57px] z-10 border-b border-ink/10 bg-paper/95 py-2 backdrop-blur lg:hidden">
         <div className="mx-auto w-44">
-          <RoundaboutDiagram stage={stage} progress={progress} />
+          <RoundaboutDiagram stage={stage} progress={progress} compact />
         </div>
       </div>
 
@@ -72,7 +100,7 @@ function Essay({ scenes }: { scenes: Block[] }) {
         {/* Desktop: full sticky diagram pane. */}
         <div className="hidden lg:block">
           <div className="sticky top-24 flex h-[calc(100vh-8rem)] items-center">
-            <RoundaboutDiagram stage={stage} progress={progress} />
+            <RoundaboutDiagram stage={stage} progress={progress} threads={threads} note={note} />
           </div>
         </div>
 

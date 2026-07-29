@@ -1,14 +1,57 @@
-# Participant handbooks
+# Participant handbooks, and the layout the whole site now uses
 
 A handbook is a per-workshop reference document for confirmed participants:
 dates, venue, travel, visas, packing, prework, contacts. The first one is
 **Bali 2026**, and it is part of the Psalms workshop page at
 `/workshops/psalms-bali-2026`.
 
-It is a different kind of page from the rest of the site. The marketing pages
-argue a case; a handbook answers questions, in a hurry, on a phone, sometimes
-on airport Wi-Fi, and often on paper. So it gets its own layout and its own
-block types.
+This layout used to be the exception. On 2026-07-29 Joshua asked for the whole
+site to look like it, so it is now the default: `HandbookLayout` renders
+Philosophy, Method, The Five Threads, Get Involved and General travel advice as
+well as the Bali handbook, and the two completed workshops plus the workshops
+index borrow its hero. `ContentPage` survives as the fallback for a page that
+does not opt in, and nothing currently uses it.
+
+What carries the look is the photo hero, the numbered section chips and the
+block vocabulary below. What does **not** travel to every page is the
+wayfinding.
+
+## Wayfinding appears from four sections up
+
+The rail, the reading-progress bar and the `sectionNav` contents grid are
+navigation aids for a document too long to hold in your head. Bali 2026 is 3,500
+words over five sections and needs all three. The marketing pages are 280 to 560
+words over two to four sections, and a sticky contents rail beside three headings
+is scaffolding around nothing. That is the same over-signposting this document was
+cut back for the day before (see "Five sections, not twenty-one" below).
+
+So `HandbookLayout` gates all three on `sections.length >= 4`. Below that the
+sections read straight down a full-width column. Today only Bali (5) and Method
+(4) clear the bar. If you add a fifth section to a page, give it a `sectionNav`
+block too, or the mobile jump grid will be missing.
+
+## Marketing blocks inside a handbook section
+
+`prose`, `quote`, `statRow`, `cardGrid`, `rubricScale` and `imageSlot` used to
+own their own column wrapper and render titles as `h2`, which double-wrapped and
+clashed with the section heading when nested. They now take the same `nested`
+flag the handbook leaf blocks do; `Frame`, `Heading` and `Kicker` in
+`BlockRenderer` are where that decision lives.
+
+Two traps that cost a round of fixes:
+
+- **A nested block drops its kicker.** One heading line per leaf block, for the
+  reason given in `HandbookBlocks`.
+- **Card heading level depends on the grid above it.** A page conversion often
+  promotes a grid's title onto its section and leaves the grid title-less, so the
+  cards sit directly under the section's `h2` and must be `h3`. `cardLevel()`
+  decides this; hardcoding `h4` for anything nested skipped a heading level on
+  /threads and /get-involved.
+
+It is a different kind of page from the marketing copy it now also carries. The
+marketing pages argue a case; a handbook answers questions, in a hurry, on a
+phone, sometimes on airport Wi-Fi, and often on paper. That is what the layout
+and the block types below are shaped for.
 
 ## One page, not two
 
