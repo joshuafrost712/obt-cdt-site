@@ -70,9 +70,9 @@ each holding the old sections as subsections.
 
 | Section | Absorbs |
 | --- | --- |
-| 01 Welcome to Workshop 3 | old 01 welcome, 06 learning outcomes |
+| 01 Welcome to Workshop 3 | old 01 welcome, 06 learning outcomes, 07 facilitators |
 | 02 Dates and programme | 02 dates, 04 how the weeks build, 05 programme |
-| 03 Your preparation and your team | 17 prework, 18 documents, 07 facilitators |
+| 03 Your preparation | 17 prework, 18 documents |
 | 04 Travel, visas and packing | 08 travel, 09 transfers, 10 before you fly, 11 entry, 12 packing, 20 departure |
 | 05 Life on the base | 03 location, 13 venue, 14 meals, 15 Wi-Fi, 16 laundry, 21 free time, 19 health |
 
@@ -86,6 +86,11 @@ Two of them moved on 2026-07-28 when their content left the page.
 `s10-before-you-fly` now sits on the card linking to General travel advice, and
 `s20-departure` on "Closing well". When you delete a block, check whether it was
 carrying an anchor and rehome it on whatever now stands in that place.
+
+The facilitator credits moved out of section 03 into 01 later the same day, on
+the reading that who you will be working with is orientation rather than prework
+(feedback, 2026-07-28). `s07-team` travelled with the block, so the link still
+resolves; that is the pattern to follow when a block changes section.
 
 `TitleSync` in `App.tsx` scrolls to the top on navigation and **must** keep its
 hash guard. Without it, the browser's own jump to the fragment is undone the
@@ -133,18 +138,29 @@ used at the top level of an ordinary page. All of them accept `anchor`.
 
 | Type | What it is | Fields it uses |
 | --- | --- | --- |
-| `subsection` | A headed paragraph inside a section | `kicker`, `title`, `body` |
+| `subsection` | A headed paragraph inside a section | `title`, `body` |
 | `callout` | Status panel | `variant`, `label`, `title`, `body` |
-| `checklist` | Ticked cards, two columns | `kicker`, `title`, `body`, `items[].label`, `items[].body` |
+| `checklist` | Ticked cards, two columns | `title`, `body`, `items[].label`, `items[].body` |
 | `list` | A quiet bulleted list, or numbered with `variant: "numbered"` | as `checklist`, with `listItem` children |
 | `glanceGrid` | Cards, a fact table with `variant: "rows"`, or a credits table with `variant: "people"` | `items[].kicker`, `.value`, `.label`, `.body` |
 | `timeline` | A dated spine: one line through a sequence of days | same item fields as `glanceGrid` |
 | `linkGrid` | Resource cards | `items[].label`, `.href` or `.route`, `.body`, `.note` |
 
+**No leaf block takes a `kicker`.** Only `handbookSection` and `sectionNav` do,
+because there the small-caps eyebrow introduces an h2 and reads as furniture over
+a title. Over a leaf block's xl h3 it reads as a heading level that is somehow
+smaller than the headings beneath it, which is exactly how a reviewer read it on
+2026-07-28. Every leaf block gets one heading line. If you find yourself wanting
+a kicker to say what the title doesn't, write a better title: `bali.15.list` went
+from "Staying online" over "Plan for less bandwidth than you have at home" to
+that title with the old one as its body.
+
 `timeline` reads exactly the item fields a `glanceGrid` does, so a dated card
 grid becomes a spine by changing one `type` and renaming nothing. Inside a
 handbook section `BlockRenderer` picks the handbook version; at the top level of
-a marketing page the original essay timeline still renders.
+a marketing page the original essay timeline still renders. The trip dates have
+been a spine since 2026-07-28; a comment asking for a timeline that arrived after
+that was written against a cached render.
 
 A `linkGrid` item with `route` (rather than `href`) goes through react-router.
 The site is served from a base path on Pages, so a raw `<a href="/x">` would drop

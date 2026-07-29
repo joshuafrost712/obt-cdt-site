@@ -710,7 +710,7 @@
         {
           "id": "bali.10.list",
           "type": "checklist",
-          "title": "Getting yourself in order before you travel",
+          "title": "Before you fly",
           "items": [
             {
               "id": "bali.10.list.1",
@@ -748,8 +748,7 @@
               "label": "Tell your bank you are travelling, and take more than one way to pay."
             }
           ],
-          "anchor": "s10-before-you-fly",
-          "kicker": "Before you fly"
+          "anchor": "s10-before-you-fly"
         },
         {
           "id": "bali.20.before",
@@ -782,8 +781,7 @@
               "label": "Leave generous time for the airport and keep your passport where you can reach it."
             }
           ],
-          "anchor": "s20-departure",
-          "kicker": "Leaving well"
+          "anchor": "s20-departure"
         }
       ]
     }
@@ -991,7 +989,7 @@
               "type": "cta",
               "number": "03",
               "anchor": "s03-preparation",
-              "label": "Your preparation and your team"
+              "label": "Your preparation"
             },
             {
               "id": "bali.contents.s04-travel",
@@ -1096,8 +1094,50 @@
                 }
               ],
               "anchor": "s06-learning",
-              "kicker": "Learning focus",
               "title": "What you will be able to do"
+            },
+            {
+              "id": "bali.s3.team-intro",
+              "type": "subsection",
+              "anchor": "s07-team",
+              "title": "Facilitators and organisers",
+              "body": "The workshop series is organised jointly by the Global Consultant Pool and SIL Orality Services."
+            },
+            {
+              "id": "bali.07.team",
+              "type": "glanceGrid",
+              "variant": "people",
+              "items": [
+                {
+                  "id": "bali.07.team.viji",
+                  "type": "glanceCard",
+                  "label": "Viji Mathew",
+                  "value": "Head of SIL's Global Consulting Pool",
+                  "body": "Workshop logistics and participant coordination."
+                },
+                {
+                  "id": "bali.07.team.josh",
+                  "type": "glanceCard",
+                  "label": "Josh Frost",
+                  "value": "Lead facilitator",
+                  "body": "OBT Researcher, CiT, Translator, and Lead Facilitator of SIL's OBT-CDT. First point of contact for anything related to the workshop itself. Write to josh_frost@sil.org."
+                },
+                {
+                  "id": "bali.07.team.nikki",
+                  "type": "glanceCard",
+                  "label": "Nikki Mustin",
+                  "value": "OBT consultant",
+                  "body": "OBT Consultant & Seasoned Psalms Translation Workshop Facilitator. Leads Psalms exegesis and internalisation, and the checking sessions."
+                },
+                {
+                  "id": "bali.07.team.katie",
+                  "type": "glanceCard",
+                  "label": "Katie Frost",
+                  "value": "Teaching",
+                  "body": "SIL Global Ethnoarts Consultant & Co-Founder of Scriptura: Psalms Layer-by-Layer. Genre theory, the CLAT process, and translating aesthetic language."
+                }
+              ],
+              "title": "The team"
             }
           ]
         },
@@ -1169,16 +1209,14 @@
               "type": "subsection",
               "title": "Which psalms",
               "body": "The workshop works closely with Psalm 1, a wisdom psalm, and Psalm 13, a lament. Hebrew poetic conventions beyond those two get their own session, so what you learn transfers to the rest of the Psalter.",
-              "anchor": "s04-journey",
-              "kicker": "Workshop journey"
+              "anchor": "s04-journey"
             },
             {
               "id": "bali.05.rhythm",
               "type": "subsection",
               "title": "The daily rhythm",
               "body": "Mornings are theory and skill. Afternoons are application with the mother-tongue translation teams and the artists, and they are also where most competencies get observed and evaluated. Expect around seven hours of classroom time a day, with evening homework kept to no more than ninety minutes.\n\nEvery day runs to the same shape: breakfast, then morning teaching sessions with a tea break in the middle, then lunch; afternoon practice sessions with a tea break before dinner.\n\nEach morning opens with a short, Psalms-focused devotional, chosen for that day's work rather than as a generic opener.",
-              "anchor": "s05-programme",
-              "kicker": "What the days look like"
+              "anchor": "s05-programme"
             },
             {
               "id": "bali.05.week1",
@@ -1262,7 +1300,7 @@
           "number": "03",
           "anchor": "s03-preparation",
           "kicker": "Before you arrive",
-          "title": "Your preparation and your team",
+          "title": "Your preparation",
           "body": "The workshop is most fruitful when people arrive having already done the preparatory work. We consider it foundational: it shapes what you understand when you walk in, and how much help you can be to the translation teams. If you have hit obstacles, tell us. We would much rather talk it through than have you arrive feeling behind.",
           "mediaId": "psalms-hebrew",
           "caption": "The Leningrad Codex, the oldest complete manuscript of the Hebrew Bible and the base text behind the Hebrew you will be reading.",
@@ -1374,52 +1412,7 @@
               "type": "subsection",
               "title": "Sharing workshop material",
               "body": "Upload only workshop-relevant material and use filenames someone else can understand. Do not circulate participant information, recordings or community materials beyond the permissions you have been given.",
-              "anchor": "s18-documents",
-              "kicker": "Where things live"
-            },
-            {
-              "id": "bali.s3.team-intro",
-              "type": "subsection",
-              "anchor": "s07-team",
-              "kicker": "Who you will be working with",
-              "title": "Facilitators and organisers",
-              "body": "The workshop series is organised jointly by the Global Consultant Pool and SIL Orality Services."
-            },
-            {
-              "id": "bali.07.team",
-              "type": "glanceGrid",
-              "variant": "people",
-              "items": [
-                {
-                  "id": "bali.07.team.viji",
-                  "type": "glanceCard",
-                  "label": "Viji Mathew",
-                  "value": "Head of SIL's Global Consulting Pool",
-                  "body": "Workshop logistics and participant coordination."
-                },
-                {
-                  "id": "bali.07.team.josh",
-                  "type": "glanceCard",
-                  "label": "Josh Frost",
-                  "value": "Lead facilitator",
-                  "body": "OBT Researcher, CiT, Translator, and Lead Facilitator of SIL's OBT-CDT. First point of contact for anything related to the workshop itself. Write to josh_frost@sil.org."
-                },
-                {
-                  "id": "bali.07.team.nikki",
-                  "type": "glanceCard",
-                  "label": "Nikki Mustin",
-                  "value": "OBT consultant",
-                  "body": "OBT Consultant & Seasoned Psalms Translation Workshop Facilitator. Leads Psalms exegesis and internalisation, and the checking sessions."
-                },
-                {
-                  "id": "bali.07.team.katie",
-                  "type": "glanceCard",
-                  "label": "Katie Frost",
-                  "value": "Teaching",
-                  "body": "SIL Global Ethnoarts Consultant & Co-Founder of Scriptura: Psalms Layer-by-Layer. Genre theory, the CLAT process, and translating aesthetic language."
-                }
-              ],
-              "title": "The team"
+              "anchor": "s18-documents"
             }
           ]
         },
@@ -1458,7 +1451,6 @@
               "id": "bali.09.transfers",
               "type": "subsection",
               "anchor": "s09-transfers",
-              "kicker": "Getting to the base",
               "title": "Airport transfers",
               "body": "We have budgeted to cover your transport between the airport and the base, and we arrange it from the flight details on the registration form. Getting yours in early is what lets us group arrivals so nobody waits long after landing.\n\nWait for a direct confirmation before you assume your pickup is booked. If your flight changes, tell us: we re-plan pickups around actual landing times, but only if we know."
             },
@@ -1522,7 +1514,6 @@
                 }
               ],
               "anchor": "s11-entry",
-              "kicker": "Visas and arrival",
               "variant": "numbered"
             },
             {
@@ -1550,7 +1541,6 @@
               "id": "bali.12.packing",
               "type": "subsection",
               "title": "What to bring",
-              "kicker": "Packing",
               "anchor": "s12-packing",
               "body": "For the workshop itself: a laptop and charger, a notebook, and headphones good enough for careful listening to audio. Facilitators may ask for specific Psalms materials or recording gear closer to the date.\n\nBeyond that, pack for the tropics. Late August and early September fall in Bali's dry season, and they are the two driest months of its year: daytime highs of about 29 to 30°C (84 to 86°F), nights around 23°C (73°F), humid throughout, and roughly 40 to 50 mm of rain across a whole month, falling on three or four days as a short heavy shower rather than a wet day. Bring light, breathable clothing, one layer for strong air-conditioning, something modest for worship and for visits to religious or cultural sites, and shoes you can stand in all day.\n\nBali also has some of the most beautiful beaches in the world and you should enjoy them. Bring whatever you need to do that safely in equatorial sun: swimwear, a hat, sunglasses and high-factor sunscreen."
             },
@@ -1647,8 +1637,7 @@
               "type": "subsection",
               "title": "Rooming",
               "body": "You are welcome to stay at the base for the workshop, and accommodation has been planned for confirmed participants. We are working from the base's own rooming layout, and where we can we are pairing people who share a language, because over two or three weeks together that makes a real difference.",
-              "anchor": "s13-accommodation",
-              "kicker": "Where you will stay"
+              "anchor": "s13-accommodation"
             },
             {
               "id": "bali.13.space",
@@ -1660,7 +1649,6 @@
               "id": "bali.14.meals",
               "type": "subsection",
               "anchor": "s14-meals",
-              "kicker": "Eating together",
               "title": "Meals and dietary needs",
               "body": "Meals come through the base kitchen on working days. Part of what keeps the cost low enough for fifty people to attend is the generosity of our hosts, and one of the ways the base runs efficiently is by having large visiting groups help with meal preparation and cleanup.\n\nWe will organise that so those who are able-bodied share the work and it finishes quickly together, rather than anyone losing half an afternoon session to it."
             },
@@ -1680,7 +1668,7 @@
             {
               "id": "bali.15.list",
               "type": "list",
-              "title": "Plan for less bandwidth than you have at home",
+              "title": "Staying online",
               "items": [
                 {
                   "id": "bali.15.list.1",
@@ -1704,13 +1692,12 @@
                 }
               ],
               "anchor": "s15-connectivity",
-              "kicker": "Staying online"
+              "body": "Plan for less bandwidth than you have at home."
             },
             {
               "id": "bali.16.laundry",
               "type": "subsection",
               "anchor": "s16-laundry",
-              "kicker": "Two or three weeks of clothes",
               "title": "Laundry",
               "body": "For most participants the workshop runs two weeks, and for anyone also doing the Crash Course it runs three. Pack with laundry in mind either way. A small amount of travel detergent may be useful, but wait for guidance from the base before planning to hand-wash or dry things in your room."
             },
@@ -1718,14 +1705,13 @@
               "id": "bali.21.free",
               "type": "subsection",
               "anchor": "s21-free-time",
-              "kicker": "Beyond the sessions",
               "title": "Free time and exploring together",
               "body": "Bali has a great deal to offer and you are warmly welcome to enjoy it. To be clear, the facilitators are not organising or sponsoring outings.\n\nIn past workshops participants decided together where they wanted to go, pooled money for a van, and went as a group. Some very good memories came out of that. We would love it to happen again, organised among yourselves."
             },
             {
               "id": "bali.19.before",
               "type": "checklist",
-              "title": "Before you leave home",
+              "title": "Health and insurance before you leave home",
               "items": [
                 {
                   "id": "bali.19.before.1",
@@ -1748,8 +1734,7 @@
                   "label": "Tell the organisers, confidentially, anything we need to know in order to support you safely."
                 }
               ],
-              "anchor": "s19-health",
-              "kicker": "Looking after each other"
+              "anchor": "s19-health"
             },
             {
               "id": "bali.19.during",

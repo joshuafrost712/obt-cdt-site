@@ -13,6 +13,15 @@ import { BlockRenderer } from './BlockRenderer'
  * The handbook has one design job the marketing pages don't: it must stay
  * readable when a third of it is still unconfirmed. Hence `callout` variants
  * that make a gap look tracked rather than forgotten.
+ *
+ * **Leaf blocks carry no eyebrow.** A small-caps kicker above a heading works
+ * where it introduces something much larger, which is why `handbookSection`
+ * keeps one: a number chip and an eyebrow over a 3xl h2 read as furniture over
+ * a title. Over a subsection's xl h3 it does not. Half the leaf blocks had one
+ * and half didn't, so the eyebrow read as a heading level that was somehow
+ * smaller than the headings under it (feedback, 2026-07-28). Every leaf block
+ * now has exactly one heading line. If a kicker said something the title
+ * didn't, the fix is a better title, not a second line above it.
  */
 
 /* ---------------------------------------------------------------- section */
@@ -99,12 +108,6 @@ export function HandbookSection({ block }: { block: Block }) {
 export function Subsection({ block }: { block: Block }) {
   return (
     <div id={block.anchor} className={`mt-6${block.anchor ? ' scroll-mt-24' : ''}`}>
-      <Txt
-        node={block}
-        field="kicker"
-        as="p"
-        className="mb-1 text-xs font-semibold uppercase tracking-[0.18em] text-accent-deep"
-      />
       <Txt node={block} field="title" as="h3" className="font-display text-xl font-semibold text-ink" />
       <Body node={block} className="mt-2 max-w-2xl space-y-3 text-[0.98rem] leading-relaxed text-ink-soft" />
     </div>
@@ -159,12 +162,6 @@ export function Callout({ block }: { block: Block }) {
 export function Checklist({ block }: { block: Block }) {
   return (
     <div id={block.anchor} className={`mt-6${block.anchor ? ' scroll-mt-24' : ''}`}>
-      <Txt
-        node={block}
-        field="kicker"
-        as="p"
-        className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-accent-deep"
-      />
       <Txt node={block} field="title" as="h3" className="font-display text-xl font-semibold text-ink" />
       <Body node={block} className="mt-2 max-w-2xl space-y-2 text-[0.95rem] leading-relaxed text-ink-soft" />
       <ul className="mt-4 grid gap-2.5 sm:grid-cols-2">
@@ -207,12 +204,6 @@ export function PlainList({ block }: { block: Block }) {
     : 'list-disc'
   return (
     <div id={block.anchor} className={`mt-6${block.anchor ? ' scroll-mt-24' : ''}`}>
-      <Txt
-        node={block}
-        field="kicker"
-        as="p"
-        className="mb-1 text-xs font-semibold uppercase tracking-[0.18em] text-accent-deep"
-      />
       <Txt node={block} field="title" as="h3" className="font-display text-xl font-semibold text-ink" />
       <Body node={block} className="mt-2 max-w-2xl space-y-2 text-[0.95rem] leading-relaxed text-ink-soft" />
       <Tag
@@ -245,12 +236,6 @@ export function PlainList({ block }: { block: Block }) {
 export function HandbookTimeline({ block }: { block: Block }) {
   return (
     <div id={block.anchor} className={`mt-6${block.anchor ? ' scroll-mt-24' : ''}`}>
-      <Txt
-        node={block}
-        field="kicker"
-        as="p"
-        className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-accent-deep"
-      />
       <Txt node={block} field="title" as="h3" className="font-display text-xl font-semibold text-ink" />
       <Body node={block} className="mt-2 max-w-2xl space-y-2 text-[0.95rem] leading-relaxed text-ink-soft" />
       <ol className="mt-5 max-w-2xl border-l-2 border-brand/25 pl-6">
@@ -295,12 +280,6 @@ export function GlanceGrid({ block }: { block: Block }) {
   const rows = people || block.variant === 'rows'
   return (
     <div id={block.anchor} className={`mt-6${block.anchor ? ' scroll-mt-24' : ''}`}>
-      <Txt
-        node={block}
-        field="kicker"
-        as="p"
-        className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-accent-deep"
-      />
       <Txt node={block} field="title" as="h3" className="font-display text-xl font-semibold text-ink" />
       <Body node={block} className="mt-2 max-w-2xl space-y-2 text-[0.95rem] leading-relaxed text-ink-soft" />
 
@@ -367,12 +346,6 @@ const external = (href?: string) => !!href && !href.startsWith('mailto:') && !hr
 export function LinkGrid({ block }: { block: Block }) {
   return (
     <div id={block.anchor} className={`mt-6${block.anchor ? ' scroll-mt-24' : ''}`}>
-      <Txt
-        node={block}
-        field="kicker"
-        as="p"
-        className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-accent-deep"
-      />
       <Txt node={block} field="title" as="h3" className="font-display text-xl font-semibold text-ink" />
       <Body node={block} className="mt-2 max-w-2xl space-y-2 text-[0.95rem] leading-relaxed text-ink-soft" />
       <div className="mt-4 grid gap-3 sm:grid-cols-2">
@@ -433,6 +406,9 @@ export function LinkGrid({ block }: { block: Block }) {
 /**
  * The contents grid at the top of the handbook. Reads the same section list the
  * rail uses; on a phone this is the primary way to jump around.
+ *
+ * This one keeps its eyebrow: it introduces an h2, which is the scale the device
+ * works at. See the note at the top of this file.
  */
 export function SectionNav({ block }: { block: Block }) {
   return (
