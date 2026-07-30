@@ -2,6 +2,7 @@ import { pageById } from '../lib/content/loader'
 import { getMedia } from '../lib/media'
 import { BlockRenderer, Cta } from '../components/blocks/BlockRenderer'
 import { RoundaboutDiagram } from '../components/scrolly/RoundaboutDiagram'
+import { SceneFigure } from '../components/scrolly/SceneFigure'
 import { useSceneProgress } from '../components/scrolly/useSceneProgress'
 import { useReveal } from '../components/scrolly/useReveal'
 import { Body, Txt } from '../components/text'
@@ -10,9 +11,10 @@ import type { Block } from '../schema/types'
 
 /**
  * The home page is a scroll-driven visual essay on the roundabout model. The
- * scene copy lives in the content store as `scene` blocks; the sticky
- * RoundaboutDiagram advances with the active scene. Everything renders
- * complete without JS — the diagram then simply shows its final state.
+ * scene copy lives in the content store as `scene` blocks. On lg+ a sticky
+ * RoundaboutDiagram advances with the active scene; without JS it stays at
+ * stage 0, a faint but complete composition. Below lg each scene carries its
+ * own static SceneFigure at that scene's stage, which needs no JS at all.
  */
 export function HomePage() {
   const page = pageById('home')
@@ -88,25 +90,25 @@ function Essay({ scenes }: { scenes: Block[] }) {
 
   return (
     <section ref={containerRef} className="relative bg-paper">
-      {/* Mobile: compact sticky diagram pinned under the header. Text
-          annotations are dropped — at 176px wide they render around 4px. */}
-      <div className="sticky top-[57px] z-10 border-b border-ink/10 bg-paper/95 py-2 backdrop-blur lg:hidden">
-        <div className="mx-auto w-44">
-          <RoundaboutDiagram stage={stage} progress={progress} compact />
-        </div>
-      </div>
-
-      <div className="mx-auto max-w-6xl gap-12 px-5 lg:grid lg:grid-cols-[1fr_1.05fr]">
-        {/* Desktop: full sticky diagram pane. */}
+      <div className="mx-auto max-w-6xl gap-12 px-5 lg:grid lg:grid-cols-[1fr_1.05fr] xl:gap-16">
+        {/* Desktop: full sticky diagram pane. Below lg each scene carries its
+            own static figure instead (SceneFigure), so there is no sticky bar
+            competing with the text on a phone. */}
         <div className="hidden lg:block">
           <div className="sticky top-24 flex h-[calc(100vh-8rem)] items-center">
-            <RoundaboutDiagram stage={stage} progress={progress} threads={threads} note={note} />
+            <RoundaboutDiagram
+              stage={stage}
+              progress={progress}
+              threads={threads}
+              note={note}
+              className="h-auto w-full max-w-[420px] xl:max-w-[500px]"
+            />
           </div>
         </div>
 
         <div>
           {scenes.map((scene, i) => (
-            <Scene key={scene.id} scene={scene} index={i} count={scenes.length} />
+            <Scene key={scene.id} scene={scene} index={i} count={scenes.length} threads={threads} />
           ))}
         </div>
       </div>
@@ -114,17 +116,23 @@ function Essay({ scenes }: { scenes: Block[] }) {
   )
 }
 
-function Scene({ scene, index, count }: { scene: Block; index: number; count: number }) {
+function Scene({ scene, index, count, threads }: { scene: Block; index: number; count: number; threads: Block[] }) {
   const ref = useReveal<HTMLDivElement>()
   return (
-    <div data-scene className="flex min-h-[70vh] items-center py-14 lg:min-h-[92vh]">
-      <div ref={ref} className="reveal">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-ink-faint">
-          <span className="text-accent-deep">{String(index + 1).padStart(2, '0')}</span> / {String(count).padStart(2, '0')}
-        </p>
-        <Txt node={scene} field="kicker" as="p" className="mt-4 text-xs font-semibold uppercase tracking-[0.18em] text-brand" />
-        <Txt node={scene} field="title" as="h2" className="mt-2 font-display text-3xl font-semibold tracking-tight text-ink md:text-4xl" />
-        <Body node={scene} className="mt-5 max-w-xl space-y-4 text-[1.05rem] leading-relaxed text-ink-soft" />
+    <div data-scene className="py-12 md:py-16 lg:flex lg:min-h-[92vh] lg:items-center lg:py-14">
+      <div
+        ref={ref}
+        className="reveal md:grid md:grid-cols-[minmax(0,1fr)_minmax(240px,300px)] md:items-center md:gap-10 lg:block"
+      >
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-ink-faint">
+            <span className="text-accent-deep">{String(index + 1).padStart(2, '0')}</span> / {String(count).padStart(2, '0')}
+          </p>
+          <Txt node={scene} field="kicker" as="p" className="mt-4 text-xs font-semibold uppercase tracking-[0.18em] text-brand" />
+          <Txt node={scene} field="title" as="h2" className="mt-2 font-display text-3xl font-semibold tracking-tight text-ink md:text-4xl" />
+          <Body node={scene} className="mt-5 max-w-xl space-y-4 text-[1.05rem] leading-relaxed text-ink-soft" />
+        </div>
+        <SceneFigure stage={index} count={count} threads={threads} className="mt-8 md:mt-0 lg:hidden" />
       </div>
     </div>
   )

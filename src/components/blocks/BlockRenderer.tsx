@@ -312,7 +312,9 @@ export function RubricScale({ block, nested = false }: { block: Block; nested?: 
       <Kicker block={block} nested={nested} />
       <Heading block={block} nested={nested} />
       <Body node={block} className="mt-3 max-w-2xl space-y-3 leading-relaxed text-ink-soft" />
-      <ol className={`grid gap-4 md:grid-cols-4 ${nested ? 'mt-4' : 'mt-8'}`}>
+      {/* Two-up on tablets: four abreast at md squeezed each card to ~170px and
+          five lines of wrap. */}
+      <ol className={`grid gap-4 sm:grid-cols-2 lg:grid-cols-4 ${nested ? 'mt-4' : 'mt-8'}`}>
         {(block.items ?? []).map((step) => (
           <li key={step.id} className="rounded-2xl border border-ink/10 bg-white/60 p-5">
             <Txt node={step} field="value" as="p" className="font-display text-3xl font-semibold text-brand" />

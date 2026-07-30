@@ -32,11 +32,18 @@ interface Props {
   /** The active scene's kicker, used as the figure's caption. */
   note?: string
   /**
-   * The mobile instance renders at 176px against a 420-unit viewBox, where label
-   * text lands around 4px and is illegible. Compact drops every text annotation
-   * and keeps the shapes.
+   * Compact drops the caption/leader annotation and the thread-name labels,
+   * whose type would be illegible at small render sizes. The numerals and the
+   * centre label stay: the per-scene crops (SceneFigure) render them large
+   * enough to read.
    */
   compact?: boolean
+  /**
+   * The viewBox is a prop so a static per-scene instance can crop to the part
+   * of the figure its scene is about. Default is the full composition.
+   */
+  viewBox?: string
+  className?: string
 }
 
 const CX = 210
@@ -90,7 +97,15 @@ const HALO = {
   strokeLinejoin: 'round' as const,
 }
 
-export function RoundaboutDiagram({ stage, progress, threads = [], note, compact = false }: Props) {
+export function RoundaboutDiagram({
+  stage,
+  progress,
+  threads = [],
+  note,
+  compact = false,
+  viewBox = '0 0 420 436',
+  className = 'h-auto w-full max-w-[420px]',
+}: Props) {
   const on = (from: number, to = 99) => stage >= from && stage <= to
   const dim = (active: boolean, lit = 1, faded = 0.14) => (active ? lit : faded)
 
@@ -102,7 +117,7 @@ export function RoundaboutDiagram({ stage, progress, threads = [], note, compact
   const annotation = compact ? undefined : NOTE[stage]
 
   return (
-    <svg viewBox="0 0 420 436" aria-hidden="true" className="h-auto w-full max-w-[420px]">
+    <svg viewBox={viewBox} aria-hidden="true" className={className}>
       {/* ---- the straight road (the old assumption) ---- */}
       <g className="ra-part" style={{ opacity: stage <= 1 ? (stage === 1 ? 1 : 0.35) : 0.1 }}>
         <line x1="60" y1="416" x2="60" y2="24" stroke="var(--color-ink-faint)" strokeWidth="26" strokeLinecap="round" opacity="0.25" />
@@ -128,9 +143,16 @@ export function RoundaboutDiagram({ stage, progress, threads = [], note, compact
           return (
             <g key={angle}>
               <line x1={x1} y1={y1} x2={x2} y2={y2} stroke="var(--color-ink-soft)" strokeWidth="14" strokeLinecap="round" opacity="0.28" />
-              <circle cx={x1} cy={y1} r="5.5" fill={on(2) ? 'var(--color-brand)' : 'var(--color-ink-faint)'}>
-                {stage === 2 && <animate attributeName="r" values="5.5;7;5.5" dur={`${2 + i * 0.3}s`} repeatCount="indefinite" />}
-              </circle>
+              {/* CSS pulse rather than SMIL: SMIL ignores prefers-reduced-motion,
+                  and a static per-scene instance would run it for the page's life. */}
+              <circle
+                cx={x1}
+                cy={y1}
+                r="5.5"
+                fill={on(2) ? 'var(--color-brand)' : 'var(--color-ink-faint)'}
+                className={stage === 2 ? 'ra-pulse' : undefined}
+                style={stage === 2 ? { animationDelay: `${i * 0.3}s` } : undefined}
+              />
             </g>
           )
         })}

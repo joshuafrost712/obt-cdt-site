@@ -23,10 +23,17 @@ function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-ink/10 bg-paper/90 backdrop-blur">
-      <div className="mx-auto flex max-w-6xl items-center gap-6 px-5 py-3">
-        <Link to="/" className="flex items-baseline gap-2 no-underline" onClick={() => setOpen(false)}>
-          <span aria-hidden className="inline-block size-3.5 translate-y-px rounded-full border-[3px] border-accent" />
-          <Txt node={site} field="title" as="span" className="font-display text-lg font-semibold tracking-tight text-ink" />
+      <div className="mx-auto flex max-w-6xl items-center gap-3 px-5 py-3 md:gap-6">
+        {/* min-w-0 + truncate: the full title is wider than a 375px phone, and a
+            wrapped header breaks the sticky offsets keyed to its one-line height. */}
+        <Link to="/" className="flex min-w-0 items-baseline gap-2 no-underline" onClick={() => setOpen(false)}>
+          <span aria-hidden className="inline-block size-3.5 shrink-0 translate-y-px rounded-full border-[3px] border-accent" />
+          <Txt
+            node={site}
+            field="title"
+            as="span"
+            className="truncate font-display text-base font-semibold tracking-tight text-ink sm:text-lg"
+          />
         </Link>
         <nav aria-label="Site" className="ml-auto hidden items-center gap-1 md:flex">
           {items.map((item) => (
@@ -62,7 +69,7 @@ function SiteHeader() {
         </nav>
         <button
           type="button"
-          className="ml-auto rounded-md border border-ink/15 px-3 py-1.5 text-sm font-medium text-ink md:hidden"
+          className="ml-auto shrink-0 rounded-md border border-ink/15 px-3 py-1.5 text-sm font-medium text-ink md:hidden"
           aria-expanded={open}
           aria-label="Toggle menu"
           onClick={() => setOpen((v) => !v)}

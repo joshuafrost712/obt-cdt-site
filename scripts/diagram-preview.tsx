@@ -8,6 +8,7 @@
  */
 import { renderToStaticMarkup } from 'react-dom/server'
 import { RoundaboutDiagram } from '../src/components/scrolly/RoundaboutDiagram'
+import { SceneFigure } from '../src/components/scrolly/SceneFigure'
 import content from '../src/content/site-content.json'
 import type { Block } from '../src/schema/types'
 
@@ -39,9 +40,19 @@ const panels = scenes
   })
   .join('\n')
 
-const compact = renderToStaticMarkup(
-  RoundaboutDiagram({ stage: 3, progress: 0.5, threads, note: 'Circulating', compact: true }) as never,
-)
+// The per-scene mobile figures (SceneFigure), each in a 335px column — the
+// content width of a 375px phone after the page's px-5 padding.
+const mobilePanels = scenes
+  .map((scene, i) => {
+    const fig = renderToStaticMarkup(
+      SceneFigure({ stage: i, count: scenes.length, threads }) as never,
+    )
+    return `<figure>
+      <figcaption><b>stage ${i}</b> &middot; ${scene.kicker}</figcaption>
+      <div class="mob">${fig}</div>
+    </figure>`
+  })
+  .join('\n')
 
 process.stdout.write(`<!doctype html><meta charset="utf-8"><title>Roundabout stages</title>
 <style>
@@ -52,10 +63,21 @@ process.stdout.write(`<!doctype html><meta charset="utf-8"><title>Roundabout sta
   figcaption{font-size:11px;color:#555;margin-bottom:6px}
   .d{width:100%}
   .d svg{width:100%;height:auto;display:block}
-  .mob{width:176px;border:1px dashed #bbb;border-radius:8px;padding:6px;margin-top:20px}
+  .mob{width:335px;max-width:100%}
+  .mob svg{display:block}
+  /* Enough of the site's utility classes for SceneFigure's markup to lay out. */
+  .mx-auto{margin-left:auto;margin-right:auto}
+  .h-auto{height:auto}.w-full{width:100%}.w-fit{width:fit-content}
+  .max-w-\\[340px\\]{max-width:340px}.max-w-\\[300px\\]{max-width:300px}
+  .max-w-\\[400px\\]{max-width:400px}.max-w-\\[320px\\]{max-width:320px}
+  .max-w-\\[270px\\]{max-width:270px}.max-w-\\[360px\\]{max-width:360px}
+  .mt-4{margin-top:1rem}.grid-cols-1{display:grid;grid-template-columns:1fr}
+  ol{list-style:none;margin:0;padding:0;font-size:13px;color:#3f4a52}
+  ol li{display:flex;gap:8px;align-items:baseline}
+  ol li span:first-child{font-size:11px;font-weight:700;color:#c24e00}
   h2{font-size:14px;margin:24px 0 8px}
 </style>
 <div class="grid">${panels}</div>
-<h2>Mobile instance (176px, compact: no text annotations)</h2>
-<div class="mob">${compact}</div>
+<h2>Per-scene mobile figures (335px column, compact, cropped viewBox)</h2>
+<div class="grid">${mobilePanels}</div>
 `)

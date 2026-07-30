@@ -69,6 +69,29 @@ body {
     transform 0.8s ease;
 }
 
+/* Static per-scene instances (SceneFigure) never change stage, so nothing
+   should ever ease if a prop is touched later. */
+.ra-static .ra-part {
+  transition: none;
+}
+
+/* Entry-road dots breathe on the "enter the roundabout" scene. CSS rather than
+   SMIL so reduced-motion can switch it off. */
+@keyframes ra-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.27);
+  }
+}
+.ra-pulse {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: ra-pulse 2s ease-in-out infinite;
+}
+
 /*
  * The figure's caption is remounted on every scene change (keyed on stage), so
  * it fades in rather than snapping. It must NOT be a .ra-part: that class
@@ -134,6 +157,9 @@ body {
   }
   .ra-part {
     transition: none;
+  }
+  .ra-pulse {
+    animation: none;
   }
   .js .ra-note {
     animation: none;
@@ -203,6 +229,9 @@ body {
   .js .reveal {
     opacity: 1 !important;
     transform: none !important;
+  }
+  .ra-pulse {
+    animation: none !important;
   }
   /* Spell out where a link actually goes; a printed href is useless otherwise. */
   a[href^='http']::after {

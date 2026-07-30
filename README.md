@@ -65,6 +65,15 @@ handbook layout cannot do. Home is the scroll-driven roundabout essay; the
 workshops index generates its cards from the workshops list rather than from
 content blocks. Both wear the handbook photo hero and nothing else of it.
 
+The roundabout essay is responsive in kind, not just in size (2026-07-30). On
+`lg+` the full diagram sits sticky beside the scenes and advances with scroll
+(growing to 500px at `xl`); without JS it stays at its faint stage-0 state.
+Below `lg` there is no scroll-linked diagram at all: each scene carries a static
+`SceneFigure` under (phone) or beside (tablet) its text, cropped to the part of
+the figure that scene is about, with the five thread names as an HTML legend on
+the circulating scene. Those instances prerender at the correct stage, so
+no-JS readers and print get the right picture per scene.
+
 Unlisted is not private. **This repo is public**, so hidden-page copy is
 readable in `site-content.json` on github.com and in the history regardless.
 Treat `hidden` as "don't index, don't advertise", never as access control.

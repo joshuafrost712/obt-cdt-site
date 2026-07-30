@@ -153,8 +153,11 @@ node .diagram-preview/diagram-preview.js > .diagram-preview/diagram.html
 Output is gitignored. Use it after any change to the figure: two collisions on
 2026-07-29 (the scene-2 caption sitting on the ring, and the faded rubric ticks
 showing through the "OBT consulting" centre label on scenes 5 and 6) were invisible
-in the code and obvious in the render. It also shows the compact mobile instance,
-which must carry no text at all.
+in the code and obvious in the render. It also shows the seven per-scene mobile
+figures (`SceneFigure`, 2026-07-30): below `lg` each home scene carries a static
+instance of the diagram cropped to that scene's subject, rendered here at the
+335px column width of a 375px phone, so the crop framing and the thread legend
+can be checked without a device.
 
 ## Consent and sourcing rules
 

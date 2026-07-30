@@ -103,7 +103,7 @@
           "type": "scene",
           "stage": 3,
           "kicker": "Circulating",
-          "title": "On the roundabout, five threads weave together",
+          "title": "Five threads at once",
           "body": "Circulating means growing along five threads at once: genre-based workshops that act as catalysts, online trainings between them, biblical language cohorts, ongoing mentorship, and supervised practice on real translation projects.\n\nEvery lap adds evidence. A workshop evaluation here, a mentored consultant check there, a language milestone, a teaching assignment. The track keeps that evidence, competency by competency.",
           "items": [
             {
@@ -137,7 +137,7 @@
           "id": "home.essay.s5",
           "type": "scene",
           "stage": 4,
-          "kicker": "Honest measurement",
+          "kicker": "Measurement",
           "title": "Progress you can actually see",
           "body": "Every workshop activity is tied to specific, observable competencies. Multiple facilitators record what they see each participant do, then translate those observations into simple 0 to 3 ratings against SIL's Competency-Based Consulting matrix.\n\nBecause many evaluators watch many activities over weeks of intense collaboration, the picture is rich and hard to fake, and it is verified by the facilitators before anything enters a participant's record."
         },
@@ -153,8 +153,8 @@
           "id": "home.essay.s7",
           "type": "scene",
           "stage": 6,
-          "kicker": "The multiplication",
-          "title": "And the roundabout keeps turning",
+          "kicker": "What comes after",
+          "title": "Graduates come back as mentors",
           "body": "The first cycle aims to certify 25 OBT-specialized consultants. But graduates do not simply drive away: strong participants return as session leaders, mentors, and workshop facilitators for the next generation.\n\nThe goal is not one cohort of consultants. It is a sustainable, replicable pathway that regions can carry forward themselves."
         },
         {
@@ -200,7 +200,7 @@
         {
           "id": "home.cta",
           "type": "ctaGroup",
-          "title": "Walk the loop yourself",
+          "title": "See how the track works",
           "body": "The pages below take each part of the model in turn: why the track exists, how certification works, and what the five threads look like in practice.",
           "items": [
             {
@@ -272,7 +272,7 @@
               "id": "philosophy.different",
               "type": "cardGrid",
               "kicker": "What makes OBT consulting different",
-              "title": "Four realities shape the whole curriculum",
+              "title": "Four things shape the curriculum",
               "items": [
                 {
                   "id": "philosophy.different.performance",
@@ -283,7 +283,7 @@
                 {
                   "id": "philosophy.different.genre",
                   "type": "card",
-                  "title": "Genre drives the challenges",
+                  "title": "Each genre raises different problems",
                   "body": "Checking a narrative means attending to story flow and participant reference; checking a psalm means understanding Hebrew poetics and local artistic genres. The skills differ so much by genre that the whole workshop series is organized around genres."
                 },
                 {
@@ -308,7 +308,7 @@
           "number": "03",
           "anchor": "s03-principles",
           "kicker": "What follows",
-          "title": "Three principles decide what we teach",
+          "title": "Three principles behind the curriculum",
           "body": "Everything in the track flows from a single commitment: start with orality, and design everything else around it. Three working principles carry that commitment into each workshop.",
           "items": [
             {
@@ -343,7 +343,7 @@
         {
           "id": "philosophy.cta",
           "type": "ctaGroup",
-          "title": "See the principles at work",
+          "title": "Keep reading",
           "items": [
             {
               "id": "philosophy.cta.method",
@@ -396,7 +396,7 @@
               "type": "labelToken",
               "number": "02",
               "anchor": "s02-evidence",
-              "label": "From observation to evidence"
+              "label": "How observations become evidence"
             },
             {
               "id": "method.contents.3",
@@ -429,7 +429,7 @@
           "number": "02",
           "anchor": "s02-evidence",
           "kicker": "Gathering evidence",
-          "title": "From observation to evidence",
+          "title": "How observations become evidence",
           "body": "Before each workshop, every lesson and activity is tied to specific knowledge, skills, and attitudes (KSAs), each connected to observable phenomena, so evaluators know exactly what to watch and listen for.\n\nDuring the workshop, facilitators record descriptive notes on what they actually see each participant do. Observations from multiple facilitators across many activities come together in one structured record per participant, which makes the resulting picture far richer than any single observer could produce.",
           "items": [
             {
@@ -507,7 +507,7 @@
                   "id": "method.arc.end",
                   "type": "timelineItem",
                   "kicker": "End of workshop",
-                  "title": "Holistic written evaluation",
+                  "title": "A written evaluation",
                   "body": "Each participant receives a written evaluation, drafted from the shared record and verified by multiple facilitators."
                 },
                 {
@@ -575,7 +575,7 @@
           "number": "01",
           "anchor": "s01-why",
           "kicker": "Why five",
-          "title": "Formation woven from five threads",
+          "title": "Formation happens in five ways at once",
           "body": "Competency development in the track is distributed across five interlocking threads. Together they provide training and mentorship sufficient to meet the full set of consulting competencies.\n\nParticipants are not expected to engage every thread in equal measure. Each person draws most heavily on the threads that will most effectively advance their own readiness, which is exactly what the roundabout model is for."
         },
         {
@@ -594,14 +594,14 @@
                   "id": "threads.grid.workshops",
                   "type": "threadCard",
                   "kicker": "Thread one",
-                  "title": "Workshops as catalysts",
+                  "title": "Workshops",
                   "body": "Five two-week intensives, each centered on a major biblical genre: Narrative, Epistles, Psalms, Legal Texts in the Torah, and Prophecy and Wisdom Literature. Participants practice most consulting competencies inside the genre at hand, with feedback at every step."
                 },
                 {
                   "id": "threads.grid.online",
                   "type": "threadCard",
                   "kicker": "Thread two",
-                  "title": "Online trainings",
+                  "title": "Online training",
                   "body": "Between workshops, live virtual sessions target the competencies the previous workshop showed participants most need, alongside curated self-paced material. Wherever possible these run with cohort elements, so no one studies alone."
                 },
                 {
@@ -622,7 +622,7 @@
                   "id": "threads.grid.field",
                   "type": "threadCard",
                   "kicker": "Thread five",
-                  "title": "Field-based application",
+                  "title": "Field practice",
                   "body": "Participants observe practicing OBT consultants and conduct supervised consultant checks on real translation projects. Strong participants are also trained to lead crash-course sessions for the next round, deepening mastery by teaching."
                 }
               ]
@@ -635,13 +635,13 @@
           "number": "03",
           "anchor": "s03-between",
           "kicker": "Between the workshops",
-          "title": "The workshops are the visible thread, not the whole fabric",
+          "title": "Most of the formation happens between workshops",
           "body": "Workshops act as catalysts: two weeks that ignite skills and expose exactly where each participant should grow next. But the track depends equally on what happens between them: the virtual sessions, the language cohorts, the mentor conversations, and the supervised checks on real projects.\n\nEvaluation data from each workshop feeds directly into what gets taught between workshops, so the track adapts to the actual cohort rather than to a fixed syllabus."
         },
         {
           "id": "threads.cta",
           "type": "ctaGroup",
-          "title": "See the threads in action",
+          "title": "Next: the workshops",
           "items": [
             {
               "id": "threads.cta.workshops",
@@ -666,13 +666,13 @@
       "route": "/workshops",
       "navLabel": "Workshops",
       "title": "The workshop series",
-      "kicker": "Five genres, five catalysts",
+      "kicker": "Five genres, five workshops",
       "metaDescription": "Five two-week, genre-based workshops anchor the OBT Consultant Development Track: Narrative, Epistles, Psalms, Legal Texts in the Torah, and Prophecy and Wisdom Literature.",
       "blocks": [
         {
           "id": "workshops-index.hero",
           "type": "hero",
-          "kicker": "Five genres, five catalysts",
+          "kicker": "Five genres, five workshops",
           "title": "The workshop series",
           "body": "Five two-week workshops anchor the track, one for each genre. Each is a fortnight of real translation work with consultants watching.",
           "mediaId": "workshops-hero"
@@ -681,7 +681,7 @@
           "id": "workshops-index.rhythm",
           "type": "prose",
           "kicker": "The rhythm",
-          "title": "Every workshop follows the same arc",
+          "title": "Every workshop runs the same way",
           "body": "Each workshop moves through genre-specific instruction, hands-on translation experience, and supervised consulting practice. Participants exegete, internalize, draft, revise, and check within the two weeks, so competencies are practiced rather than merely presented.\n\nThe series progresses from more accessible genres toward more complex ones, and the one-week experiential OBT Crash Course is the recommended doorway for newcomers: each crash-course participant learns oral Bible translation by doing it, functioning as a mother-tongue translator for a week."
         },
         {
@@ -730,7 +730,7 @@
         {
           "id": "workshops-index.cta",
           "type": "ctaGroup",
-          "title": "Single-workshop visits are genuinely welcome",
+          "title": "You can join for a single workshop",
           "body": "Visiting one workshop is an effective way to assess whether the track fits a mentee, to add an oral specialization to an existing consulting certification, or to contribute as a session leader or evaluator.",
           "items": [
             {
@@ -828,7 +828,7 @@
         {
           "id": "involved.cta",
           "type": "ctaGroup",
-          "title": "Start the conversation",
+          "title": "Get in touch",
           "body": "Write a few lines about who you are and how you hope to contribute, and we will follow up personally.",
           "items": [
             {
@@ -994,7 +994,7 @@
           "id": "narrative.story",
           "type": "prose",
           "kicker": "Where the track began",
-          "title": "Foundations, practiced on story",
+          "title": "Why narrative came first",
           "body": "Narrative came first for a reason: story is the Bible's most accessible genre and the natural on-ramp into oral translation work. The workshop built the foundational OBT skill set: exegesis with an oral lens, internalization of passages through embodied group activities, oral drafting and revision, and a first taste of what consultants listen for in a checking session.\n\nParticipants worked in teams through the full OBT cycle on narrative passages, with attention to the things that make or break an oral story: participant reference, story flow, and the storytelling conventions of oral cultures."
         },
         {
@@ -1006,13 +1006,13 @@
         {
           "id": "narrative.seeded",
           "type": "prose",
-          "title": "What it set in motion",
+          "title": "What it started",
           "body": "Bangalore established the pattern every later workshop follows: teach only what cannot be gained from books, practice everything, and evaluate through observation rather than examination. It also confirmed the appetite: the interest that surfaced around this first workshop exceeded what one event could hold, and it shaped the plans for everything that followed."
         },
         {
           "id": "narrative.cta",
           "type": "ctaGroup",
-          "title": "The story continued in Chiang Mai",
+          "title": "Next came Chiang Mai",
           "items": [
             {
               "id": "narrative.cta.next",
@@ -1052,13 +1052,13 @@
           "id": "epistles.story",
           "type": "prose",
           "kicker": "Raising the difficulty",
-          "title": "From story to argument",
+          "title": "A letter lives on its argument",
           "body": "Epistles ask different questions of a translator than narrative does. Where a story lives on flow and participant reference, a letter lives on its argument: how each move builds on the last, where the emphasis falls, and what the writer is doing with every paragraph.\n\nThe second workshop equipped participants with genre-specific exegetical tools for the Epistles, centered on argument structure and discourse prominence, and put those tools to work on passages the teams translated and checked during the two weeks."
         },
         {
           "id": "epistles.check",
           "type": "prose",
-          "title": "A real check, not a simulation",
+          "title": "A consultant check with real stakes",
           "body": "The milestone of Chiang Mai was consulting practice with real stakes: participants took part in mentored consultant checking of an actual OBT Epistles translation, observed and guided by experienced consultants.\n\nMore than twenty consultants and consultants-in-training worked through the two weeks together, and each one left with a written evaluation grounded in what multiple facilitators had observed across the sessions."
         },
         {
@@ -1138,7 +1138,7 @@
           "id": "psalms.what",
           "type": "prose",
           "kicker": "The vision",
-          "title": "Psalms that sing in local voices",
+          "title": "Psalms in forms communities already sing",
           "body": "The Psalms are poetry, and poetry refuses to travel as plain prose. This workshop trains consultants to exegete Hebrew poetry with an oral lens (imagery, parallelism, poetic structure, prominence) and to facilitate the translation of Psalms into the artistic genres a community already sings, chants, and performs.\n\nThe overarching framework is the Creating Local Arts Together (CLAT) process: discovering a community's own art forms, matching them to the purposes of a psalm, and creating translations that live as local worship."
         },
         {
@@ -1986,7 +1986,7 @@
         {
           "id": "psalms.cta",
           "type": "ctaGroup",
-          "title": "Missed this one?",
+          "title": "If you missed this one",
           "body": "Two workshops remain in the series, and expressions of interest now shape their planning.",
           "items": [
             {
