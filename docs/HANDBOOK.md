@@ -19,14 +19,14 @@ wayfinding.
 ## Wayfinding appears from four sections up
 
 The rail, the reading-progress bar and the `sectionNav` contents grid are
-navigation aids for a document too long to hold in your head. Bali 2026 is 3,500
-words over five sections and needs all three. The marketing pages are 280 to 560
+navigation aids for a document too long to hold in your head. Bali 2026 is 3,700
+words over six sections and needs all three. The marketing pages are 280 to 560
 words over two to four sections, and a sticky contents rail beside three headings
 is scaffolding around nothing. That is the same over-signposting this document was
 cut back for the day before (see "Five sections, not twenty-one" below).
 
 So `HandbookLayout` gates all three on `sections.length >= 4`. Below that the
-sections read straight down a full-width column. Today only Bali (5) and Method
+sections read straight down a full-width column. Today only Bali (6) and Method
 (4) clear the bar. If you add a fifth section to a page, give it a `sectionNav`
 block too, or the mobile jump grid will be missing.
 
@@ -67,7 +67,7 @@ block list into three zones:
 | Zone | What it is | On the Psalms page |
 | --- | --- | --- |
 | intro | blocks before the first `handbookSection` | the fully-booked notice, the vision prose, one photo |
-| sections | the `handbookSection` blocks, with the rail and progress bar | the five handbook sections |
+| sections | the `handbookSection` blocks, with the rail and progress bar | the six handbook sections |
 | outro | blocks after the last `handbookSection` | the "Missed this one?" call to action |
 
 The workshop's own header (kicker, title, facts panel) is not rendered in this
@@ -104,12 +104,12 @@ write to Josh if they lost it. Do not add it back as a convenience.
 The Exegetical Guide link is fine to keep: it is read-only and already
 circulated to the cohort.
 
-## Five sections, not twenty-one
+## Six sections, not twenty-one
 
 The handbook shipped with 21 top-level sections. A reviewer read that as a sign
 the document had been machine-generated, and he was right about the cause:
 nobody divides a document into 21 parts on purpose. On 2026-07-28 it became five,
-each holding the old sections as subsections.
+each holding the old sections as subsections. A sixth arrived on 2026-07-31.
 
 | Section | Absorbs |
 | --- | --- |
@@ -118,9 +118,26 @@ each holding the old sections as subsections.
 | 03 Your preparation | 17 prework, 18 documents |
 | 04 Travel, visas and packing | 08 travel, 09 transfers, 10 before you fly, 11 entry, 12 packing, 20 departure |
 | 05 Life on the base | 03 location, 13 venue, 14 meals, 15 Wi-Fi, 16 laundry, 21 free time, 19 health |
+| 06 Cost and financial support | new on 2026-07-31; nothing folded in |
+
+Section 06 is a real addition rather than a regression toward twenty-one. Until
+2026-07-31 the site said nothing about what a workshop costs, while the two
+public description docs said there was no registration fee and Josh was quoting
+$150 and $250 privately to whoever asked. Cost is a top-level question a
+participant arrives with, so it gets a top-level section and a contents entry
+rather than a paragraph buried in "Life on the base".
+
+It sits last, not after 02 where a reader might look for it first, because
+inserting it there would renumber sections 03 through 05 and break the anchors
+participants already hold in email. Given the choice between the tidier position
+and links that keep resolving, the links win.
+
+`bali.20.thanks`, the closing cyan note, moved from the end of 05 to the end of
+06 so that it is still the last thing on the page and the document does not end
+on money. It carries no anchor, so nothing needed rehoming.
 
 **Every one of the 21 old anchors still resolves.** Section anchors are
-`s01-welcome` through `s05-base`; the other 20 (`s08-travel`, `s16-laundry`, and
+`s01-welcome` through `s06-cost`; the other 20 (`s08-travel`, `s16-laundry`, and
 so on) live on the subsection, checklist, glanceGrid or linkGrid they were folded
 into. Participants have those fragment links in email. Keep them working: the
 `anchor` field renders as an `id` on all of those block types.
@@ -148,8 +165,8 @@ with `"layout": "handbook"`. Its `blocks` array is:
 1. one `hero` (with `mediaId` for the full-bleed photo, and `labelToken` items
    for the date chips)
 2. the intro blocks, ordinary page blocks like `prose` and `imageSlot`
-3. one `sectionNav` (the contents grid, five entries)
-4. five `handbookSection` blocks
+3. one `sectionNav` (the contents grid, six entries)
+4. six `handbookSection` blocks
 5. the outro `ctaGroup`
 
 ## Adding or editing a section
@@ -223,22 +240,28 @@ the row reads name, then role, then qualification.
   Eleven of these across the document was the single biggest source of panel
   fatigue; two remain.
 - `note` — SIL blue. Context worth knowing. Two, and both are load-bearing.
-- `thanks` — cyan. The closing note. One, at the very end.
+- `thanks` — cyan. The closing note. One, at the very end. It lives at the end of
+  the last section, so it travels when a new last section is added.
 
 The default chip text comes from the variant; `label` overrides it.
 
 ## Highlighting discipline
 
-Counts as of 2026-07-28, after the restructure and the review round that
-followed it, and worth re-checking after any substantial edit:
+Counts as of 2026-07-31, after the restructure, the review round that followed
+it, and the cost section, and worth re-checking after any substantial edit:
 
-| | Original | Restructure | After review |
-| --- | --- | --- | --- |
-| Top-level sections | 21 | 5 | 5 |
-| Callout panels | 21 | 11 | 9 |
-| Ticked checklists | 13 | 5 | 1 |
-| Photographs | 8 | 5 | 5 |
-| Words | 3,775 | ~3,700 | ~3,500 |
+| | Original | Restructure | After review | With cost |
+| --- | --- | --- | --- | --- |
+| Top-level sections | 21 | 5 | 5 | 6 |
+| Callout panels | 21 | 11 | 9 | 9 |
+| Ticked checklists | 13 | 5 | 1 | 1 |
+| Photographs | 8 | 5 | 5 | 5 |
+| Words | 3,775 | ~3,700 | ~3,500 | ~3,720 |
+
+The cost section added a `glanceGrid` and three `subsection` blocks and no
+callout, which is why the panel count did not move. `action-required` is still at
+its four and `note` at its two. A settled fee is a fact for the rows table, not a
+stop-and-read panel.
 
 A tick means "you do this, then confirm you did". A callout means "stop and read
 this". Both stop meaning anything when every section has one.

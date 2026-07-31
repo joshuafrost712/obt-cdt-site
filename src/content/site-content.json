@@ -1187,6 +1187,13 @@
               "number": "05",
               "anchor": "s05-base",
               "label": "Life on the base"
+            },
+            {
+              "id": "bali.contents.s06-cost",
+              "type": "cta",
+              "number": "06",
+              "anchor": "s06-cost",
+              "label": "Cost and financial support"
             }
           ]
         },
@@ -1974,6 +1981,65 @@
               "variant": "coming-soon",
               "title": "Venue arrival details, room allocation, Wi-Fi, laundry, and the nearest clinic",
               "body": "Still with the base: the reception number and a pinned map location, arrival instructions, room allocation and check-in time, linen, accessibility, quiet hours, the Wi-Fi network and password, laundry arrangements, and the nearest clinic and hospital along with the safeguarding contact. Please wait for the official venue message before arranging independent transport or your own accommodation. In a life-threatening emergency, call 112."
+            }
+          ]
+        },
+        {
+          "id": "bali.s6",
+          "type": "handbookSection",
+          "number": "06",
+          "anchor": "s06-cost",
+          "kicker": "What it costs",
+          "title": "Cost and financial support",
+          "body": "The workshops carry a participant cost. It is close to what a room and meals actually cost for the days you are on the base.",
+          "items": [
+            {
+              "id": "bali.06.fees",
+              "type": "glanceGrid",
+              "title": "Participant cost",
+              "variant": "rows",
+              "items": [
+                {
+                  "id": "bali.06.fees.crash",
+                  "type": "glanceCard",
+                  "value": "$150",
+                  "label": "OBT Crash Course",
+                  "body": "Five days, 18 to 22 August."
+                },
+                {
+                  "id": "bali.06.fees.psalms",
+                  "type": "glanceCard",
+                  "value": "$250",
+                  "label": "Psalms workshop",
+                  "body": "Two weeks, 24 August to 4 September."
+                },
+                {
+                  "id": "bali.06.fees.both",
+                  "type": "glanceCard",
+                  "value": "$400",
+                  "label": "Both weeks",
+                  "body": "Most participants are here for both and pay the two together."
+                }
+              ],
+              "anchor": "s06-fees"
+            },
+            {
+              "id": "bali.06.why",
+              "type": "subsection",
+              "title": "Why we are asking",
+              "body": "Grants and donations have carried the whole cost of this track so far. That is not a foundation a two-and-a-half-year programme can be built on, so the workshops now ask participants to share their cost.\n\nFacilitator travel, teaching materials, local transport and the administration behind the workshop are still carried by grants and by people who give toward this work. There is no margin built into the figures above. What each workshop costs will differ from venue to venue, and the intention is to keep every one of them as inexpensive as its location allows while the track keeps moving between regions. Bali is among the least expensive places this track will gather."
+            },
+            {
+              "id": "bali.06.orgs",
+              "type": "subsection",
+              "title": "If your organisation has a training budget",
+              "body": "Where your organisation has a line for professional development, we ask that it cover this. Contributions from participants who have organisational funding are what let grant money reach participants whose organisations have nothing at all for training. Invoicing details come by email; write to Josh if you need them sooner."
+            },
+            {
+              "id": "bali.06.scholarships",
+              "type": "subsection",
+              "title": "If the cost is a barrier",
+              "body": "Partial and full scholarships are available, and no qualified participant is kept from a workshop over money. Write to Josh Frost directly. You will not be asked to document or justify your situation in detail, and the conversation stays between the two of you."
             },
             {
               "id": "bali.20.thanks",
