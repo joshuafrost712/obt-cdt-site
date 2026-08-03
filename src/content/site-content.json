@@ -1991,12 +1991,12 @@
           "anchor": "s06-cost",
           "kicker": "What it costs",
           "title": "Cost and financial support",
-          "body": "The workshops carry a participant cost. It is close to what a room and meals actually cost for the days you are on the base.",
+          "body": "Room and board in Bali is covered, as participants were told in March. Nobody is being asked to pay to attend. The figures below are a recommended contribution, and they are a guide rather than a bill.",
           "items": [
             {
               "id": "bali.06.fees",
               "type": "glanceGrid",
-              "title": "Participant cost",
+              "title": "Recommended contribution",
               "variant": "rows",
               "items": [
                 {
@@ -2018,27 +2018,27 @@
                   "type": "glanceCard",
                   "value": "$400",
                   "label": "Both weeks",
-                  "body": "Most participants are here for both and pay the two together."
+                  "body": "For someone here from the Crash Course through to the close."
                 }
               ],
               "anchor": "s06-fees"
             },
             {
-              "id": "bali.06.why",
-              "type": "subsection",
-              "title": "Why we are asking",
-              "body": "Grants and donations have carried the whole cost of this track so far. That is not a foundation a two-and-a-half-year programme can be built on, so the workshops now ask participants to share their cost.\n\nFacilitator travel, teaching materials, local transport and the administration behind the workshop are still carried by grants and by people who give toward this work. There is no margin built into the figures above. What each workshop costs will differ from venue to venue, and the intention is to keep every one of them as inexpensive as its location allows while the track keeps moving between regions. Bali is among the least expensive places this track will gather."
-            },
-            {
               "id": "bali.06.orgs",
               "type": "subsection",
               "title": "If your organisation has a training budget",
-              "body": "Where your organisation has a line for professional development, we ask that it cover this. Contributions from participants who have organisational funding are what let grant money reach participants whose organisations have nothing at all for training. Invoicing details come by email; write to Josh if you need them sooner."
+              "body": "Where your organisation has a line for professional development, a contribution toward the workshop is welcome and it does real work. Contributions from participants whose organisations have funding are what let grant money reach participants whose organisations have nothing at all for training. If yours would like to give, write to Josh and he will arrange the invoice."
+            },
+            {
+              "id": "bali.06.future",
+              "type": "subsection",
+              "title": "From the workshop after Bali onward",
+              "body": "Grants and donations have carried the whole cost of this track so far, and that is not a foundation a two-and-a-half-year programme can be built on. So each workshop after Bali will carry a participation cost.\n\nThat cost is built from room and board for the stay, the flights for the facilitators who travel in to teach, and the materials a workshop runs on, down to the paper participants draft, colour and mark up on while they internalise a passage. It will be set a little above what those come to, and the difference is deliberate: it funds scholarships for participants whose organisations cannot send them. Each figure will differ from venue to venue and will be named once that venue is settled."
             },
             {
               "id": "bali.06.scholarships",
               "type": "subsection",
-              "title": "If the cost is a barrier",
+              "title": "If cost would ever keep you from a workshop",
               "body": "Partial and full scholarships are available, and no qualified participant is kept from a workshop over money. Write to Josh Frost directly. You will not be asked to document or justify your situation in detail, and the conversation stays between the two of you."
             },
             {

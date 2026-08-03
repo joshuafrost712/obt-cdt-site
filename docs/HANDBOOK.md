@@ -127,6 +127,13 @@ $150 and $250 privately to whoever asked. Cost is a top-level question a
 participant arrives with, so it gets a top-level section and a contents entry
 rather than a paragraph buried in "Life on the base".
 
+On 2026-08-03 the section changed position rather than shape: Bali is not being
+charged after all, so the figures are a **recommended contribution** and the
+section also carries the change coming to later workshops. Do not quietly
+promote those figures back into a fee. The distinction is the whole point of the
+section, and the participants most likely to over-read a number as a bill are
+the ones whose organisations have nothing.
+
 It sits last, not after 02 where a reader might look for it first, because
 inserting it there would renumber sections 03 through 05 and break the anchors
 participants already hold in email. Given the choice between the tidier position
@@ -256,7 +263,7 @@ it, and the cost section, and worth re-checking after any substantial edit:
 | Callout panels | 21 | 11 | 9 | 9 |
 | Ticked checklists | 13 | 5 | 1 | 1 |
 | Photographs | 8 | 5 | 5 | 5 |
-| Words | 3,775 | ~3,700 | ~3,500 | ~3,720 |
+| Words | 3,775 | ~3,700 | ~3,500 | ~3,755 |
 
 The cost section added a `glanceGrid` and three `subsection` blocks and no
 callout, which is why the panel count did not move. `action-required` is still at
