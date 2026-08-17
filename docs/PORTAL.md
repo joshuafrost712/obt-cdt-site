@@ -116,8 +116,7 @@ transfer, not a developer.
 
 1. Create the project in the OBT-CDT Supabase account.
 2. `supabase link` and `supabase db push`.
-3. Seed `member_allowlist` from the sign-up sheet (Master tab, keyed on lowercased
-   Primary Email) and pre-create the Psalms and Crash Course attendee accounts.
+3. Seed `member_allowlist` with `scripts/seed_allowlist.py` (see below).
 4. **Configure custom SMTP before inviting anyone.** The built-in mailer allows
    about two emails an hour and password resets share the budget; ~46 people
    self-registering will meet it. Brevo is already in use for the genre app.
@@ -130,6 +129,43 @@ transfer, not a developer.
    site builds exactly as before.
 
 Do step 5 after the non-GitHub domain is live, or it gets done twice.
+
+### Seeding the allowlist
+
+`scripts/seed_allowlist.py` reads the sign-up workbook and upserts
+`member_allowlist`. Export the sheet somewhere outside this repo first
+(`rclone backend copyid gdrive: <sheet-id> /tmp/signup.xlsx`), run it with no
+flags to see what it would write, then re-run with `--apply`. It masks addresses
+unless you pass `--show`, and **no participant address is ever written into this
+repository** — the site's standing rule is aggregates only.
+
+**It takes the union of every roster tab, not just Master.** The allowlist
+decides one thing: who may create an account at all. It is not an authorization
+boundary for content, because RLS is. So including someone who never attends
+costs a dormant row, while excluding someone who did attend costs a person who
+cannot reach their own report. As of the 2026-08-17 export that is **41 distinct
+addresses** across Master (39), the legacy eligible list (28), Chiang Mai (23),
+Psalms 2026 (23), and Hebrew Training (12). Master alone would have missed two.
+
+The script **refuses to run against a workbook whose shape has changed** rather
+than seeding what it can find. A renamed tab would otherwise drop a whole cohort
+and still report success.
+
+It also flags **near-duplicate addresses** — same local part, different domain,
+`+tags` and gmail dots ignored. That is the failure that actually bites: a report
+published to `x@jocum.br` when the profile registered `x@jocum.com.br` does not
+error, it lands in the unmatched queue looking like a stranger. The current
+export has exactly one such pair. Each one found is a candidate `member_alias`
+row.
+
+**Pre-creating attendee accounts is not done, and probably should not be.** The
+plan called for it, but an account with no password is a state a participant
+cannot use: they still have to run "forgot password" to get in, which is the same
+one email as self-registering, plus a confusing intermediate. The reason to
+pre-create was so reports match on arrival — and
+`publication_claim_for_new_profile()` already promotes waiting rows the moment
+someone signs up, so unmatched-then-matched is a designed path, not a failure.
+Allowlist everyone; let them register.
 
 ### Two notes on the keys
 

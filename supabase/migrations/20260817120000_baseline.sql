@@ -161,12 +161,24 @@ values
   ('psalms-bali-2026', 'Workshop 3 · Psalms', 'Bali, Indonesia',
    '2026-08-24', '2026-09-04', 'fully-booked',
    'Hebrew poetry exegesis for OBT and translation into local artistic genres.'),
-  -- Runs alongside Psalms in Bali for participants who need the foundational
-  -- material first. It has its own roster in Honest Eval and therefore needs its
-  -- own event row here, or its reports arrive with no workshop to group under.
+  -- The week BEFORE Psalms, not alongside it: site-content.json says "Crash
+  -- Course: 18 to 22 August", Tuesday to Saturday because the 17th is an
+  -- Indonesian public holiday. Crash Course people are in Bali for three weeks,
+  -- Psalms-only people for two. It has its own roster in Honest Eval and
+  -- therefore needs its own event row, or its reports arrive with no workshop to
+  -- group under.
   ('crash-course-bali-2026', 'OBT Crash Course', 'Bali, Indonesia',
-   '2026-08-24', '2026-09-04', 'fully-booked',
-   'Foundational OBT skills for participants joining the track at Psalms.')
+   '2026-08-18', '2026-08-22', 'fully-booked',
+   'The one-week experiential doorway: each participant learns oral Bible translation by doing it.'),
+  -- Not a workshop and not the Crash Course, despite both being 2026 Hebrew-ish
+  -- and both feeding Bali. This is the online alphabet-memorization series (the
+  -- sign-up workbook's "Hebrew Training" tab and its own intake form). It is here
+  -- because Joshua's stated purpose for this login is every future OBT-CDT online
+  -- training, not only the residential ones. It publishes nothing today, so the
+  -- row is inert until it does.
+  ('hebrew-training-2026', 'Hebrew Alphabet Training', 'Online',
+   null, null, 'completed',
+   'Online sessions memorizing the Hebrew alphabet, ahead of the Psalms workshop.')
 on conflict (id) do nothing;
 
 -- ------------------------------------------------------------------- notes
