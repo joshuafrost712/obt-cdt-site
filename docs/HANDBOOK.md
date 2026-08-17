@@ -308,6 +308,15 @@ The second round the same day added the revision line and the weekend food
 arrangements, again with no new panel: the Saturday and Sunday community meals and
 the noodles-and-eggs supplement extended the existing Weekends subsection.
 
+A third round added the weekend meal sign-up sheet, and it is the harder case,
+because a recurring Friday deadline with real consequences is a better candidate
+for `action-required` than anything else on the page that lacks one. It still did
+not get a panel. The deadline is bold inside the paragraph that explains why it
+exists, and it repeats in the `note` on the link card, so a reader meets it twice
+without a fifth orange box competing with dates, flights, visas and dietary needs.
+A `linkGrid` card with a deadline in its note is the pattern to reuse when
+something is both a task and a link.
+
 A tick means "you do this, then confirm you did". A callout means "stop and read
 this". Both stop meaning anything when every section has one.
 
