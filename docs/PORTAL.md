@@ -123,16 +123,31 @@ transfer, not a developer.
    self-registering will meet it. Brevo is already in use for the genre app.
 5. Set the auth Redirect URLs to the portal path — an exact path, not a `/**`
    wildcard on the site origin.
-6. Set `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` as Actions variables
-   **and add them to `.github/workflows/deploy.yml`'s `env:` block**; they are not
-   passed today, so this is a workflow edit, not just a variable. Consider a
-   `production` environment with a required reviewer: this repo auto-deploys
-   every content round, and that pipeline would then sit in front of the portal
-   database.
+6. Set `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` as repo Actions
+   **variables** (not secrets). The workflow already passes them; see
+   `.env.example` for the shape.
 7. Redeploy. `/portal` and the nav entry appear; with the variables unset the
    site builds exactly as before.
 
 Do step 5 after the non-GitHub domain is live, or it gets done twice.
+
+### Two notes on the keys
+
+**The portal uses Supabase's new key format.** The dashboard now issues
+`sb_publishable_...` and calls the old `anon` JWT legacy, so an administrator
+looking for the word "anon" in 2027 will not find it. `config.ts` accepts
+`VITE_SUPABASE_PUBLISHABLE_KEY` and falls back to `VITE_SUPABASE_ANON_KEY`, so
+either generation works and an old variable cannot silently switch the portal
+off. The matching secret key is `sb_secret_...`, which replaces `service_role`;
+it never enters this repo, CI, or a browser.
+
+**No deploy reviewer gate, deliberately.** An earlier draft of this runbook
+suggested a `production` environment with a required reviewer, on the reasoning
+that this repo auto-deploys every content round. That reasoning was wrong: the
+build job receives only the project URL and the publishable key, both of which a
+visitor's browser already holds. A reviewer would gate every content round and
+protect nothing. It becomes worth revisiting only if CI is ever given a key that
+outranks `anon` — which it should not be.
 
 ## The CBC seam
 

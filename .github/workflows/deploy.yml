@@ -38,6 +38,14 @@ jobs:
           # from the deployed site (?dev=1) lands in the Sheet. Leave unset and
           # submissions fall back to downloading a markdown file.
           VITE_FEEDBACK_URL: ${{ vars.VITE_FEEDBACK_URL }}
+          # Member portal (docs/PORTAL.md). Both are repo Actions *variables*,
+          # not secrets: the publishable key carries the `anon` role and ships in
+          # the JS bundle by design, so this job never holds anything a visitor's
+          # browser does not already have. RLS is what decides who reads what.
+          # Leave either unset and `backendEnabled` is false — no /portal route,
+          # no nav entry, no supabase-js in any loaded chunk.
+          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ vars.VITE_SUPABASE_PUBLISHABLE_KEY }}
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
