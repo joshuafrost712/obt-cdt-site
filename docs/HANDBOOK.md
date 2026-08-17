@@ -176,6 +176,33 @@ with `"layout": "handbook"`. Its `blocks` array is:
 4. six `handbookSection` blocks
 5. the outro `ctaGroup`
 
+## The revision line, and the mirror rule
+
+The hero takes an optional `note`, and on a handbook that is the revision line:
+
+```jsonc
+"note": "Last updated 17 August 2026 · weekend meals, laundry, blankets, and visa guidance. Where an older email disagrees with this page, the page is right."
+```
+
+Participants were told on 2026-08-03 that this page supersedes the logistics
+emails. That promise only works if a reader can date the page. Without the line, a
+participant who got the 14 August blanket notice has no way to tell whether what
+they are reading was written before or after it, so the safe move is to distrust
+the page and re-read the inbox, which is the failure the page existed to end.
+
+**Any content change to a handbook bumps the line in the same commit.** The date
+is the day the change ships, and the clause after the dot names what moved, in a
+handful of words, so the line answers "is the thing I heard about in here yet?"
+Do not list every edit; name the ones a participant would go looking for.
+
+The rule behind it is not a site rule. Logistics facts reach participants by email
+and WhatsApp first, and the page goes stale unless mirroring is a standing
+obligation rather than a good intention. That obligation, the question set a new
+venue has to answer, and the discretion screen for what may go on a public page
+live in the vault at `_Meta/Workshop-Logistics-Protocol.md`, with the `/logistics-update`
+skill as the mechanism. Read it before a logistics round; this file only governs
+how the copy is shaped once it arrives.
+
 ## Adding or editing a section
 
 ```jsonc
@@ -276,6 +303,10 @@ six and panels at nine. The blanket is the case worth remembering: it arrived as
 an urgent all-cohort notice with a deadline and a cost, which is exactly the shape
 that argues for a fifth `action-required`. It went into Rooming as bold prose
 instead, because the four that exist are the four that survive being read.
+
+The second round the same day added the revision line and the weekend food
+arrangements, again with no new panel: the Saturday and Sunday community meals and
+the noodles-and-eggs supplement extended the existing Weekends subsection.
 
 A tick means "you do this, then confirm you did". A callout means "stop and read
 this". Both stop meaning anything when every section has one.

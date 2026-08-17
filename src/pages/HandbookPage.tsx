@@ -210,6 +210,27 @@ export function HandbookHero({ block, status }: { block: Block; status?: Worksho
           ))}
         </div>
 
+        {/*
+         * `note` is the revision line: "Last updated 17 August 2026 · what changed".
+         * A handbook that participants were told to trust over the emails has to say
+         * how current it is, or a reader cannot tell whether the page predates the
+         * message in their inbox. Optional, so heroes without one are unaffected.
+         */}
+        {/*
+         * Given an accent rule and a reading measure so it reads as a revision
+         * stamp. At the full hero width and the credit's weight it sat directly
+         * above the photo credit and read as a second piece of small print,
+         * which is the one thing it must not look like.
+         */}
+        {block.note && (
+          <Txt
+            node={block}
+            field="note"
+            as="p"
+            className="mt-7 max-w-2xl border-l-2 border-brand-light/50 pl-3.5 text-[0.8rem] leading-relaxed text-paper/70"
+          />
+        )}
+
         {media.credit && <p className="hb-credit mt-9 text-[0.7rem] text-paper/40">{media.credit}</p>}
       </div>
     </header>
