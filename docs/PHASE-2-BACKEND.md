@@ -1,3 +1,13 @@
+> **Superseded for provisioning.** The portal was built on its own Supabase
+> project with a reports-only schema in `supabase/migrations/`. See
+> **[PORTAL.md](./PORTAL.md)** for the current architecture and runbook.
+>
+> The activation steps below are wrong and step 2 is dangerous: it says to run
+> `supabase/schema.sql`, which carries a privilege escalation and redefines
+> `handle_new_user` / `on_auth_user_created` — the names of Honest Eval's
+> invite-only auth gate. Do not run it. The design memo that follows is kept
+> because it records why the accounts backend is shaped the way it is.
+
 # Phase 2: accounts backend
 
 **Status (2026-07-21): BUILT, behind flags, awaiting provisioning.** The
