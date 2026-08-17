@@ -54,15 +54,15 @@ function SiteHeader() {
           ))}
           {backendEnabled && (
             <NavLink
-              to="/account"
+              to="/portal"
               className={({ isActive }) =>
                 `rounded-full border px-3.5 py-1.5 text-sm font-medium no-underline transition-colors ${
                   isActive ? 'border-ink bg-ink text-paper' : 'border-ink/20 text-ink-soft hover:bg-paper-deep hover:text-ink'
                 }`
               }
             >
-              <span data-dfb-node="site.nav.account" data-dfb-field="label">
-                {siteLabel('site.nav.account', 'My Account')}
+              <span data-dfb-node="site.nav.portal" data-dfb-field="label">
+                {siteLabel('site.nav.portal', 'Member portal')}
               </span>
             </NavLink>
           )}
@@ -98,7 +98,7 @@ function SiteHeader() {
           ))}
           {backendEnabled && (
             <NavLink
-              to="/account"
+              to="/portal"
               onClick={() => setOpen(false)}
               className={({ isActive }) =>
                 `block rounded-lg px-3 py-2.5 text-base font-medium no-underline ${
@@ -106,8 +106,8 @@ function SiteHeader() {
                 }`
               }
             >
-              <span data-dfb-node="site.nav.account" data-dfb-field="label">
-                {siteLabel('site.nav.account', 'My Account')}
+              <span data-dfb-node="site.nav.portal" data-dfb-field="label">
+                {siteLabel('site.nav.portal', 'Member portal')}
               </span>
             </NavLink>
           )}

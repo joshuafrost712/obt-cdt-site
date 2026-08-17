@@ -37,9 +37,174 @@
         "label": "Dates"
       },
       {
-        "id": "site.nav.account",
+        "id": "site.nav.portal",
         "type": "labelToken",
-        "label": "My Account"
+        "label": "Member portal"
+      },
+      {
+        "id": "portal.title",
+        "type": "labelToken",
+        "label": "Member portal"
+      },
+      {
+        "id": "portal.kicker",
+        "type": "labelToken",
+        "label": "For enrolled participants"
+      },
+      {
+        "id": "portal.checking",
+        "type": "labelToken",
+        "label": "Checking your session…"
+      },
+      {
+        "id": "portal.signout",
+        "type": "labelToken",
+        "label": "Sign out"
+      },
+      {
+        "id": "portal.signin.heading",
+        "type": "labelToken",
+        "label": "Sign in"
+      },
+      {
+        "id": "portal.signin.heading.register",
+        "type": "labelToken",
+        "label": "Create your account"
+      },
+      {
+        "id": "portal.signin.heading.reset",
+        "type": "labelToken",
+        "label": "Reset your password"
+      },
+      {
+        "id": "portal.signin.body",
+        "type": "labelToken",
+        "label": "Use the email address you gave when you registered for the track."
+      },
+      {
+        "id": "portal.signin.returning",
+        "type": "labelToken",
+        "label": "Your session has ended. Sign in again to see your reports."
+      },
+      {
+        "id": "portal.signin.email",
+        "type": "labelToken",
+        "label": "Email address"
+      },
+      {
+        "id": "portal.signin.password",
+        "type": "labelToken",
+        "label": "Password"
+      },
+      {
+        "id": "portal.signin.cta",
+        "type": "labelToken",
+        "label": "Sign in"
+      },
+      {
+        "id": "portal.signin.cta.register",
+        "type": "labelToken",
+        "label": "Create account"
+      },
+      {
+        "id": "portal.signin.cta.reset",
+        "type": "labelToken",
+        "label": "Email me a reset link"
+      },
+      {
+        "id": "portal.signin.working",
+        "type": "labelToken",
+        "label": "Working…"
+      },
+      {
+        "id": "portal.signin.switch.signin",
+        "type": "labelToken",
+        "label": "Back to sign in"
+      },
+      {
+        "id": "portal.signin.switch.register",
+        "type": "labelToken",
+        "label": "I need to create an account"
+      },
+      {
+        "id": "portal.signin.switch.reset",
+        "type": "labelToken",
+        "label": "I forgot my password"
+      },
+      {
+        "id": "portal.signin.registered",
+        "type": "labelToken",
+        "label": "If that address is on the OBT-CDT list, a confirmation email is on its way. If nothing arrives, contact the track administrator."
+      },
+      {
+        "id": "portal.signin.reset-sent",
+        "type": "labelToken",
+        "label": "If that address has a portal account, a password reset link is on its way."
+      },
+      {
+        "id": "portal.signin.error.not-on-list",
+        "type": "labelToken",
+        "label": "That address is not on the OBT-CDT participant list. Contact the track administrator to be added."
+      },
+      {
+        "id": "portal.signin.error.rate-limit",
+        "type": "labelToken",
+        "label": "Too many emails have been sent from the portal in the last hour. Please try again a little later."
+      },
+      {
+        "id": "portal.signin.error.bad-credentials",
+        "type": "labelToken",
+        "label": "That email and password do not match. Try again, or reset your password."
+      },
+      {
+        "id": "portal.signin.error.unconfirmed",
+        "type": "labelToken",
+        "label": "Your account is not confirmed yet. Check your email for the confirmation link."
+      },
+      {
+        "id": "portal.list.loading",
+        "type": "labelToken",
+        "label": "Loading your reports…"
+      },
+      {
+        "id": "portal.list.empty",
+        "type": "labelToken",
+        "label": "You are on the OBT-CDT list. Reports appear here after a workshop you attend, once they have been sent to you."
+      },
+      {
+        "id": "portal.list.ungrouped",
+        "type": "labelToken",
+        "label": "Other"
+      },
+      {
+        "id": "portal.list.superseded",
+        "type": "labelToken",
+        "label": "A later version was sent"
+      },
+      {
+        "id": "portal.report.title",
+        "type": "labelToken",
+        "label": "Your report"
+      },
+      {
+        "id": "portal.report.loading",
+        "type": "labelToken",
+        "label": "Loading…"
+      },
+      {
+        "id": "portal.report.back",
+        "type": "labelToken",
+        "label": "Back to your reports"
+      },
+      {
+        "id": "portal.report.notfound",
+        "type": "labelToken",
+        "label": "There is no report with that link in your record. If you were expecting one, contact the track administrator."
+      },
+      {
+        "id": "portal.report.superseded",
+        "type": "labelToken",
+        "label": "A later version of this report was sent. This is the version you received on the date above."
       }
     ]
   },

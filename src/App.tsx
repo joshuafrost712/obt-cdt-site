@@ -13,9 +13,16 @@ import { NotFoundPage } from './pages/NotFoundPage'
 
 // Participant-area pages: lazy chunks so supabase-js never touches the main
 // bundle or the SSR prerender. Routes exist only when the backend flag is on.
-const AccountPage = lazy(() => import('./pages/backend/AccountPage'))
-const EventsPage = lazy(() => import('./pages/backend/EventsPage'))
-const CertificatesPage = lazy(() => import('./pages/backend/CertificatesPage'))
+//
+// AccountPage / EventsPage / CertificatesPage are deliberately NOT routed. They
+// were written against `supabase/schema.sql`'s fresh-project design (profiles
+// with a role column, registrations, evaluations, certificates), and the live
+// portal project has none of those tables — so routing them would show a
+// participant a raw PostgREST "table not found" inside the sign-in shell. The
+// files stay, with a DORMANT header, because docs/PHASE-2-BACKEND.md is a memo
+// people read and a memo describing deleted files becomes archaeology.
+const PortalPage = lazy(() => import('./pages/backend/PortalPage'))
+const PortalReportPage = lazy(() => import('./pages/backend/PortalReportPage'))
 
 function Deferred({ children }: { children: ReactNode }) {
   return <Suspense fallback={<p className="mx-auto max-w-3xl px-5 py-16 text-ink-faint">Loading…</p>}>{children}</Suspense>
@@ -69,9 +76,8 @@ export default function App() {
         <Route path="/workshops/:slug" element={<WorkshopPage />} />
         {backendEnabled && (
           <>
-            <Route path="/account" element={<Deferred><AccountPage /></Deferred>} />
-            <Route path="/events" element={<Deferred><EventsPage /></Deferred>} />
-            <Route path="/certificates" element={<Deferred><CertificatesPage /></Deferred>} />
+            <Route path="/portal" element={<Deferred><PortalPage /></Deferred>} />
+            <Route path="/portal/r/:reportId" element={<Deferred><PortalReportPage /></Deferred>} />
           </>
         )}
         <Route path="*" element={<NotFoundPage />} />

@@ -1,4 +1,17 @@
 /**
+ * DORMANT — not routed, not reachable.
+ *
+ * Written against `supabase/schema.sql`'s fresh-project design (a `profiles`
+ * table with a role column, plus `registrations` / `evaluations` /
+ * `certificates`). The live portal project has none of those tables: it is a
+ * reports-only portal whose schema lives in `supabase/migrations/`. Routing this
+ * page would show a participant a raw PostgREST "table not found".
+ *
+ * Kept rather than deleted because docs/PHASE-2-BACKEND.md still describes this
+ * design and a memo pointing at deleted files becomes archaeology. Bring it back
+ * when event registration or certificates are actually built.
+ */
+/**
  * Typed data access for the accounts backend. Row shapes mirror
  * supabase/schema.sql; RLS guarantees every query below only ever returns the
  * signed-in user's own rows.

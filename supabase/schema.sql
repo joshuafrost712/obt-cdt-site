@@ -1,5 +1,31 @@
--- OBT-CDT site backend schema (Phase 2). Run once in the Supabase SQL editor
--- of a fresh project (safe to re-run: idempotent where possible).
+-- ============================================================================
+-- SUPERSEDED. DO NOT RUN THIS FILE.
+--
+-- The portal's schema now lives in `supabase/migrations/`, applied with the
+-- Supabase CLI. This file is kept only because docs/PHASE-2-BACKEND.md
+-- describes the design it encodes.
+--
+-- Two reasons it must not be run:
+--
+--   1. It carries a privilege escalation. `create policy "update own profile"
+--      ... for update using (auth.uid() = id)` has no WITH CHECK, and Postgres
+--      reuses the USING expression when WITH CHECK is absent — which the row
+--      still satisfies after `role` changes. Any signed-in participant could
+--      have made themselves an admin. The migrations drop the `role` column
+--      entirely and put administrator-ness in `portal_admin`.
+--
+--   2. It defines `public.handle_new_user()` and drops/recreates the
+--      `on_auth_user_created` trigger on `auth.users`. Those are the exact
+--      names of Honest Eval's invite-only auth gate. Run against THAT project
+--      (`vdbirmjvjzfdgajwgowj`) this would silently replace the allowlist check
+--      with a body that only inserts a profile row, turning an invite-only
+--      evaluation database into open signup with nothing on screen to say so.
+--
+-- The portal's equivalent function is deliberately named
+-- `handle_new_portal_user` so the two can never collide by accident.
+-- ============================================================================
+
+-- OBT-CDT site backend schema (Phase 2). Historical design notes follow.
 --
 -- Design notes are in docs/PHASE-2-BACKEND.md. Summary:
 --   * Participants read ONLY their own registrations/evaluations/certificates.
