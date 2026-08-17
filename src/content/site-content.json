@@ -1015,6 +1015,583 @@
       "layout": "handbook"
     },
     {
+      "id": "crash-course-bali-2026",
+      "route": "/workshops/crash-course-bali-2026",
+      "navLabel": "Crash Course · Bali 2026",
+      "title": "The OBT Crash Course",
+      "kicker": "Bali 2026",
+      "metaDescription": "Participant handbook for the OBT Crash Course, Bali, 18 to 22 August 2026: why the course is built the way it is, what happens each day, and what each session is for.",
+      "hidden": true,
+      "layout": "handbook",
+      "blocks": [
+        {
+          "id": "cc.hero",
+          "type": "hero",
+          "kicker": "OBT Crash Course · Bali 2026",
+          "title": "The OBT Crash Course",
+          "body": "Five days that give a cohort one shared account of what oral Bible translation is and how it is actually done. This page is the handbook for it: why the course is built the way it is, what each day holds, and what every session is for.",
+          "note": "Last updated 18 August 2026 · first publication, for the opening session. Where an older email disagrees with this page, the page is right.",
+          "mediaId": "bali-journey",
+          "items": [
+            {
+              "id": "cc.hero.dates",
+              "type": "labelToken",
+              "label": "Tuesday 18 to Saturday 22 August 2026"
+            },
+            {
+              "id": "cc.hero.venue",
+              "type": "labelToken",
+              "label": "YWAM base, Jimbaran, Bali"
+            },
+            {
+              "id": "cc.hero.shape",
+              "type": "labelToken",
+              "label": "Five full days, 8:30 to 4:00"
+            },
+            {
+              "id": "cc.hero.work",
+              "type": "labelToken",
+              "label": "Two passages, start to finish"
+            }
+          ]
+        },
+        {
+          "id": "cc.intro",
+          "type": "prose",
+          "kicker": "The vision",
+          "title": "Learn the whole process by running it twice",
+          "body": "Most training in Bible translation teaches a step at a time and hopes the steps add up. This course does the opposite. In five days you take a passage from first reading to a consultant-checked recording, and then, on the last day, you do the whole thing again on a second passage with the teaching taken away.\n\nThat is the design. Every teaching session is short and is followed immediately by the work it describes, because the skill this track certifies is not knowing what internalisation is. It is being able to lead it."
+        },
+        {
+          "id": "cc.intro.image",
+          "type": "imageSlot",
+          "mediaId": "home-hero",
+          "caption": "A recordist at work in the field. Everything this week rehearses points at a room like this one."
+        },
+        {
+          "id": "cc.contents",
+          "type": "sectionNav",
+          "kicker": "Contents",
+          "title": "Find what you need",
+          "items": [
+            {
+              "id": "cc.contents.s01",
+              "type": "cta",
+              "number": "01",
+              "anchor": "s01-why",
+              "label": "Why this course exists"
+            },
+            {
+              "id": "cc.contents.s02",
+              "type": "cta",
+              "number": "02",
+              "anchor": "s02-outcomes",
+              "label": "What you will be able to do"
+            },
+            {
+              "id": "cc.contents.s03",
+              "type": "cta",
+              "number": "03",
+              "anchor": "s03-week",
+              "label": "The week at a glance"
+            },
+            {
+              "id": "cc.contents.s04",
+              "type": "cta",
+              "number": "04",
+              "anchor": "s04-day-one",
+              "label": "Day One"
+            },
+            {
+              "id": "cc.contents.s05",
+              "type": "cta",
+              "number": "05",
+              "anchor": "s05-day-two",
+              "label": "Day Two"
+            },
+            {
+              "id": "cc.contents.s06",
+              "type": "cta",
+              "number": "06",
+              "anchor": "s06-day-three",
+              "label": "Day Three"
+            },
+            {
+              "id": "cc.contents.s07",
+              "type": "cta",
+              "number": "07",
+              "anchor": "s07-day-four",
+              "label": "Day Four"
+            },
+            {
+              "id": "cc.contents.s08",
+              "type": "cta",
+              "number": "08",
+              "anchor": "s08-day-five",
+              "label": "Day Five"
+            }
+          ]
+        },
+        {
+          "id": "cc.s1",
+          "type": "handbookSection",
+          "number": "01",
+          "anchor": "s01-why",
+          "kicker": "The philosophy",
+          "title": "Why this course exists",
+          "body": "Oral Bible translation is not written translation read aloud. It is a different process producing a different product for a different kind of audience, and a consultant who has only ever checked a printed text will reach for the wrong questions in the room.\n\nThe Crash Course exists to give everyone on this track the same starting account of that difference: what makes a process oral, what makes a product oral, and where the line is beyond which neither is true any more. Everything that follows in the series, including the Psalms workshop next week, assumes you have this week's vocabulary and this week's experience of having done the work yourself.\n\nFive convictions shape how the days are built. They are worth reading before the week starts, because they explain why sessions are short, why you will spend more time working than listening, and why you will be asked to do the same thing twice.",
+          "variant": "plain",
+          "items": [
+            {
+              "id": "cc.01.thesis",
+              "type": "callout",
+              "variant": "note",
+              "label": "Course thesis",
+              "title": "Orality is not the absence of literacy. It is a preference for holistic communication, and it has been the primary way people think and communicate throughout history.",
+              "body": "We treat it as a beautiful aspect of how God made human beings, how he has acted in sacred history, and how he has grown his church, rather than as a problem to work around. Almost every practical decision this week follows from taking that seriously."
+            },
+            {
+              "id": "cc.01.c1",
+              "type": "subsection",
+              "title": "The better a team understands the passage, the less goes wrong later",
+              "body": "This is the principle the week is built on, and it is the reason exegesis comes first and gets the most time. Mistakes that are cheap to fix in an exegesis conversation are expensive in a draft and painful in a recording, because an oral draft cannot be quietly edited. Somebody has to re-internalise it.\n\nSo the exegesis you do here is holistic rather than lexical: eight areas of inquiry, seven from the OBT article by Frost, Mustin and Beal, plus the cultural and historical background as the eighth."
+            },
+            {
+              "id": "cc.01.c2",
+              "type": "subsection",
+              "title": "The purpose of the translation shapes the process, not only the product",
+              "body": "A team's goal for its community decides what an adequate process looks like: how oral the community actually is, which steps have to change, and by how much. A consultant's job is to reason about that with the team rather than to apply a fixed sequence and score it.\n\nYou will be asked repeatedly this week to say why a step should change for a given community, not only that it should."
+            },
+            {
+              "id": "cc.01.c3",
+              "type": "subsection",
+              "title": "We teach the way we are asking you to teach",
+              "body": "The sessions model the adult-learning practices you will be expected to use with mother-tongue translators: conversation rather than lecture, simple repeatable symbols you can draw on a whiteboard, discovery before definition, and hooks back to the devotion earlier that morning.\n\nIf a session feels like it is being done to you rather than at you, that is the point. Watch the facilitation as well as the content, because you are the one who will be running it next."
+            },
+            {
+              "id": "cc.01.c4",
+              "type": "subsection",
+              "title": "The process is a chain of quality checks, and each link catches what no other link would",
+              "body": "Exegesis, internalisation, drafting, recording, peer review, revision, community testing, the consultant check, and revision again. Every one of them exists to catch a particular kind of failure. A team under deadline pressure will always be tempted to cut one, and knowing what each step is for is what lets you say what that cut would cost."
+            },
+            {
+              "id": "cc.01.c5",
+              "type": "subsection",
+              "title": "Character is part of the competence",
+              "body": "Godly interaction inside the team, and between the team and the community, is the foundation the whole process rests on rather than a nice addition to it. Peer review, revision and the consultant check are the sessions where that becomes visible, because they are the sessions where somebody tells you your work is not finished.\n\nWe are asking each other for humility, unity, and a heart of service, and we will be paying attention to it."
+            },
+            {
+              "id": "cc.01.ask",
+              "type": "list",
+              "title": "What we are asking of each other this week",
+              "items": [
+                {
+                  "id": "cc.01.ask.1",
+                  "type": "listItem",
+                  "label": "Do the work in your team rather than watching it. Facilitators are a resource, not a substitute."
+                },
+                {
+                  "id": "cc.01.ask.2",
+                  "type": "listItem",
+                  "label": "Say when you are lost. A misunderstanding surfaced on Tuesday is cheap; the same one found on Saturday is not."
+                },
+                {
+                  "id": "cc.01.ask.3",
+                  "type": "listItem",
+                  "label": "Give feedback somebody can act on. Point at a place in the recording and say what you heard there."
+                },
+                {
+                  "id": "cc.01.ask.4",
+                  "type": "listItem",
+                  "label": "Receive feedback on the merits. Either change the draft, or say why the current rendering is right."
+                },
+                {
+                  "id": "cc.01.ask.5",
+                  "type": "listItem",
+                  "label": "Keep the equipment and the files in order. Somebody else has to be able to find your work."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "cc.s2",
+          "type": "handbookSection",
+          "number": "02",
+          "anchor": "s02-outcomes",
+          "kicker": "Outcomes",
+          "title": "What you will be able to do",
+          "body": "The course is organised around five areas of knowledge, attitude and skill. Each maps onto competencies in SIL's Competency-Based Consulting standard, which is the standard this whole track certifies against, so the work you do this week is evidence rather than practice for evidence.",
+          "items": [
+            {
+              "id": "cc.02.ksa",
+              "type": "glanceGrid",
+              "anchor": "s02-ksa",
+              "title": "The five areas",
+              "items": [
+                {
+                  "id": "cc.02.ksa.or",
+                  "type": "glanceCard",
+                  "kicker": "Orality",
+                  "value": "Define it, and reason from it",
+                  "body": "Assess how oral a people group actually is, and think critically about a team's stated workflow in the light of it. Tell an oral Bible translation from an audio recording of a written one, in both process and product."
+                },
+                {
+                  "id": "cc.02.ksa.wf",
+                  "type": "glanceCard",
+                  "kicker": "Workflow and team",
+                  "value": "Name the steps and who holds them",
+                  "body": "State the core processes of an OBT workflow in order, say what each one is for, and describe the competencies and relationships a team needs at every step."
+                },
+                {
+                  "id": "cc.02.ksa.eid",
+                  "type": "glanceCard",
+                  "kicker": "Core processes",
+                  "value": "Exegete, internalise, draft",
+                  "body": "Do all three yourself on a real passage, to a standard a team could work from, and be able to facilitate them for others."
+                },
+                {
+                  "id": "cc.02.ksa.ip",
+                  "type": "glanceCard",
+                  "kicker": "Interpersonal",
+                  "value": "Facilitate in a godly manner",
+                  "body": "Give and receive hard feedback in a way that keeps the conversation open and separates the translation from the translator."
+                },
+                {
+                  "id": "cc.02.ksa.tr",
+                  "type": "glanceCard",
+                  "kicker": "Technology",
+                  "value": "Run a project in APM",
+                  "body": "Use Audio Project Manager to carry an OBT process end to end, with Audacity alongside it, and reach the exegetical resources from FIA and the Spoken English Bible."
+                }
+              ]
+            },
+            {
+              "id": "cc.02.eval",
+              "type": "subsection",
+              "anchor": "s02-evaluation",
+              "title": "How the week is assessed",
+              "body": "Nine questions, spread across the five areas and asked at the sessions where the evidence actually appears. Facilitators record against them as the week goes, in the evaluation app, rather than writing a report afterwards from memory.\n\nThe scale has four points and matches the CBC scale. What separates the top two points is teaching capacity: whether you could model this for a mother-tongue team, not whether you did it tidily."
+            },
+            {
+              "id": "cc.02.scale",
+              "type": "glanceGrid",
+              "variant": "rows",
+              "title": "The four points",
+              "items": [
+                {
+                  "id": "cc.02.scale.0",
+                  "type": "glanceCard",
+                  "label": "0 · Not yet",
+                  "value": "What was produced would need to be redone rather than refined."
+                },
+                {
+                  "id": "cc.02.scale.1",
+                  "type": "glanceCard",
+                  "label": "1 · Emerging",
+                  "value": "The idea is visible but the execution is not. A facilitator can see what you were reaching for and would have to supply the rest."
+                },
+                {
+                  "id": "cc.02.scale.2",
+                  "type": "glanceCard",
+                  "label": "2 · Competent",
+                  "value": "You could do this on a real project with a colleague available for questions."
+                },
+                {
+                  "id": "cc.02.scale.3",
+                  "type": "glanceCard",
+                  "label": "3 · Strong",
+                  "value": "You could model it for a translation team, anticipating what will go wrong rather than only handling what does."
+                }
+              ]
+            },
+            {
+              "id": "cc.02.bar",
+              "type": "callout",
+              "variant": "note",
+              "label": "Where the bar sits",
+              "title": "Two is the standard this course targets, not the middle of the range",
+              "body": "A 2 means a competent consultant-in-training. Nobody is expected to arrive at a 3 across the board in five days, and a 1 in an area you have never worked in is information rather than a verdict."
+            },
+            {
+              "id": "cc.02.notclaim",
+              "type": "subsection",
+              "title": "What this week does not assess",
+              "body": "Two things, said plainly so that nobody reads more into a Crash Course record than it holds. There is no session in which you teach this material to a translation team, so the week measures you doing the work rather than facilitating it; that evidence is collected in the Psalms workshop and later. And the exegesis question grades your written notes rather than your handling of an exegesis conversation, which is the largest thing this course still wants a home for."
+            }
+          ]
+        },
+        {
+          "id": "cc.s3",
+          "type": "handbookSection",
+          "number": "03",
+          "anchor": "s03-week",
+          "kicker": "The shape of it",
+          "title": "The week at a glance",
+          "body": "Five full days, Tuesday to Saturday rather than Monday to Friday, because Monday the 17th is Indonesia's Independence Day. The course guide numbers the days One to Five, and so does this page.\n\nEvery day opens at 8:30 with a devotion, breaks for a snack around 11:00 and for lunch at 1:00, and closes at 4:00. Teaching sessions are short. The long blocks are yours, working in your team on the passage, with facilitators circulating. On the days when the work is not finished at 4:00, we take the snack and keep going.\n\nAll times are WITA, on the base.",
+          "mediaId": "workshops-hero",
+          "caption": "The long afternoon blocks are the course. The teaching sessions exist to set them up.",
+          "variant": "plain",
+          "items": [
+            {
+              "id": "cc.03.days",
+              "type": "timeline",
+              "anchor": "s03-days",
+              "items": [
+                {
+                  "id": "cc.03.days.1",
+                  "type": "glanceCard",
+                  "kicker": "Tue 18 Aug",
+                  "value": "Day One",
+                  "label": "Orality and exegesis",
+                  "body": "Welcome and overview, what makes a Bible translation oral, exegesis for OBT, and the afternoon on Passage 1. Exegesis notes are handed in by the end of the evening."
+                },
+                {
+                  "id": "cc.03.days.2",
+                  "type": "glanceCard",
+                  "kicker": "Wed 19 Aug",
+                  "value": "Day Two",
+                  "label": "Internalisation and the tools",
+                  "body": "Internalisation for OBT, two hours internalising Passage 1, then Audio Project Manager and Audacity in the afternoon."
+                },
+                {
+                  "id": "cc.03.days.3",
+                  "type": "glanceCard",
+                  "kicker": "Thu 20 Aug",
+                  "value": "Day Three",
+                  "label": "Draft, record, review, revise",
+                  "body": "The longest day of the workflow. Drafting, recording Passage 1 in APM, peer review, and a first revision."
+                },
+                {
+                  "id": "cc.03.days.4",
+                  "type": "glanceCard",
+                  "kicker": "Fri 21 Aug",
+                  "value": "Day Four",
+                  "label": "Community testing and the consultant check",
+                  "body": "Building community testing questions in the morning, then a consultant check on your passage and a second revision across the rest of the day."
+                },
+                {
+                  "id": "cc.03.days.5",
+                  "type": "glanceCard",
+                  "kicker": "Sat 22 Aug",
+                  "value": "Day Five",
+                  "label": "The whole process, again",
+                  "body": "A guided reflection on the process as a whole, then Passage 2 from exegesis to recording with the teaching taken away, and a celebration."
+                }
+              ]
+            },
+            {
+              "id": "cc.03.before",
+              "type": "subsection",
+              "title": "One thing to have done before Day Two",
+              "body": "Every participant needs an Audio Project Manager account, APM downloaded, and verified entry into their team's translation project. If any of those three is not true for you, come to the Monday evening or the Tuesday lunch break and we will get it sorted before the Wednesday afternoon session, which assumes it."
+            },
+            {
+              "id": "cc.03.next",
+              "type": "linkGrid",
+              "title": "For the rest of the trip",
+              "items": [
+                {
+                  "id": "cc.03.next.psalms",
+                  "type": "cta",
+                  "label": "Psalms workshop handbook",
+                  "route": "/workshops/psalms-bali-2026",
+                  "body": "Dates, the base, meals, laundry, travel and visas, and the Psalms programme itself.",
+                  "note": "Logistics live here, not on this page"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "cc.s4",
+          "type": "handbookSection",
+          "number": "04",
+          "anchor": "s04-day-one",
+          "kicker": "Tuesday 18 August",
+          "title": "Day One: orality and exegesis",
+          "body": "8:30 welcome and overview · 9:15 devotion · 9:45 orality and OBT · 11:00 snack · 11:30 exegesis for OBT · 1:00 lunch · 2:30 exegesis of Passage 1 · 4:00 close, notes in by the end of the evening.\n\nToday builds the frame everything else hangs on, and then puts you straight to work inside it.",
+          "items": [
+            {
+              "id": "cc.04.l1",
+              "type": "subsection",
+              "title": "Welcome and overview",
+              "body": "Viji welcomes the cohort, gives the history of the OBT Consultant Development Track and states what it is for. Josh leads introductions. The purpose is community and orientation: who is in the room, how this week connects to the last workshop and the next one, and where oral Bible translation sits inside the wider translation movement."
+            },
+            {
+              "id": "cc.04.l2",
+              "type": "subsection",
+              "title": "What is oral Bible translation, and what does it take?",
+              "body": "The definitional session, and the one the rest of the week refers back to. We build the definition of orality up from a few activities rather than starting from a slide, then take it into Bible translation: what would make a process an OBT process, when a process stops being one, what makes the product oral, and when it stops being that.\n\nWe compare what the group produces against a defined OBT process drawn with the symbols from the YWAM OBT handbook. Draw them. You will use them all week."
+            },
+            {
+              "id": "cc.04.l3",
+              "type": "subsection",
+              "title": "Exegesis for oral Bible translation",
+              "body": "The requirements for exegesis when the product will be heard rather than read. We start from Harmelink's account of multimodality and functionally cognitive semantics, told as a story, and work out the steps a facilitator needs to lead a holistic and conversational exegesis session.\n\nIf you come from a written translation background, this session is mostly about where the emphasis moves rather than what gets added. There is also a note here worth catching: on projects with no translation advisor, the OBT consultant often carries part of that role, and this is one of the places you build toward it."
+            },
+            {
+              "id": "cc.04.l4",
+              "type": "subsection",
+              "title": "Exegete Passage 1",
+              "body": "No new content. Your team applies the framework to the first passage, with facilitators available as a resource rather than as leaders. Notes are handed in by the end of the evening and read for technical accuracy and coverage of the eight areas, and you get them back in time to fix anything before internalisation.\n\nWrite them for the person who has to draft from them tomorrow, because that person is you."
+            }
+          ]
+        },
+        {
+          "id": "cc.s5",
+          "type": "handbookSection",
+          "number": "05",
+          "anchor": "s05-day-two",
+          "kicker": "Wednesday 19 August",
+          "title": "Day Two: internalisation and the tools",
+          "body": "8:30 devotion · 9:00 internalisation for OBT · 10:30 snack · 11:00 internalise Passage 1 · 1:00 lunch and chores · 2:30 APM and Audacity training.\n\nA teaching session, a long block of practice, and then the software that will carry the rest of the week.",
+          "items": [
+            {
+              "id": "cc.05.l1",
+              "type": "subsection",
+              "title": "Internalisation for OBT",
+              "body": "What internalisation is for, what tools it uses, and how to lead a session of it. Three things come together here: a cognitive-linguistics account of how meaning is made across several modes at once, which picks up Harmelink from yesterday; Katie Frost's 4Es framework for the process itself; and the SENSES acronym for organising the activities inside a session.\n\nThe session is run using the frameworks it is teaching, and it hooks back to the devotions, which is the clearest example this week of modelling the pedagogy we are asking for."
+            },
+            {
+              "id": "cc.05.l2",
+              "type": "subsection",
+              "title": "Internalise Passage 1",
+              "body": "Two hours in your team on the passage you exegeted yesterday. Facilitators watch and give feedback as you go, and this is a rated session: what is being looked for is deliberate use of the activities rather than reading the passage until it sticks, and whether you can tell the passage without the text while holding its structure, its participants and the flow of events.\n\nWhere something drops out, notice what dropped and go back for it. That noticing is most of the skill."
+            },
+            {
+              "id": "cc.05.l3",
+              "type": "subsection",
+              "title": "Audio Project Manager and Audacity",
+              "body": "A live walkthrough of APM on screen while you follow on your own machine, plus Audacity as the companion tool. We also cover why APM rather than Render or AVTT for this workshop, which comes down to its flexibility and to the team's experience with it, and we verify that everybody is properly set up in their own translation project.\n\nWhat is assessed here is not speed. It is whether your files land in the right place for the right passage and your comments attach to the point they refer to, so that a peer reviewer can open your project on Thursday and work without asking you anything."
+            }
+          ]
+        },
+        {
+          "id": "cc.s6",
+          "type": "handbookSection",
+          "number": "06",
+          "anchor": "s06-day-three",
+          "kicker": "Thursday 20 August",
+          "title": "Day Three: draft, record, review, revise",
+          "body": "8:30 devotion with Viji · 9:00 drafting in OBT · 9:45 recording Passage 1 in APM · 11:00 snack · 11:30 peer review in APM · 1:00 lunch · 2:30 revise Passage 1 · 4:00 snack and work until it is done.\n\nFour steps of the workflow in one day. The teaching is deliberately brief in each case so that the doing starts immediately.",
+          "items": [
+            {
+              "id": "cc.06.l1",
+              "type": "subsection",
+              "title": "Drafting in OBT",
+              "body": "Forty-five minutes on the role of drafting and its best practices, then straight into it. We return to the definition of OBT and place drafting inside the community's engagement with the meaning of the text, which by now has already happened in exegesis and internalisation.\n\nThe practical core is the sentence-draft file: a record of what the team thinks is best, roughly phrase by phrase, and then a whole-part-whole sequence of iterative performances whose best parts are stitched into a natural, faithful, clear and acceptable whole. We will also be honest about where the phrase-draft approach fits badly, because for some oral peoples it does."
+            },
+            {
+              "id": "cc.06.l2",
+              "type": "subsection",
+              "title": "Recording Passage 1 in APM",
+              "body": "Take the draft into APM and produce a recording. Getting a draft to a recordable state is itself the content of this session, because it is where the cost of a shaky internalisation becomes obvious: an oral passage cannot be quietly corrected later, since a change has to be re-memorised and re-performed before it can be recorded.\n\nAssessment here is a completion check. Either the recording exists in the right place or it does not."
+            },
+            {
+              "id": "cc.06.l3",
+              "type": "subsection",
+              "title": "Peer review in APM",
+              "body": "The first quality check from outside your own team. A short orientation on what peer review is for within the broader checking community and what kinds of notes are actually useful, then you review another team's passage and they review yours.\n\nA useful note points at a specific place in the recording and says what the reviewer heard there, in terms the other team can act on. General approval and general criticism are equally unusable."
+            },
+            {
+              "id": "cc.06.l4",
+              "type": "subsection",
+              "title": "Revise Passage 1",
+              "body": "The first test of whether a team can reason through translation issues under critique, which is why conduct is watched here as closely as craft. A short orientation on revision strategy comes first: give the community a version as close to final as you can, because a rough recording produces feedback that is not worth much; edit a phrase or two in so the new version can be played; then use that new audio as the basis for re-memorising.\n\nRe-memorising the revised version is the step teams skip, and it is the one that produces the stronger recording for the community check."
+            }
+          ]
+        },
+        {
+          "id": "cc.s7",
+          "type": "handbookSection",
+          "number": "07",
+          "anchor": "s07-day-four",
+          "kicker": "Friday 21 August",
+          "title": "Day Four: community testing and the consultant check",
+          "body": "8:30 devotion with Nikki · 9:00 making community testing questions · 10:30 snack · 11:00 consultant check and second revision, running through to 4:00 with a break for lunch · 4:00 snack and work until complete.\n\nToday the passage leaves the team twice: once toward the community, at least on paper, and once toward a consultant.",
+          "items": [
+            {
+              "id": "cc.07.l1",
+              "type": "subsection",
+              "title": "Making community testing questions for OBT",
+              "body": "How community testing in OBT differs from community testing in written translation. Functionally the gap is smaller than people expect, especially for teams already used to reading a translation aloud. The real difference is that the audience is also asked about the emotion and the performance, because performance is part of an oral translation in a way it never is in a written one.\n\nWe reason toward that rather than announce it. Each team then writes five to ten questions and a general plan for how testing would be run, and hands both in."
+            },
+            {
+              "id": "cc.07.l2",
+              "type": "subsection",
+              "title": "Consultant check and second revision",
+              "body": "An OBT consultant gives consultant-level feedback on your passage, and you revise it. The check is lighter than a real one, on purpose. What matters is that you know what an OBT checking session feels like from both chairs: what a consultant asks and how they ask it, and what it is like to receive that and then go and change your translation.\n\nThe consultant is modelling the session you will practise running yourself in the Psalms workshop next week. Watch the facilitation, not only the notes."
+            },
+            {
+              "id": "cc.07.l3",
+              "type": "subsection",
+              "title": "If you finish early",
+              "body": "Teams that get through the second revision with time left can begin exegesis on the next passage. Ask a facilitator before you start, so that we know where each team is going into Saturday."
+            }
+          ]
+        },
+        {
+          "id": "cc.s8",
+          "type": "handbookSection",
+          "number": "08",
+          "anchor": "s08-day-five",
+          "kicker": "Saturday 22 August",
+          "title": "Day Five: the whole process, again",
+          "body": "8:30 devotion and guided reflection with Josh · 9:00 the OBT process: steps, skills and relationships · 10:30 snack · the rest of the day on Passage 2, then celebration.\n\nThe last day has two halves. The first stands back and looks at the whole process at once. The second runs it again, faster, with no teaching in front of it.",
+          "items": [
+            {
+              "id": "cc.08.l1",
+              "type": "subsection",
+              "title": "The OBT process: steps, skills and relationships",
+              "body": "Ninety minutes of reflection conversation, and the only session all week that puts the entire process and its roles in front of the group at once. We name the steps in order, say what quality problem each one exists to catch, and work out what competencies and what relationships a real team needs at every step, including what a team does when nobody holds a needed competency.\n\nIt comes before the second passage rather than after it, deliberately. Reasoning about the whole process on the strength of four days of having worked it is a different thing from debriefing a fresh repetition."
+            },
+            {
+              "id": "cc.08.l2",
+              "type": "subsection",
+              "title": "Passage 2, start to finish",
+              "body": "Exegesis, internalisation, drafting and recording on a second passage, in one day, in your team. Facilitators will give light feedback if you ask for it, but the aim is repetitions rather than measurement, and we will be observing rather than grading closely.\n\nBy the end of it you will have taken two passages through the core of an OBT workflow. That is the thing this course is actually for."
+            },
+            {
+              "id": "cc.08.l3",
+              "type": "subsection",
+              "title": "Celebration",
+              "body": "A meal together, a structured debrief on what the week taught each of us, and an introduction to the Psalms workshop that starts on Monday the 24th."
+            },
+            {
+              "id": "cc.08.thanks",
+              "type": "callout",
+              "variant": "thanks",
+              "title": "Thank you for the week you are about to give this.",
+              "body": "Five days is not long to learn a process this size, and the reason it works at all is that everyone in the room does the work rather than watches it. May what we make here serve the communities waiting to hear these passages in their own voice."
+            }
+          ]
+        },
+        {
+          "id": "cc.cta",
+          "type": "ctaGroup",
+          "title": "Questions during the week",
+          "body": "Josh is the first point of contact for anything to do with the course itself.",
+          "items": [
+            {
+              "id": "cc.cta.contact",
+              "type": "cta",
+              "variant": "primary",
+              "label": "Email Josh",
+              "href": "mailto:josh_frost@sil.org"
+            },
+            {
+              "id": "cc.cta.psalms",
+              "type": "cta",
+              "variant": "ghost",
+              "label": "Psalms workshop handbook",
+              "route": "/workshops/psalms-bali-2026"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": "general-travel-advice",
       "route": "/general-travel-advice",
       "navLabel": "General travel advice",
@@ -1268,7 +1845,7 @@
           "kicker": "Workshop three · Psalms · Bali 2026",
           "title": "Psalms in Bali",
           "body": "The third workshop of the OBT Consultant Development Track, and the participant handbook for it: what the weeks hold, where the base is, what to put in your bag, and what to do before you fly.",
-          "note": "Last updated 17 August 2026 · weekend meals and the Friday sign-up deadline, laundry, blankets, and visa guidance. Where an older email disagrees with this page, the page is right.",
+          "note": "Last updated 18 August 2026 · the Crash Course handbook is now linked from the programme section. Where an older email disagrees with this page, the page is right.",
           "mediaId": "bali-hero",
           "items": [
             {
@@ -1552,6 +2129,20 @@
                 }
               ],
               "anchor": "s02-dates"
+            },
+            {
+              "id": "bali.02.crash",
+              "type": "linkGrid",
+              "items": [
+                {
+                  "id": "bali.02.crash.handbook",
+                  "type": "cta",
+                  "label": "OBT Crash Course handbook",
+                  "route": "/workshops/crash-course-bali-2026",
+                  "body": "The philosophy behind the course, the five-day schedule, and what each session is for.",
+                  "note": "18 to 22 August"
+                }
+              ]
             },
             {
               "id": "bali.02.action",
