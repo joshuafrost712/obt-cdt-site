@@ -1030,7 +1030,7 @@
           "kicker": "OBT Crash Course · Bali 2026",
           "title": "The OBT Crash Course",
           "body": "Five days that give a cohort one shared account of what oral Bible translation is and how it is actually done. This page is the handbook for it: why the course is built the way it is, what each day holds, and what every session is for.",
-          "note": "Last updated 18 August 2026 · first publication, for the opening session. Where an older email disagrees with this page, the page is right.",
+          "note": "Last updated 18 August 2026 · the daily timetable is now on this page, in section three. Where an older email disagrees with this page, the page is right.",
           "mediaId": "bali-journey",
           "items": [
             {
@@ -1328,7 +1328,7 @@
           "anchor": "s03-week",
           "kicker": "The shape of it",
           "title": "The week at a glance",
-          "body": "Five full days, Tuesday to Saturday rather than Monday to Friday, because Monday the 17th is Indonesia's Independence Day. The course guide numbers the days One to Five, and so does this page.\n\nEvery day opens at 8:30 with a devotion, breaks for a snack around 11:00 and for lunch at 1:00, and closes at 4:00. Teaching sessions are short. The long blocks are yours, working in your team on the passage, with facilitators circulating. On the days when the work is not finished at 4:00, we take the snack and keep going.\n\nAll times are WITA, on the base.",
+          "body": "Five full days, Tuesday to Saturday rather than Monday to Friday, because Monday the 17th is Indonesia's Independence Day. The course guide numbers the days One to Five, and so does this page.\n\nEvery day starts at 8:30, breaks mid-morning for a snack and at 1:00 for lunch, and closes at 4:00. Day One is the one exception at the start: the welcome comes first and the devotion follows it. Teaching sessions are short. The long blocks are yours, working in your team on the passage, with facilitators circulating. On the days when the work is not finished at 4:00, we take the snack and keep going.\n\nAll times are WITA, on the base.",
           "mediaId": "workshops-hero",
           "caption": "The long afternoon blocks are the course. The teaching sessions exist to set them up.",
           "variant": "plain",
@@ -1377,6 +1377,279 @@
                   "value": "Day Five",
                   "label": "The whole process, again",
                   "body": "A guided reflection on the process as a whole, then Passage 2 from exegesis to recording with the teaching taken away, and a celebration."
+                }
+              ]
+            },
+            {
+              "id": "cc.03.times",
+              "type": "scheduleTable",
+              "anchor": "s03-times",
+              "title": "The daily timetable",
+              "body": "Times are WITA. The teaching sessions are the short ones; the long blocks are your team working on the passage.",
+              "items": [
+                {
+                  "id": "cc.03.times.d1",
+                  "type": "scheduleDay",
+                  "label": "Day One",
+                  "value": "Tuesday 18 August",
+                  "items": [
+                    {
+                      "id": "cc.03.times.d1.r1",
+                      "type": "scheduleRow",
+                      "label": "8:30 – 9:15",
+                      "value": "Welcome and overview"
+                    },
+                    {
+                      "id": "cc.03.times.d1.r2",
+                      "type": "scheduleRow",
+                      "label": "9:15 – 9:45",
+                      "value": "Devotion",
+                      "variant": "break"
+                    },
+                    {
+                      "id": "cc.03.times.d1.r3",
+                      "type": "scheduleRow",
+                      "label": "9:45 – 11:00",
+                      "value": "Orality and OBT"
+                    },
+                    {
+                      "id": "cc.03.times.d1.r4",
+                      "type": "scheduleRow",
+                      "label": "11:00 – 11:30",
+                      "value": "Snack",
+                      "variant": "break"
+                    },
+                    {
+                      "id": "cc.03.times.d1.r5",
+                      "type": "scheduleRow",
+                      "label": "11:30 – 1:00",
+                      "value": "Exegesis for Oral Bible Translation"
+                    },
+                    {
+                      "id": "cc.03.times.d1.r6",
+                      "type": "scheduleRow",
+                      "label": "1:00 – 2:30",
+                      "value": "Lunch",
+                      "variant": "break"
+                    },
+                    {
+                      "id": "cc.03.times.d1.r7",
+                      "type": "scheduleRow",
+                      "label": "2:30 – 4:00",
+                      "value": "Exegete Passage 1, in your team"
+                    },
+                    {
+                      "id": "cc.03.times.d1.r8",
+                      "type": "scheduleRow",
+                      "label": "4:00",
+                      "value": "Close. Exegesis notes are handed in by the end of the evening.",
+                      "variant": "break"
+                    }
+                  ]
+                },
+                {
+                  "id": "cc.03.times.d2",
+                  "type": "scheduleDay",
+                  "label": "Day Two",
+                  "value": "Wednesday 19 August",
+                  "items": [
+                    {
+                      "id": "cc.03.times.d2.r1",
+                      "type": "scheduleRow",
+                      "label": "8:30 – 9:00",
+                      "value": "Devotion",
+                      "variant": "break"
+                    },
+                    {
+                      "id": "cc.03.times.d2.r2",
+                      "type": "scheduleRow",
+                      "label": "9:00 – 10:30",
+                      "value": "Internalisation for OBT"
+                    },
+                    {
+                      "id": "cc.03.times.d2.r3",
+                      "type": "scheduleRow",
+                      "label": "10:30 – 11:00",
+                      "value": "Snack",
+                      "variant": "break"
+                    },
+                    {
+                      "id": "cc.03.times.d2.r4",
+                      "type": "scheduleRow",
+                      "label": "11:00 – 1:00",
+                      "value": "Internalise Passage 1, in your team"
+                    },
+                    {
+                      "id": "cc.03.times.d2.r5",
+                      "type": "scheduleRow",
+                      "label": "1:00 – 2:30",
+                      "value": "Lunch and chores",
+                      "variant": "break"
+                    },
+                    {
+                      "id": "cc.03.times.d2.r6",
+                      "type": "scheduleRow",
+                      "label": "2:30 – 4:00",
+                      "value": "Audio Project Manager and Audacity"
+                    },
+                    {
+                      "id": "cc.03.times.d2.r7",
+                      "type": "scheduleRow",
+                      "label": "4:00",
+                      "value": "Close",
+                      "variant": "break"
+                    }
+                  ]
+                },
+                {
+                  "id": "cc.03.times.d3",
+                  "type": "scheduleDay",
+                  "label": "Day Three",
+                  "value": "Thursday 20 August",
+                  "items": [
+                    {
+                      "id": "cc.03.times.d3.r1",
+                      "type": "scheduleRow",
+                      "label": "8:30 – 9:00",
+                      "value": "Devotion",
+                      "variant": "break"
+                    },
+                    {
+                      "id": "cc.03.times.d3.r2",
+                      "type": "scheduleRow",
+                      "label": "9:00 – 9:45",
+                      "value": "Drafting in OBT"
+                    },
+                    {
+                      "id": "cc.03.times.d3.r3",
+                      "type": "scheduleRow",
+                      "label": "9:45 – 11:00",
+                      "value": "Record Passage 1 in APM"
+                    },
+                    {
+                      "id": "cc.03.times.d3.r4",
+                      "type": "scheduleRow",
+                      "label": "11:00 – 11:30",
+                      "value": "Snack",
+                      "variant": "break"
+                    },
+                    {
+                      "id": "cc.03.times.d3.r5",
+                      "type": "scheduleRow",
+                      "label": "11:30 – 1:00",
+                      "value": "Peer review Passage 1 in APM"
+                    },
+                    {
+                      "id": "cc.03.times.d3.r6",
+                      "type": "scheduleRow",
+                      "label": "1:00 – 2:30",
+                      "value": "Lunch",
+                      "variant": "break"
+                    },
+                    {
+                      "id": "cc.03.times.d3.r7",
+                      "type": "scheduleRow",
+                      "label": "2:30 – 4:00",
+                      "value": "Revise Passage 1"
+                    },
+                    {
+                      "id": "cc.03.times.d3.r8",
+                      "type": "scheduleRow",
+                      "label": "4:00",
+                      "value": "Snack, then work until the revision is done",
+                      "variant": "break"
+                    }
+                  ]
+                },
+                {
+                  "id": "cc.03.times.d4",
+                  "type": "scheduleDay",
+                  "label": "Day Four",
+                  "value": "Friday 21 August",
+                  "items": [
+                    {
+                      "id": "cc.03.times.d4.r1",
+                      "type": "scheduleRow",
+                      "label": "8:30 – 9:00",
+                      "value": "Devotion",
+                      "variant": "break"
+                    },
+                    {
+                      "id": "cc.03.times.d4.r2",
+                      "type": "scheduleRow",
+                      "label": "9:00 – 10:30",
+                      "value": "Making community testing questions"
+                    },
+                    {
+                      "id": "cc.03.times.d4.r3",
+                      "type": "scheduleRow",
+                      "label": "10:30 – 11:00",
+                      "value": "Snack",
+                      "variant": "break"
+                    },
+                    {
+                      "id": "cc.03.times.d4.r4",
+                      "type": "scheduleRow",
+                      "label": "11:00 – 1:00",
+                      "value": "Consultant check and second revision of Passage 1"
+                    },
+                    {
+                      "id": "cc.03.times.d4.r5",
+                      "type": "scheduleRow",
+                      "label": "1:00 – 2:30",
+                      "value": "Lunch",
+                      "variant": "break"
+                    },
+                    {
+                      "id": "cc.03.times.d4.r6",
+                      "type": "scheduleRow",
+                      "label": "2:30 – 4:00",
+                      "value": "Consultant check and second revision, continued",
+                      "body": "A team that finishes early starts on the Passage 2 exegesis."
+                    },
+                    {
+                      "id": "cc.03.times.d4.r7",
+                      "type": "scheduleRow",
+                      "label": "4:00",
+                      "value": "Snack, then work until complete",
+                      "variant": "break"
+                    }
+                  ]
+                },
+                {
+                  "id": "cc.03.times.d5",
+                  "type": "scheduleDay",
+                  "label": "Day Five",
+                  "value": "Saturday 22 August",
+                  "items": [
+                    {
+                      "id": "cc.03.times.d5.r1",
+                      "type": "scheduleRow",
+                      "label": "8:30 – 9:00",
+                      "value": "Devotion and guided reflection",
+                      "variant": "break"
+                    },
+                    {
+                      "id": "cc.03.times.d5.r2",
+                      "type": "scheduleRow",
+                      "label": "9:00 – 10:30",
+                      "value": "The OBT Process: Steps, Skills, and Relationships"
+                    },
+                    {
+                      "id": "cc.03.times.d5.r3",
+                      "type": "scheduleRow",
+                      "label": "10:30 – 11:00",
+                      "value": "Snack",
+                      "variant": "break"
+                    },
+                    {
+                      "id": "cc.03.times.d5.r4",
+                      "type": "scheduleRow",
+                      "label": "11:00 onward",
+                      "value": "Passage 2, from exegesis to recording",
+                      "body": "The guide sets no boundaries inside this block. Your team sets the pace, and the celebration closes the day."
+                    }
+                  ]
                 }
               ]
             },

@@ -218,7 +218,8 @@ body {
   }
   .hb-section aside,
   .hb-section li,
-  .hb-section dl > div {
+  .hb-section dl > div,
+  .hb-schedule tbody {
     break-inside: avoid;
     page-break-inside: avoid;
   }

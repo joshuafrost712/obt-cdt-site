@@ -36,6 +36,9 @@ export type BlockType =
   | 'listItem'
   | 'glanceGrid'
   | 'glanceCard'
+  | 'scheduleTable'
+  | 'scheduleDay'
+  | 'scheduleRow'
   | 'linkGrid'
 
 export interface Block {
@@ -68,7 +71,8 @@ export interface Block {
    * 'action-required' | 'coming-soon' | 'note' | 'thanks'; a glanceGrid uses
    * 'rows' to render as a label/value fact table instead of cards; a
    * handbookSection uses 'plain' to skip the duotone wash over its photo, which
-   * a picture of people's faces needs.
+   * a picture of people's faces needs; a scheduleRow uses 'break' for the
+   * devotions, snacks, meals and end-of-day lines that frame the teaching.
    */
   variant?: string
   /** Scene index for the home visual essay (drives the roundabout diagram). */

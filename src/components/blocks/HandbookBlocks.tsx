@@ -338,6 +338,81 @@ export function GlanceGrid({ block }: { block: Block }) {
   )
 }
 
+/* --------------------------------------------------------- scheduleTable */
+
+/**
+ * The clock, as opposed to the story a `timeline` tells. One `scheduleDay` per
+ * item, each holding its own `items` of rows: `label` is the time span, `value`
+ * is what happens in it, and `body` adds a line where the slot needs one.
+ *
+ * `variant: "break"` on a row is a devotion, a snack, a meal or the end-of-day
+ * line. Those stay on the timetable because a participant planning a phone call
+ * needs them, but they are set back so that scanning the column shows the
+ * teaching and the team work first.
+ *
+ * It is a real `<table>`. Participants read down the time column looking for
+ * one row, and a stack of divs gives a screen reader no way to say which time a
+ * session belongs to.
+ */
+export function ScheduleTable({ block }: { block: Block }) {
+  return (
+    <div id={block.anchor} className={`mt-6${block.anchor ? ' scroll-mt-24' : ''}`}>
+      <Txt node={block} field="title" as="h3" className="font-display text-xl font-semibold text-ink" />
+      <Body node={block} className="mt-2 max-w-2xl space-y-2 text-[0.95rem] leading-relaxed text-ink-soft" />
+
+      <div className="hb-schedule mt-4 overflow-hidden rounded-2xl border border-ink/10 bg-white/60">
+        <table className="w-full border-collapse text-left">
+          {(block.items ?? []).map((day, i) => (
+            <tbody key={day.id}>
+              <tr className={i > 0 ? 'border-t border-ink/10' : undefined}>
+                <th scope="colgroup" colSpan={2} className="bg-brand-soft/50 px-5 py-2.5">
+                  <span className="flex flex-wrap items-baseline gap-x-3 gap-y-0.5">
+                    <Txt
+                      node={day}
+                      field="label"
+                      as="span"
+                      className="font-display text-base font-semibold text-ink"
+                    />
+                    <Txt
+                      node={day}
+                      field="value"
+                      as="span"
+                      className="text-xs font-semibold uppercase tracking-[0.14em] text-ink-faint"
+                    />
+                  </span>
+                </th>
+              </tr>
+              {(day.items ?? []).map((row) => (
+                <tr key={row.id} className="border-t border-ink/[0.06]">
+                  <th
+                    scope="row"
+                    className="whitespace-nowrap py-2.5 pl-5 pr-4 align-baseline text-[0.85rem] font-semibold tabular-nums text-ink-faint"
+                  >
+                    <Txt node={row} field="label" as="span" />
+                  </th>
+                  <td
+                    className={`py-2.5 pr-5 align-baseline text-[0.95rem] ${
+                      row.variant === 'break' ? 'text-ink-faint' : 'font-medium text-ink'
+                    }`}
+                  >
+                    <Txt node={row} field="value" as="span" />
+                    <Body
+                      node={row}
+                      className="mt-1 space-y-1 text-[0.88rem] font-normal leading-relaxed text-ink-soft"
+                    />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          ))}
+        </table>
+      </div>
+
+      <Txt node={block} field="note" as="p" className="mt-2.5 text-[0.85rem] leading-relaxed text-ink-faint" />
+    </div>
+  )
+}
+
 /* -------------------------------------------------------------- linkGrid */
 
 const external = (href?: string) => !!href && !href.startsWith('mailto:') && !href.startsWith('#')

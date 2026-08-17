@@ -11,6 +11,7 @@ import {
   HandbookTimeline,
   LinkGrid,
   PlainList,
+  ScheduleTable,
   SectionNav,
   Subsection,
 } from './HandbookBlocks'
@@ -86,6 +87,8 @@ function BlockView({ block, nested }: { block: Block; nested: boolean }) {
       return <PlainList block={block} />
     case 'glanceGrid':
       return <GlanceGrid block={block} />
+    case 'scheduleTable':
+      return <ScheduleTable block={block} />
     case 'linkGrid':
       return <LinkGrid block={block} />
     case 'sectionNav':

@@ -238,6 +238,7 @@ used at the top level of an ordinary page. All of them accept `anchor`.
 | `list` | A quiet bulleted list, or numbered with `variant: "numbered"` | as `checklist`, with `listItem` children |
 | `glanceGrid` | Cards, a fact table with `variant: "rows"`, or a credits table with `variant: "people"` | `items[].kicker`, `.value`, `.label`, `.body` |
 | `timeline` | A dated spine: one line through a sequence of days | same item fields as `glanceGrid` |
+| `scheduleTable` | A real timetable: days as row groups, times down the left | `title`, `body`, `note`, `items[]` of `scheduleDay` (`label`, `value`) each holding `scheduleRow` items (`label`, `value`, `body`, `variant`) |
 | `linkGrid` | Resource cards | `items[].label`, `.href` or `.route`, `.body`, `.note` |
 
 **No leaf block takes a `kicker`.** Only `handbookSection` and `sectionNav` do,
@@ -255,6 +256,16 @@ handbook section `BlockRenderer` picks the handbook version; at the top level of
 a marketing page the original essay timeline still renders. The trip dates have
 been a spine since 2026-07-28; a comment asking for a timeline that arrived after
 that was written against a cached render.
+
+`scheduleTable` and `timeline` answer two different questions about the same
+week and a section can carry both. The spine says what a day is for; the table
+says when to be in the room. Section 03 of the Crash Course handbook does both,
+added 2026-08-18 because a participant standing in the corridor at 11:20 needs
+the clock, not the theme. A row with `variant: "break"` is a devotion, a snack,
+a meal or the end-of-day line: still listed, because somebody is planning a
+phone call around it, but set back so the teaching and the team work are what
+the eye finds first. Times live only in the content file, so a schedule change
+is one edit and no code.
 
 A `linkGrid` item with `route` (rather than `href`) goes through react-router.
 The site is served from a base path on Pages, so a raw `<a href="/x">` would drop
