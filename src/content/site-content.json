@@ -1103,7 +1103,7 @@
           "kicker": "Workshop three · Psalms · Bali 2026",
           "title": "Psalms in Bali",
           "body": "The third workshop of the OBT Consultant Development Track, and the participant handbook for it: what the weeks hold, where the base is, what to put in your bag, and what to do before you fly.",
-          "note": "Last updated 17 August 2026 · weekend meals, laundry, blankets, and visa guidance. Where an older email disagrees with this page, the page is right.",
+          "note": "Last updated 17 August 2026 · weekend meals and the meal sign-up sheet, laundry, blankets, and visa guidance. Where an older email disagrees with this page, the page is right.",
           "mediaId": "bali-hero",
           "items": [
             {
@@ -1847,7 +1847,21 @@
               "id": "bali.14.weekend",
               "type": "subsection",
               "title": "Weekends",
-              "body": "The base kitchen does not serve as many meals at the weekend, so we provide a meal stipend and you buy your own nearby. To be honest about the size of it: sensible rather than lavish, enough to eat well at places that follow normal food-safety practice.\n\nYou are not left to sort out every weekend meal yourself. The base holds a community meal on Saturday evening and again on Sunday evening, and you are welcome to join both.\n\nEach weekend you also get three packets of instant noodles and three eggs as a supplement. They are yours to eat whenever you like: a late arrival, a skipped breakfast, or supper in your room."
+              "body": "The base kitchen does not serve as many meals at the weekend, so we give you a small stipend and you buy your own nearby: roughly Rp 50,000 for the whole weekend, about $3. That is not meant to cover every weekend meal on its own. The two arrangements below are what make it enough. When you do eat out, choose places that follow normal food-safety practice.\n\nWe eat together twice each weekend, on Saturday evening and again on Sunday evening. The meal is cooked on the base and costs you nothing. **You need to opt in by the Friday before.** The kitchen shops on Friday for the whole weekend, so a name added on Saturday cannot be fed. The sign-up sheet is below, it takes a few seconds, and you can change your answer any time before Friday.\n\nEach weekend you also get three packets of instant noodles and three eggs as a supplement. They are yours to eat whenever you like: a late arrival, a skipped breakfast, or supper in your room."
+            },
+            {
+              "id": "bali.14.signup",
+              "type": "linkGrid",
+              "items": [
+                {
+                  "id": "bali.14.signup.sheet",
+                  "type": "cta",
+                  "label": "Weekend meal sign-up sheet",
+                  "href": "https://docs.google.com/spreadsheets/d/1ncFZ9c8AQSw-MBWZXUYtm3nCJc_9RwSV2vk4guI7ICc/edit",
+                  "note": "Opt in by the Friday before",
+                  "body": "Find the first empty row, type your name, and put Yes under each meal you want. One row per person."
+                }
+              ]
             },
             {
               "id": "bali.14.action",
