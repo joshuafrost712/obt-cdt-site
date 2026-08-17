@@ -1642,7 +1642,7 @@
               "type": "subsection",
               "anchor": "s09-transfers",
               "title": "Airport transfers",
-              "body": "We have budgeted to cover your transport between the airport and the base, and we arrange it from the flight details on the registration form. Getting yours in early is what lets us group arrivals so nobody waits long after landing.\n\nWait for a direct confirmation before you assume your pickup is booked. If your flight changes, tell us: we re-plan pickups around actual landing times, but only if we know."
+              "body": "We have budgeted to cover your transport between the airport and the base, and we arrange it from the flight details on the registration form. Getting yours in early is what lets us group arrivals so nobody waits long after landing.\n\nThe vans are planned around the arrival times we already hold. If we do not have yours, we cannot promise to cover your ride, and you may have to arrange and pay for it yourself. We would far rather meet you at the airport, so send what you know even if the flight is not booked yet.\n\nWait for a direct confirmation before you assume your pickup is booked. If your flight changes, tell us: we re-plan pickups around actual landing times, but only if we know."
             },
             {
               "id": "bali.09.general",
@@ -1682,13 +1682,13 @@
                   "id": "bali.11.list.2",
                   "type": "listItem",
                   "label": "Visa",
-                  "body": "Work out whether you need an e-Visa, a Visa on Arrival or e-VOA, another visa type, or whether you are exempt."
+                  "body": "Apply for the ordinary 30-day tourist visa, the B1 Visa on Arrival, through the official portal below. Do not select \"work and travel\": that is a separate category and it requires a sponsor inside Indonesia. Some passports, ASEAN ones among them, enter visa-free for 30 days, and that works just as well."
                 },
                 {
                   "id": "bali.11.list.3",
                   "type": "listItem",
                   "label": "Arrival declaration",
-                  "body": "The immigration portal requires an arrival card, submitted within the three days before you arrive."
+                  "body": "The immigration portal requires an arrival card, submitted within the three days before you arrive. Submitting it returns a QR code. Keep it on your phone: you show it at the checkpoint after immigration."
                 },
                 {
                   "id": "bali.11.list.4",
@@ -1732,7 +1732,7 @@
               "type": "subsection",
               "title": "What to bring",
               "anchor": "s12-packing",
-              "body": "For the workshop itself: a laptop and charger, a notebook, and headphones good enough for careful listening to audio. Facilitators may ask for specific Psalms materials or recording gear closer to the date.\n\nBeyond that, pack for the tropics. Late August and early September fall in Bali's dry season, and they are the two driest months of its year: daytime highs of about 29 to 30°C (84 to 86°F), nights around 23°C (73°F), humid throughout, and roughly 40 to 50 mm of rain across a whole month, falling on three or four days as a short heavy shower rather than a wet day. Bring light, breathable clothing, one layer for strong air-conditioning, something modest for worship and for visits to religious or cultural sites, and shoes you can stand in all day.\n\nBali also has some of the most beautiful beaches in the world and you should enjoy them. Bring whatever you need to do that safely in equatorial sun: swimwear, a hat, sunglasses and high-factor sunscreen."
+              "body": "For the workshop itself: a laptop and charger, a notebook, and headphones good enough for careful listening to audio. Facilitators may ask for specific Psalms materials or recording gear closer to the date.\n\nBeyond that, pack for the tropics. Late August and early September fall in Bali's dry season, and they are the two driest months of its year: daytime highs of about 29 to 30°C (84 to 86°F), nights around 23°C (73°F), humid throughout, and roughly 40 to 50 mm of rain across a whole month, falling on three or four days as a short heavy shower rather than a wet day. Bring light, breathable clothing, one layer for strong air-conditioning, something modest for worship and for visits to religious or cultural sites, and shoes you can stand in all day. Bring a light blanket for your bed as well; the base does not provide one, and there is more on that under Rooming.\n\nBali also has some of the most beautiful beaches in the world and you should enjoy them. Bring whatever you need to do that safely in equatorial sun: swimwear, a hat, sunglasses and high-factor sunscreen."
             },
             {
               "id": "bali.20.closing",
@@ -1826,7 +1826,7 @@
               "id": "bali.13.rooming",
               "type": "subsection",
               "title": "Rooming",
-              "body": "You are welcome to stay at the base for the workshop, and accommodation has been planned for confirmed participants. We are working from the base's own rooming layout, and where we can we are pairing people who share a language, because over two or three weeks together that makes a real difference.",
+              "body": "You are welcome to stay at the base for the workshop, and accommodation has been planned for confirmed participants. We are working from the base's own rooming layout, and where we can we are pairing people who share a language, because over two or three weeks together that makes a real difference.\n\n**Bring your own blanket.** The base sheets every bed and gives you a pillow with a case, but it does not provide blankets. The rooms are air-conditioned and nights outside sit around 23°C, so this is about sleeping comfortably rather than keeping warm. If you are travelling a long way and would rather not carry one, write to Josh as soon as you can and we will buy one here for about $15.",
               "anchor": "s13-accommodation"
             },
             {
@@ -1889,7 +1889,57 @@
               "type": "subsection",
               "anchor": "s16-laundry",
               "title": "Laundry",
-              "body": "For most participants the workshop runs two weeks, and for anyone also doing the Crash Course it runs three. Pack with laundry in mind either way. A small amount of travel detergent may be useful, but wait for guidance from the base before planning to hand-wash or dry things in your room."
+              "body": "For most participants the workshop runs two weeks, and for anyone also doing the Crash Course it runs three. Pack with laundry in mind either way.\n\nThe base recommends a laundry near us that collects and delivers. Students on the base have used it and been looked after well. Message them on WhatsApp to arrange a pickup; they work by the kilogram, and you choose how fast you need it back."
+            },
+            {
+              "id": "bali.16.laundry.prices",
+              "type": "glanceGrid",
+              "title": "What the laundry charges",
+              "variant": "rows",
+              "body": "Read off their own price list in August 2026, converted at roughly Rp 17,800 to the US dollar. Prices and turnaround are theirs to change, so confirm both, and what each service covers, when you message them.",
+              "items": [
+                {
+                  "id": "bali.16.laundry.prices.fold",
+                  "type": "glanceCard",
+                  "value": "Rp 6,000 per kg",
+                  "label": "Wash and fold",
+                  "body": "About $0.35, back in two days. Rp 10,000 for next day, about $0.55. Rp 14,000 for three hours, about $0.80."
+                },
+                {
+                  "id": "bali.16.laundry.prices.komplit",
+                  "type": "glanceCard",
+                  "value": "Rp 8,000 per kg",
+                  "label": "Cuci komplit",
+                  "body": "Full service. About $0.45, back in two days. Rp 12,000 for next day, about $0.70. Rp 16,000 for three hours, about $0.90."
+                },
+                {
+                  "id": "bali.16.laundry.prices.strika",
+                  "type": "glanceCard",
+                  "value": "Rp 6,000 per kg",
+                  "label": "Strika or kering",
+                  "body": "Ironing or drying only. About $0.35, back in two days. Rp 9,000 for next day, about $0.50. Rp 12,000 for three hours, about $0.70."
+                }
+              ]
+            },
+            {
+              "id": "bali.16.laundry.links",
+              "type": "linkGrid",
+              "items": [
+                {
+                  "id": "bali.16.laundry.links.map",
+                  "type": "cta",
+                  "label": "The laundry on Google Maps",
+                  "href": "https://maps.app.goo.gl/9NTkgRmWo4Fhig969?g_st=iw",
+                  "note": "External map"
+                },
+                {
+                  "id": "bali.16.laundry.links.whatsapp",
+                  "type": "cta",
+                  "label": "Message the laundry on WhatsApp",
+                  "href": "https://wa.me/6289612000302",
+                  "note": "0896-1200-0302"
+                }
+              ]
             },
             {
               "id": "bali.21.free",
@@ -1979,8 +2029,8 @@
               "id": "bali.s5.pending",
               "type": "callout",
               "variant": "coming-soon",
-              "title": "Venue arrival details, room allocation, Wi-Fi, laundry, and the nearest clinic",
-              "body": "Still with the base: the reception number and a pinned map location, arrival instructions, room allocation and check-in time, linen, accessibility, quiet hours, the Wi-Fi network and password, laundry arrangements, and the nearest clinic and hospital along with the safeguarding contact. Please wait for the official venue message before arranging independent transport or your own accommodation. In a life-threatening emergency, call 112."
+              "title": "Venue arrival details, room allocation, Wi-Fi, and the nearest clinic",
+              "body": "Still with the base: the reception number and a pinned map location, arrival instructions, room allocation and check-in time, accessibility, quiet hours, the Wi-Fi network and password, and the nearest clinic and hospital along with the safeguarding contact. Please wait for the official venue message before arranging independent transport or your own accommodation. In a life-threatening emergency, call 112."
             }
           ]
         },

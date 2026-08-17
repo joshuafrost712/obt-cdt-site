@@ -270,6 +270,13 @@ callout, which is why the panel count did not move. `action-required` is still a
 its four and `note` at its two. A settled fee is a fact for the rows table, not a
 stop-and-read panel.
 
+The 2026-08-17 round held to the same rule. It added a `glanceGrid` and a
+`linkGrid` for laundry and extended four existing bodies, so sections stayed at
+six and panels at nine. The blanket is the case worth remembering: it arrived as
+an urgent all-cohort notice with a deadline and a cost, which is exactly the shape
+that argues for a fifth `action-required`. It went into Rooming as bold prose
+instead, because the four that exist are the four that survive being read.
+
 A tick means "you do this, then confirm you did". A callout means "stop and read
 this". Both stop meaning anything when every section has one.
 
@@ -291,13 +298,20 @@ The ones that remain are gathered into one panel per section that says **what** 
 missing and **who** will send it, so a reader can tell a tracked gap from an
 oversight.
 
-Open gaps as of 2026-07-28, after the review round:
+Open gaps as of 2026-08-17:
 
 - **04** driver details and pickup times, and the final resource and equipment
   list.
 - **05** venue arrival details and reception number, room allocation, check-in,
-  linen, accessibility, quiet hours, Wi-Fi network and password, laundry, nearest
-  clinic and hospital, safeguarding contact.
+  accessibility, quiet hours, Wi-Fi network and password, nearest clinic and
+  hospital, safeguarding contact.
+
+Two closed on 2026-08-17. **Laundry** now carries the service the base
+recommends, with its own price list as a rows table and its map and WhatsApp
+links; the source was a message from the base on 2026-08-16. **Linen** is
+answered inside Rooming: the base sheets every bed and provides a pillow with a
+case but no blankets, from the notice sent to participants on 2026-08-14. Both
+came out of the section-05 panel in the same commit, which is the pattern.
 
 When one is settled, move it into real content and delete it from the panel and
 from this list.
