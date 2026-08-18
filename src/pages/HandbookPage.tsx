@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { pageById } from '../lib/content/loader'
 import { getMedia } from '../lib/media'
 import { BlockRenderer } from '../components/blocks/BlockRenderer'
@@ -162,6 +163,12 @@ export function HandbookPage({ pageId }: { pageId: string }) {
  * Full-bleed photo hero. The date band lives in `items` as labelToken blocks so
  * the dates are editable content, not markup.
  *
+ * A token with a `route` renders as a link rather than a static pill. That is
+ * how the Psalms handbook sends a Crash Course participant to the Crash Course
+ * handbook from the top of the page: the date band is where a reader already
+ * looks for "which week am I here for", so it is the right place for the other
+ * week's page to be reachable (Joshua, 2026-08-18).
+ *
  * Exported because this hero is what carries the handbook look, and since
  * 2026-07-29 every page wears it: the marketing workshops and the workshops
  * index call it directly rather than through `HandbookLayout`. It stands up
@@ -200,14 +207,28 @@ export function HandbookHero({ block, status }: { block: Block; status?: Worksho
         <Body node={block} className="mt-5 max-w-xl space-y-3 text-[1.05rem] leading-relaxed text-paper/80" />
 
         <div className="mt-8 flex flex-wrap gap-2.5">
-          {(block.items ?? []).map((token) => (
-            <span
-              key={token.id}
-              className="rounded-full border border-paper/25 bg-paper/10 px-4 py-1.5 text-sm font-medium backdrop-blur-sm"
-            >
-              <Txt node={token} field="label" as="span" />
-            </span>
-          ))}
+          {(block.items ?? []).map((token) => {
+            const pill = 'rounded-full border px-4 py-1.5 text-sm font-medium backdrop-blur-sm'
+            // An internal route has to go through react-router: the site is
+            // served from a base path on Pages, and a raw <a href="/x"> would
+            // drop it and 404.
+            return token.route ? (
+              <Link
+                key={token.id}
+                to={token.route}
+                className={`${pill} group border-brand-light/60 bg-paper/15 text-paper no-underline transition-colors hover:border-brand-light hover:bg-paper/25`}
+              >
+                <Txt node={token} field="label" as="span" />
+                <span aria-hidden className="ml-1.5 inline-block transition-transform group-hover:translate-x-0.5">
+                  →
+                </span>
+              </Link>
+            ) : (
+              <span key={token.id} className={`${pill} border-paper/25 bg-paper/10`}>
+                <Txt node={token} field="label" as="span" />
+              </span>
+            )
+          })}
         </div>
 
         {/*

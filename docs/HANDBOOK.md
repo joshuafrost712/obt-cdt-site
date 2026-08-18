@@ -271,6 +271,13 @@ A `linkGrid` item with `route` (rather than `href`) goes through react-router.
 The site is served from a base path on Pages, so a raw `<a href="/x">` would drop
 it and 404.
 
+A hero `labelToken` with a `route` renders as a link pill rather than a static
+one: brighter border, an arrow, and react-router for the same base-path reason.
+Added 2026-08-18 so the Psalms date band can send a Crash Course participant to
+the Crash Course handbook from the top of the page, which is where a reader
+already looks to work out which week they are here for. Use it sparingly. A date
+band of four facts and three links is a nav bar, not a date band.
+
 `variant: "people"` on a `glanceGrid` renders the rows table with the left column
 as a person's name in the display face rather than a small-caps field label, so
 the row reads name, then role, then qualification.

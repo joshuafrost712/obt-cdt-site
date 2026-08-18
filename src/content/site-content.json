@@ -840,7 +840,15 @@
           "kicker": "Five genres, five workshops",
           "title": "The workshop series",
           "body": "Five two-week workshops anchor the track, one for each genre. Each is a fortnight of real translation work with consultants watching.",
-          "mediaId": "workshops-hero"
+          "mediaId": "workshops-hero",
+          "items": [
+            {
+              "id": "workshops-index.hero.crash",
+              "type": "labelToken",
+              "label": "New to OBT? Start with the Crash Course",
+              "route": "/workshops/crash-course-bali-2026"
+            }
+          ]
         },
         {
           "id": "workshops-index.rhythm",
@@ -848,6 +856,22 @@
           "kicker": "The rhythm",
           "title": "Every workshop runs the same way",
           "body": "Each workshop moves through genre-specific instruction, hands-on translation experience, and supervised consulting practice. Participants exegete, internalize, draft, revise, and check within the two weeks, so competencies are practiced rather than merely presented.\n\nThe series progresses from more accessible genres toward more complex ones, and the one-week experiential OBT Crash Course is the recommended doorway for newcomers: each crash-course participant learns oral Bible translation by doing it, functioning as a mother-tongue translator for a week."
+        },
+        {
+          "id": "workshops-index.crash",
+          "type": "linkGrid",
+          "title": "The way in: the OBT Crash Course",
+          "body": "One week of learning oral Bible translation by doing it. The most recent course runs in Bali immediately before the Psalms workshop, and its handbook is the fullest account of what the week involves.",
+          "items": [
+            {
+              "id": "workshops-index.crash.bali2026",
+              "type": "cta",
+              "label": "OBT Crash Course handbook",
+              "route": "/workshops/crash-course-bali-2026",
+              "body": "The five convictions the course is built on, the day-by-day timetable, and what each session is for.",
+              "note": "Bali · 18 to 22 August 2026"
+            }
+          ]
         },
         {
           "id": "workshops-index.series",
@@ -2118,7 +2142,7 @@
           "kicker": "Workshop three · Psalms · Bali 2026",
           "title": "Psalms in Bali",
           "body": "The third workshop of the OBT Consultant Development Track, and the participant handbook for it: what the weeks hold, where the base is, what to put in your bag, and what to do before you fly.",
-          "note": "Last updated 18 August 2026 · the Crash Course handbook is now linked from the programme section. Where an older email disagrees with this page, the page is right.",
+          "note": "Last updated 18 August 2026 · the Crash Course handbook is now linked from the date band above and from the programme section. Where an older email disagrees with this page, the page is right.",
           "mediaId": "bali-hero",
           "items": [
             {
@@ -2129,7 +2153,8 @@
             {
               "id": "bali.hero.arrival",
               "type": "labelToken",
-              "label": "Crash Course: 18 to 22 August"
+              "label": "Crash Course handbook: 18 to 22 August",
+              "route": "/workshops/crash-course-bali-2026"
             },
             {
               "id": "bali.hero.venue",
@@ -2354,7 +2379,7 @@
           "anchor": "s02-programme",
           "kicker": "The shape of the trip",
           "title": "Dates and programme",
-          "body": "Most participants are in Bali for two weeks, 24 August to 4 September. If you are also doing the OBT Crash Course you arrive a week earlier and are there for three.",
+          "body": "Most participants are in Bali for two weeks, 24 August to 4 September. If you are also doing the OBT Crash Course you arrive a week earlier and are there for three.\n\nThe Crash Course week has its own handbook, linked under the dates below.",
           "items": [
             {
               "id": "bali.02.dates",
@@ -2406,14 +2431,16 @@
             {
               "id": "bali.02.crash",
               "type": "linkGrid",
+              "title": "The Crash Course week has its own page",
+              "body": "Everything about the first week lives there. This page carries the logistics for all three weeks, so you need both if your trip starts on the 18th.",
               "items": [
                 {
                   "id": "bali.02.crash.handbook",
                   "type": "cta",
                   "label": "OBT Crash Course handbook",
                   "route": "/workshops/crash-course-bali-2026",
-                  "body": "The philosophy behind the course, the five-day schedule, and what each session is for.",
-                  "note": "18 to 22 August"
+                  "body": "The philosophy behind the course, the five-day timetable with clock times, and what each of the seventeen sessions is for.",
+                  "note": "Tuesday 18 to Saturday 22 August"
                 }
               ]
             },

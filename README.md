@@ -78,11 +78,23 @@ Unlisted is not private. **This repo is public**, so hidden-page copy is
 readable in `site-content.json` on github.com and in the history regardless.
 Treat `hidden` as "don't index, don't advertise", never as access control.
 
-One page is unlisted: `/general-travel-advice`, the generic pre-flight and
-departure checks that came out of the Bali handbook on 2026-07-28. It is linked
-from the workshop travel section and from nowhere else, deliberately: it is a
-reference for the few who want it, not a claim the track has anything original
-to say about airport queues.
+Two pages are unlisted, and each is deliberately reachable from a different
+number of places.
+
+`/general-travel-advice` holds the generic pre-flight and departure checks that
+came out of the Bali handbook on 2026-07-28. It is linked from the workshop
+travel section and from nowhere else, deliberately: it is a reference for the few
+who want it, not a claim the track has anything original to say about airport
+queues.
+
+`/workshops/crash-course-bali-2026` is the Crash Course participant handbook. It
+is noindex, but it is **signposted**, at Joshua's request on 2026-08-18: a linked
+token in the Psalms hero date band, a titled card in the Psalms programme
+section, and on the public `/workshops` index both a hero token and a card under
+the paragraph that calls the Crash Course the doorway into the series. The
+course is the way newcomers enter the track, so a reader who lands anywhere near
+the series should be one click from it. Leaving it out of the sitemap and the top
+nav is the only thing `hidden` still does here.
 
 The Bali 2026 handbook used to be unlisted too; on 2026-07-28 it was merged into
 the Psalms workshop page at Joshua's request, so `/workshops/psalms-bali-2026` is

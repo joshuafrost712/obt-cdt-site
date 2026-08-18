@@ -62,7 +62,7 @@ export interface Block {
   attribution?: string
   /** Media manifest key for imageSlot / hero art. */
   mediaId?: string
-  /** Internal route for a CTA. */
+  /** Internal route for a CTA, or for a hero labelToken that links out. */
   route?: string
   /** External URL for a CTA (mailto: allowed). */
   href?: string
