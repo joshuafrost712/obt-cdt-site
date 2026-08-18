@@ -116,6 +116,15 @@ export interface PageDef {
    * a way to keep content private.
    */
   hidden?: boolean
+  /**
+   * Kept out of the top nav, but indexed and in sitemap.xml — the two halves of
+   * `hidden` split apart, because the Crash Course handbook needs one and not
+   * the other (Joshua, 2026-08-18): search engines may have it, and the reader's
+   * route to it is the Psalms workshop page rather than a nav entry of its own.
+   *
+   * Ignored on workshops, which are never in the nav to begin with.
+   */
+  navHidden?: boolean
   /** Which page component renders this page. Default is the generic ContentPage. */
   layout?: 'default' | 'handbook'
   blocks: Block[]

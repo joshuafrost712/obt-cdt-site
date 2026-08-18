@@ -59,6 +59,9 @@ that the contents rail and progress bar only appear from four sections up, so a
 - `"hidden": true` makes a page **unlisted**: still prerendered and reachable by
   link, but absent from the top nav and `sitemap.xml`, and served with
   `noindex, nofollow`.
+- `"navHidden": true` withholds the nav entry and nothing else: the page is
+  indexed and in `sitemap.xml`, and readers reach it through whatever links to
+  it. Use it for a document that belongs to one workshop rather than to the site.
 
 The home page and `/workshops` are the two exceptions, because each has a job the
 handbook layout cannot do. Home is the scroll-driven roundabout essay; the
@@ -78,23 +81,22 @@ Unlisted is not private. **This repo is public**, so hidden-page copy is
 readable in `site-content.json` on github.com and in the history regardless.
 Treat `hidden` as "don't index, don't advertise", never as access control.
 
-Two pages are unlisted, and each is deliberately reachable from a different
-number of places.
+One page is unlisted: `/general-travel-advice`, the generic pre-flight and
+departure checks that came out of the Bali handbook on 2026-07-28. It is linked
+from the workshop travel section and from nowhere else, deliberately: it is a
+reference for the few who want it, not a claim the track has anything original
+to say about airport queues.
 
-`/general-travel-advice` holds the generic pre-flight and departure checks that
-came out of the Bali handbook on 2026-07-28. It is linked from the workshop
-travel section and from nowhere else, deliberately: it is a reference for the few
-who want it, not a claim the track has anything original to say about airport
-queues.
-
-`/workshops/crash-course-bali-2026` is the Crash Course participant handbook. It
-is noindex, but it is **signposted**, at Joshua's request on 2026-08-18: a linked
-token in the Psalms hero date band, a titled card in the Psalms programme
-section, and on the public `/workshops` index both a hero token and a card under
-the paragraph that calls the Crash Course the doorway into the series. The
-course is the way newcomers enter the track, so a reader who lands anywhere near
-the series should be one click from it. Leaving it out of the sitemap and the top
-nav is the only thing `hidden` still does here.
+One page is `navHidden`: `/workshops/crash-course-bali-2026`, the Crash Course
+participant handbook. Joshua's decision on 2026-08-18 was to index it but route
+to it **only through the Bali Psalms workshop page**, which is what split
+`navHidden` out of `hidden` in the first place. So it carries a real sitemap row
+and no `noindex`, and exactly two links point at it: the linked token in the
+Psalms hero date band and the titled card in the Psalms programme section. An
+earlier round put a hero token and a card on the public `/workshops` index too;
+both were removed when the decision landed. Do not re-add a link from the
+workshops index, the home page or the nav — the course belongs to the trip that
+runs it, and search is the way a stranger finds it.
 
 The Bali 2026 handbook used to be unlisted too; on 2026-07-28 it was merged into
 the Psalms workshop page at Joshua's request, so `/workshops/psalms-bali-2026` is

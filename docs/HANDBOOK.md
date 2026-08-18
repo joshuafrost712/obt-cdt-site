@@ -88,6 +88,12 @@ link. See the named exception in `README.md` under Content rules.
 `"hidden": true` still exists for pages and now also for workshops, and still
 means no nav entry, no `sitemap.xml` entry, and `noindex, nofollow` in the head.
 
+`"navHidden": true` is the nav half of that on its own, added 2026-08-18 for the
+Crash Course handbook: indexed, in the sitemap, and reachable only through the
+links that point at it, which for that page means the Psalms workshop page and
+nothing else. Reach for it when a document belongs to one workshop rather than to
+the site, and a nav entry would advertise it to every reader of every page.
+
 **This repo is public.** Unlisted controls search engines and site navigation,
 nothing more. Every word of handbook copy is readable in `site-content.json` on
 github.com and in the commit history. Do not put anything in a handbook that
@@ -275,8 +281,10 @@ A hero `labelToken` with a `route` renders as a link pill rather than a static
 one: brighter border, an arrow, and react-router for the same base-path reason.
 Added 2026-08-18 so the Psalms date band can send a Crash Course participant to
 the Crash Course handbook from the top of the page, which is where a reader
-already looks to work out which week they are here for. Use it sparingly. A date
-band of four facts and three links is a nav bar, not a date band.
+already looks to work out which week they are here for. With the Crash Course
+page `navHidden` rather than nav-linked, that token and the programme card are
+the whole route to it. Use it sparingly. A date band of four facts and three
+links is a nav bar, not a date band.
 
 `variant: "people"` on a `glanceGrid` renders the rows table with the left column
 as a person's name in the display face rather than a small-caps field label, so

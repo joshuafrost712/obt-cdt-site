@@ -81,9 +81,15 @@ export interface NavItem {
   nodeId: string
 }
 
+/**
+ * `navHidden` as well as `hidden`, because a page can be indexed and still not
+ * belong in the nav: the Crash Course handbook is reached through the Psalms
+ * workshop page, and a nav that grows an entry per workshop-specific document
+ * stops being a nav.
+ */
 export function navItems(): NavItem[] {
   return content.pages
-    .filter((p) => !p.hidden)
+    .filter((p) => !p.hidden && !p.navHidden)
     .map((p) => ({ route: p.route, label: p.navLabel, nodeId: p.id }))
 }
 
@@ -99,6 +105,8 @@ export function allRoutes(): string[] {
  * Workshops are included as well as pages. A workshop is never in the top nav
  * anyway, but `hidden` also has to keep it out of the sitemap and put noindex in
  * its head, and reading only `pages` here would have failed silently.
+ *
+ * `navHidden` deliberately does NOT count here: it withholds the nav entry only.
  */
 export function hiddenRoutes(): string[] {
   return [...content.pages, ...content.workshops].filter((p) => p.hidden).map((p) => p.route)
