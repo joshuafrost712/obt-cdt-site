@@ -2118,7 +2118,7 @@
           "kicker": "Workshop three · Psalms · Bali 2026",
           "title": "Psalms in Bali",
           "body": "The third workshop of the OBT Consultant Development Track, and the participant handbook for it: what the weeks hold, where the base is, what to put in your bag, and what to do before you fly.",
-          "note": "Last updated 19 August 2026 · the venue's proper name, the blanket price, and the general health and travel checklists removed. Where an older email disagrees with this page, the page is right.",
+          "note": "Last updated 19 August 2026 · the venue's proper name, the blanket price, the night temperature, and the general health and travel checklists removed. Transfer and equipment details now come by email rather than appearing here. Where an older email disagrees with this page, the page is right.",
           "mediaId": "bali-hero",
           "items": [
             {
@@ -2765,7 +2765,7 @@
               "type": "subsection",
               "title": "What to bring",
               "anchor": "s12-packing",
-              "body": "For the workshop itself: a laptop and charger, a notebook, and headphones good enough for careful listening to audio. Facilitators may ask for specific Psalms materials or recording gear closer to the date.\n\nBeyond that, pack for the tropics. Late August and early September fall in Bali's dry season, and they are the two driest months of its year: daytime highs of about 29 to 30°C (84 to 86°F), nights around 23°C (73°F), humid throughout, and roughly 40 to 50 mm of rain across a whole month, falling on three or four days as a short heavy shower rather than a wet day. Bring light, breathable clothing, one layer for strong air-conditioning, something modest for worship and for visits to religious or cultural sites, and shoes you can stand in all day. Bring a light blanket for your bed as well; the base does not provide one, and there is more on that under Rooming.\n\nBali also has some of the most beautiful beaches in the world and you should enjoy them. Bring whatever you need to do that safely in equatorial sun: swimwear, a hat, sunglasses and high-factor sunscreen."
+              "body": "For the workshop itself: a laptop and charger, a notebook, and headphones good enough for careful listening to audio. Facilitators may ask for specific Psalms materials or recording gear closer to the date.\n\nBeyond that, pack for the tropics. Late August and early September fall in Bali's dry season, and they are the two driest months of its year: daytime highs of about 29 to 30°C (84 to 86°F), nights around 25°C (77°F), humid throughout, and roughly 40 to 50 mm of rain across a whole month, falling on three or four days as a short heavy shower rather than a wet day. Bring light, breathable clothing, one layer for strong air-conditioning, something modest for worship and for visits to religious or cultural sites, and shoes you can stand in all day. Bring a light blanket for your bed as well; the base does not provide one, and there is more on that under Rooming.\n\nBali also has some of the most beautiful beaches in the world and you should enjoy them. Bring whatever you need to do that safely in equatorial sun: swimwear, a hat, sunglasses and high-factor sunscreen."
             },
             {
               "id": "bali.20.closing",
@@ -2789,13 +2789,6 @@
                 }
               ],
               "anchor": "s20-departure"
-            },
-            {
-              "id": "bali.s4.pending",
-              "type": "callout",
-              "variant": "coming-soon",
-              "title": "Driver details, pickup times, and the final resource and equipment list",
-              "body": "Transfer details go out closer to the date, once itineraries are in. Facilitators may also ask for specific Psalms materials, recording gear or software, and that list will appear here when it is settled."
             }
           ]
         },
