@@ -1041,7 +1041,7 @@
             {
               "id": "cc.hero.venue",
               "type": "labelToken",
-              "label": "YWAM base, Jimbaran, Bali"
+              "label": "University of the Nations base, Jimbaran, Bali"
             },
             {
               "id": "cc.hero.shape",
@@ -2118,7 +2118,7 @@
           "kicker": "Workshop three · Psalms · Bali 2026",
           "title": "Psalms in Bali",
           "body": "The third workshop of the OBT Consultant Development Track, and the participant handbook for it: what the weeks hold, where the base is, what to put in your bag, and what to do before you fly.",
-          "note": "Last updated 18 August 2026 · the Crash Course handbook is now linked from the date band above and from the programme section. Where an older email disagrees with this page, the page is right.",
+          "note": "Last updated 19 August 2026 · the venue's proper name, the blanket price, and the general health and travel checklists removed. Where an older email disagrees with this page, the page is right.",
           "mediaId": "bali-hero",
           "items": [
             {
@@ -2135,7 +2135,7 @@
             {
               "id": "bali.hero.venue",
               "type": "labelToken",
-              "label": "YWAM base, Jimbaran, Bali"
+              "label": "University of the Nations base, Jimbaran, Bali"
             },
             {
               "id": "bali.hero.size",
@@ -2817,7 +2817,7 @@
                 {
                   "id": "bali.03.venue.venue",
                   "type": "glanceCard",
-                  "value": "YWAM Bali base, Jimbaran",
+                  "value": "University of the Nations base, Jimbaran",
                   "label": "Venue"
                 },
                 {
@@ -2830,8 +2830,7 @@
                   "id": "bali.03.venue.area",
                   "type": "glanceCard",
                   "value": "Bukit peninsula, south Bali",
-                  "label": "Area",
-                  "body": "The base is a working campus of the University of the Nations."
+                  "label": "Area"
                 }
               ],
               "anchor": "s03-location"
@@ -2859,7 +2858,7 @@
               "id": "bali.13.rooming",
               "type": "subsection",
               "title": "Rooming",
-              "body": "You are welcome to stay at the base for the workshop, and accommodation has been planned for confirmed participants. We are working from the base's own rooming layout, and where we can we are pairing people who share a language, because over two or three weeks together that makes a real difference.\n\n**Bring your own blanket.** The base sheets every bed and gives you a pillow with a case, but it does not provide blankets. The rooms are air-conditioned and nights outside sit around 23°C, so this is about sleeping comfortably rather than keeping warm. If you are travelling a long way and would rather not carry one, write to Josh as soon as you can and we will buy one here for about $15.",
+              "body": "You are welcome to stay at the base for the workshop, and accommodation has been planned for confirmed participants. We are working from the base's own rooming layout, and where we can we are pairing people who share a language.\n\n**Bring your own blanket.** The base sheets every bed and gives you a pillow with a case, but it does not provide blankets. The rooms are air-conditioned and nights outside sit around 25°C, so this is about sleeping comfortably rather than keeping warm. If you are travelling a long way and would rather not carry one, write to Josh as soon as you can and we will buy one here for about $4.",
               "anchor": "s13-accommodation"
             },
             {
@@ -2982,61 +2981,6 @@
               "body": "Bali has a great deal to offer and you are warmly welcome to enjoy it. To be clear, the facilitators are not organising or sponsoring outings.\n\nIn past workshops participants decided together where they wanted to go, pooled money for a van, and went as a group. Some very good memories came out of that. We would love it to happen again, organised among yourselves."
             },
             {
-              "id": "bali.19.before",
-              "type": "checklist",
-              "title": "Health and insurance before you leave home",
-              "items": [
-                {
-                  "id": "bali.19.before.1",
-                  "type": "checklistItem",
-                  "label": "Arrange international travel and medical insurance."
-                },
-                {
-                  "id": "bali.19.before.2",
-                  "type": "checklistItem",
-                  "label": "Talk to a travel-health professional about your own needs, early enough for any course of treatment they recommend."
-                },
-                {
-                  "id": "bali.19.before.3",
-                  "type": "checklistItem",
-                  "label": "Bring enough prescribed medication for the whole trip plus a reasonable delay."
-                },
-                {
-                  "id": "bali.19.before.4",
-                  "type": "checklistItem",
-                  "label": "Tell the organisers, confidentially, anything we need to know in order to support you safely."
-                }
-              ],
-              "anchor": "s19-health"
-            },
-            {
-              "id": "bali.19.during",
-              "type": "list",
-              "title": "While you are there",
-              "items": [
-                {
-                  "id": "bali.19.during.1",
-                  "type": "listItem",
-                  "label": "Drink water, use sun protection, and take care in unfamiliar traffic."
-                },
-                {
-                  "id": "bali.19.during.2",
-                  "type": "listItem",
-                  "label": "Use reputable transport. Do not ride a scooter unless you are properly licensed, insured and experienced."
-                },
-                {
-                  "id": "bali.19.during.3",
-                  "type": "listItem",
-                  "label": "Respect local customs, sacred spaces and community instructions."
-                },
-                {
-                  "id": "bali.19.during.4",
-                  "type": "listItem",
-                  "label": "Report illness, injury, safeguarding concerns or urgent practical problems straight away."
-                }
-              ]
-            },
-            {
               "id": "bali.19.contacts",
               "type": "glanceGrid",
               "title": "Numbers to have on you",
@@ -3057,13 +3001,6 @@
                   "body": "Josh Frost, lead facilitator."
                 }
               ]
-            },
-            {
-              "id": "bali.s5.pending",
-              "type": "callout",
-              "variant": "coming-soon",
-              "title": "Venue arrival details, room allocation, Wi-Fi, and the nearest clinic",
-              "body": "Still with the base: the reception number and a pinned map location, arrival instructions, room allocation and check-in time, accessibility, quiet hours, the Wi-Fi network and password, and the nearest clinic and hospital along with the safeguarding contact. Please wait for the official venue message before arranging independent transport or your own accommodation. In a life-threatening emergency, call 112."
             }
           ]
         },
