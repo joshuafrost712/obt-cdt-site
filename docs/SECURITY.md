@@ -436,29 +436,78 @@ available in the session.
 These are not oversights. They are the parts of CDT-00 that could not be done in
 the session that wrote the rest, and each one names what unblocks it.
 
-**The portal's Supabase project is not configured on the deployment, and this is
-the gap the others hang off.** `gh api repos/joshuafrost712/obt-cdt-site/actions/variables`
-returns `total_count: 0`, the `github-pages` environment has none either, and the
-deployed bundle contains zero occurrences of `supabase.co`. So `backendEnabled` is
-false, `src/App.tsx` does not register `/portal` at all, and the project
-reference and publishable key were not available to the session. Consequences:
-`connect-src` currently names no Supabase origin, and `csp-hashes.mjs` prints a
-loud note saying so on every build. It refuses outright if exactly one of the two
-variables is set, because a half-set pair ships a policy that does not match the
-bundle. Unblocked by: the project reference and publishable key, then
-`docs/PORTAL.md` step 6.
+**CLOSED 2026-08-21: the portal's Supabase project is configured.** The project
+is `lvzwmzqqvbnurumygcnt`, in the dedicated OBT-CDT Supabase account.
+`VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` are set as repo Actions
+variables, and a build with the CI environment reproduced reports `backend:
+enabled` with `connect-src` carrying the project over both `https` and `wss`.
+`VITE_FEEDBACK_URL` is deliberately still unset, so the feedback widget falls
+through to a markdown download. The mechanism note is worth keeping: `csp-hashes.mjs`
+refuses outright if exactly one of the two variables is set, because a half-set
+pair ships a policy that does not match the bundle.
 
-**The Supabase Auth project settings have not been applied.** All of them need
-the project: TOTP enrolment enabled, leaked-password protection on, minimum
-password length 12, JWT expiry one hour, refresh-token rotation with reuse
-detection, email confirmations required, and the redirect allowlist narrowed to
-exact paths rather than a wildcard. That last one is done knowingly twice, once
-now and again when CDT-DOMAIN moves the host, because an unbounded allowlist in
-the meantime is a live open redirect into the auth flow. Auth rate limits are to
-be read from the dashboard and recorded here as found, not asserted from this
-document. **When these are applied, add a dated table here with the value found
-and the value set for each**, because a project setting has no migration and is
-therefore the control most likely to be silently reverted.
+Routing was then verified positively rather than by the absence of a 404, because
+`--expect-portal` could not fire at all until it was repaired the same day: the
+sign-in card renders on `/portal` and `/portal/r/:id`, a bogus route renders the
+404 page, and there are zero CSP violations on any of the three.
+
+**Nothing has been deployed yet, and that is deliberate.** The next build
+publishes a "Member portal" nav entry on a site participants are actively reading
+for workshop logistics, while `member_allowlist` holds zero rows and
+`handle_new_portal_user()` refuses every address that is not in it. A deployed
+portal would therefore look live and reject everyone. Seed the allowlist first.
+
+## The Supabase Auth settings, as found and as set
+
+Applied 2026-08-21 through the management API. A project setting has no migration,
+so it is the control most likely to be silently reverted, which is why this table
+records both columns rather than only the target.
+
+| Setting | Found | Set to | Note |
+|---|---|---|---|
+| Custom SMTP | Brevo, `smtp-relay.brevo.com:587`, sender "SIL OBT-CDT" | unchanged | Already configured. The built-in mailer's roughly two per hour would not have carried 46 self-registrations. |
+| TOTP enrolment and verification | both enabled | unchanged | Already correct, and the prerequisite for the MFA migration. |
+| Email confirmations | required (`mailer_autoconfirm` false) | unchanged | Already correct. |
+| JWT expiry | 3600 | unchanged | Already one hour. |
+| Refresh-token rotation, reuse detection | on, reuse interval 10 | unchanged | Already correct. |
+| CAPTCHA | disabled | unchanged | Correct by decision; see above. |
+| Minimum password length | 6 | **12** | |
+| `site_url` | **`http://localhost:3000`** | `https://joshuafrost712.github.io/obt-cdt-site/portal` | Every confirmation and reset link pointed at localhost until this was changed. |
+| Redirect allowlist | **empty** | four exact paths | Production `/portal`, plus `http://localhost:5191`, `:4191` and `:4193` under the same base, which are the dev and dist ports the consultant-UI and boundary-harness specs book. No wildcard. |
+| Leaked-password protection | off | **left off, by decision** | See below. |
+| `rate_limit_email_sent` | 30 per hour | unchanged, recorded | Read from the project, not asserted from this document. |
+
+Two corrections to what this document previously said about these settings.
+
+**The redirect allowlist was empty, not unbounded.** The earlier text justified
+doing the step twice on the grounds that "an unbounded allowlist in the meantime
+is a live open redirect into the auth flow." It was not unbounded. It was empty,
+with `site_url` pointing at localhost, so the risk was not an open redirect but a
+non-functional one: every auth email led nowhere usable. The action was the same
+and the urgency was higher.
+
+**The auth-config PATCH is atomic.** The first attempt sent all four changed
+fields together and the whole request failed with a 402 on one of them, which read
+as "none of this worked" rather than "one field needs a paid plan." Apply auth
+settings field by field.
+
+**There is no leaked-password protection, by decision.** Supabase's HaveIBeenPwned
+check is a Pro-plan feature: the management API refuses it with
+`402 Configuring leaked password protection via HaveIBeenPwned.org is available on
+Pro Plans and up`. The project is on the free plan, and Joshua's call on
+2026-08-21 was that it is not needed yet. That is worth stating plainly rather
+than leaving as an unexplained gap, because the earlier draft of this document
+listed it among settings that were "all free," and a later reader would otherwise
+try to apply it and hit the same 402.
+
+What stands in its place, and it is not nothing: the minimum password length is
+now 12, sign-up is gated by `member_allowlist` so a stranger's credentials get
+them a refusal rather than an account, Supabase's server-side auth rate limits
+apply, and MFA is required for the two roles that can read the whole cohort. What
+is genuinely not covered is a participant who reuses a password that has appeared
+in a public breach. **Revisit when the project moves to Pro for any other reason**,
+at which point it is a single toggle, or sooner if the cohort grows past the point
+where the allowlist is the main gate.
 
 **The MFA migration is written, reviewed and not applied.** Its safety gate will
 refuse until an administrator has enrolled, which is the correct behaviour and
