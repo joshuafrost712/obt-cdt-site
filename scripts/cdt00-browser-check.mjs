@@ -120,7 +120,11 @@ for (const p of PAGES) {
 // http: child navigate the top document at all, so the check reported "no bust"
 // for a reason that had nothing to do with the site.
 console.log('\nFrame-buster (criterion 4)')
-const attackerPort = Number(new URL(BASE).port) + 100
+// A deployed URL has no port, so fall back to a fixed one. The attacker page
+// only has to be a DIFFERENT ORIGIN from the site; localhost against
+// joshuafrost712.github.io is comfortably that.
+const sitePort = Number(new URL(BASE).port)
+const attackerPort = Number.isFinite(sitePort) && sitePort ? sitePort + 100 : 4383
 const framePage = (target) =>
   `<!doctype html><meta charset=utf-8><title>attacker page</title>
    <h1>attacker page</h1>

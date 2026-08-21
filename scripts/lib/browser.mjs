@@ -86,6 +86,8 @@ class Session {
     this.id = 0
     this.pending = new Map()
     this.events = []
+    // sessionId -> targetInfo, for out-of-process iframes (see send()).
+    this.childSessions = new Map()
     ws.addEventListener('message', (ev) => {
       const msg = JSON.parse(ev.data)
       if (msg.id && this.pending.has(msg.id)) {
@@ -93,6 +95,12 @@ class Session {
         this.pending.delete(msg.id)
         msg.error ? reject(new Error(msg.error.message)) : resolve(msg.result)
       } else if (msg.method) {
+        if (msg.method === 'Target.attachedToTarget') {
+          this.childSessions.set(msg.params.sessionId, msg.params.targetInfo)
+        }
+        if (msg.method === 'Target.detachedFromTarget') {
+          this.childSessions.delete(msg.params.sessionId)
+        }
         this.events.push(msg)
       }
     })
@@ -100,11 +108,16 @@ class Session {
 
   // The handbook is roughly 22,000px tall, so a beyond-viewport capture of it
   // takes well over the default. Timeouts are per call rather than global.
-  send(method, params = {}, timeout = 30000) {
+  // `sessionId` addresses an auto-attached child target. A cross-SITE iframe is
+  // put in its own renderer process, and Page.createIsolatedWorld from the parent
+  // session cannot reach it, so reading such a frame needs its own session. That
+  // is not an edge case here: the deployed site is on github.io while a test
+  // harness page is on localhost.
+  send(method, params = {}, timeout = 30000, sessionId = undefined) {
     const id = ++this.id
     return new Promise((resolve, reject) => {
       this.pending.set(id, { resolve, reject })
-      this.ws.send(JSON.stringify({ id, method, params }))
+      this.ws.send(JSON.stringify({ id, method, params, ...(sessionId ? { sessionId } : {}) }))
       setTimeout(() => {
         if (this.pending.delete(id)) reject(new Error(`${method} timed out after ${timeout}ms`))
       }, timeout)
@@ -127,6 +140,13 @@ async function connect(browser) {
     s.send('Runtime.enable'),
     s.send('Log.enable'),
     s.send('Network.enable'),
+    // flatten:true routes child-target traffic over this same socket, addressed
+    // by sessionId. Without it, a cross-site iframe is invisible to this session.
+    s.send('Target.setAutoAttach', {
+      autoAttach: true,
+      waitForDebuggerOnStart: false,
+      flatten: true,
+    }),
   ])
   return { session: s, targetId: target.id, ws }
 }
@@ -259,6 +279,17 @@ export async function visit(
   // refusing to render inside the frame?" is unanswerable from the outside.
   const childFrames = []
   if (frames) {
+    const probe = async (read, url) =>
+      childFrames.push({
+        url,
+        title: await read('document.title'),
+        text: (await read('document.body ? document.body.innerText : ""')) || '',
+        marker: await read(
+          'document.querySelector("[data-testid=\'cdt-frame-refused\']") ? true : false',
+        ),
+      })
+
+    // Same-process iframes: an isolated world in the parent's session reaches them.
     try {
       const { frameTree } = await session.send('Page.getFrameTree')
       for (const child of frameTree.childFrames || []) {
@@ -266,26 +297,40 @@ export async function visit(
           frameId: child.frame.id,
           worldName: 'cdt00-probe',
         })
-        const read = (expr) =>
-          session
-            .send('Runtime.evaluate', {
-              expression: expr,
-              contextId: executionContextId,
-              returnByValue: true,
-            })
-            .then((r) => r.result.value)
-            .catch(() => '')
-        childFrames.push({
-          url: child.frame.url,
-          title: await read('document.title'),
-          text: (await read('document.body ? document.body.innerText : ""')) || '',
-          marker: await read(
-            'document.querySelector("[data-testid=\'cdt-frame-refused\']") ? true : false',
-          ),
-        })
+        await probe(
+          (expr) =>
+            session
+              .send('Runtime.evaluate', {
+                expression: expr,
+                contextId: executionContextId,
+                returnByValue: true,
+              })
+              .then((r) => r.result.value)
+              .catch(() => ''),
+          child.frame.url,
+        )
       }
     } catch {
       /* no frames, or the page navigated away mid-probe */
+    }
+
+    // Cross-site iframes: their own renderer process, their own session.
+    for (const [sessionId, info] of session.childSessions) {
+      if (info.type !== 'iframe') continue
+      if (childFrames.some((f) => f.url === info.url)) continue
+      try {
+        await session.send('Runtime.enable', {}, 30000, sessionId)
+        await probe(
+          (expr) =>
+            session
+              .send('Runtime.evaluate', { expression: expr, returnByValue: true }, 30000, sessionId)
+              .then((r) => r.result.value)
+              .catch(() => ''),
+          info.url,
+        )
+      } catch {
+        /* target went away */
+      }
     }
   }
 
