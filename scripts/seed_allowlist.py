@@ -90,7 +90,7 @@ def near_duplicates(addresses) -> list[tuple[str, ...]]:
     """Addresses that are probably one person.
 
     This is the failure that actually bites: a report published to
-    `x@jocum.br` when the profile registered `x@jocum.com.br` does not error,
+    `x@partner.br` when the profile registered `x@partner.com.br` does not error,
     it lands in the unmatched queue looking like a stranger. Catching it here,
     before anyone signs up, is far cheaper than reconciling it afterwards — and
     each pair found is a candidate row for `member_alias`.

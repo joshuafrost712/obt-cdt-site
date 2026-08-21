@@ -153,7 +153,7 @@ and still report success.
 
 It also flags **near-duplicate addresses** — same local part, different domain,
 `+tags` and gmail dots ignored. That is the failure that actually bites: a report
-published to `x@jocum.br` when the profile registered `x@jocum.com.br` does not
+published to `x@partner.br` when the profile registered `x@partner.com.br` does not
 error, it lands in the unmatched queue looking like a stranger. The current
 export has exactly one such pair. Each one found is a candidate `member_alias`
 row.
