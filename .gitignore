@@ -20,3 +20,7 @@ scripts/fonts.generated.css
 
 # editor
 .DS_Store
+
+# python bytecode from scripts/
+__pycache__/
+*.pyc
