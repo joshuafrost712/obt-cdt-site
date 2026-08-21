@@ -100,9 +100,28 @@ for (const p of PAGES) {
   if (bad) failures++
 
   if (p.name === 'portal') {
-    const isNotFound = /not found|page not found/i.test(r.bodyText) || /Not Found/i.test(r.title)
+    // This detector was written against /not found|page not found/i and could
+    // never fire, which made --expect-portal a guarantee that guaranteed
+    // nothing. NotFoundPage renders "404", "This page doesn't exist", "The
+    // address may have changed…" and "Back to the start", none of which match
+    // either pattern; and getRouteMeta('/portal') has no content page to resolve
+    // against, so the title falls back to site.title rather than saying "Not
+    // Found". Measured 2026-08-21, and it is program finding 12.
+    //
+    // Two changes. The 404 markers avoid the apostrophe in "doesn't", because
+    // keying a gate to a punctuation character is the same fragility one level
+    // down. And routing is now asserted POSITIVELY as well: the portal must show
+    // the sign-in card, so a third state (routed but rendering something broken)
+    // fails instead of passing for not being the 404 page.
+    const body = r.bodyText || ''
+    const isNotFound = /back to the start/i.test(body) || /this page does/i.test(body)
+    const looksLikePortal = /password/i.test(body) && /sign in/i.test(body)
     if (expectPortal && isNotFound) {
       console.log('      FAIL portal rendered NotFoundPage; this check would pass vacuously')
+      failures++
+    } else if (expectPortal && !looksLikePortal) {
+      console.log('      FAIL portal routed but did not render the sign-in card')
+      console.log(`           body began: ${body.replace(/\s+/g, ' ').slice(0, 120)}`)
       failures++
     } else if (!expectPortal && isNotFound) {
       console.log('      SKIP portal is not routed (backendEnabled false). Criterion 3 is')
