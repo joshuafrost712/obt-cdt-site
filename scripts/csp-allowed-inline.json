@@ -1,0 +1,13 @@
+{
+  "_comment": "Inline scripts the CSP admits. Keyed on a normalized hash so the /dev/ entry's base-path interpolation does not change the key between a local build and CI. Adding an entry is a deliberate decision: see docs/SECURITY.md. Regenerate with `npm run build` then `node scripts/csp-hashes.mjs --update-allowlist`.",
+  "allowed": {
+    "0eef8e24a2526dd520cf99eb1de59620": {
+      "description": "document.documentElement.classList.add('js')",
+      "files": 12
+    },
+    "6420d83847553cfa6a687dc4fab0d0dc": {
+      "description": "try { localStorage.setItem('cdt.dev', '1') } catch (e) {} location.rep",
+      "files": 1
+    }
+  }
+}
