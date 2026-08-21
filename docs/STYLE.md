@@ -27,6 +27,30 @@ there; components only ever use token names.
 | Interface | Source Sans 3 500, uppercase, 0.15em tracking on labels | `--font-sans`, the `body` default |
 | Pull quotes | Caveat 500 | `--font-script`, only in the `quote` block |
 
+**The fonts are self-hosted, not loaded from Google.** Since 2026-08-21 (spec
+CDT-00) the twelve faces live in `public/fonts/` as `@font-face` rules in
+`src/index.css`, and `index.html` carries no font link and no preconnect. The
+reason is in `docs/SECURITY.md`: a Google Fonts request told Google the IP address
+of every person who opened the participant handbook, and part of this cohort works
+where that is a real cost. **Do not add a font link back into `index.html`**, and
+do not hand-edit the `@font-face` block.
+
+`scripts/fetch-fonts.mjs` is how the files got there, so a weight change is a
+re-run rather than an archaeology exercise. `npm run fonts:check` re-fetches and
+reports drift without writing. Two things it knows that are easy to get wrong.
+
+Google declares one `@font-face` per weight but points several of them at the
+**same** variable woff2, so there are 24 declarations over 10 files: Playfair
+400/600/700 share one file, and Source Sans 3 400/500/600/700 share one. Naming
+files by weight saves identical bytes several times, which on the first run of
+this script tripled the font payload and moved home-page LCP from 108ms to 824ms.
+
+Only the `latin` and `latin-ext` subsets are kept, of the nine Google offers. That
+is not a reduction: `unicode-range` means a browser downloads only the subsets a
+page actually needs, and no page here contains Greek, Cyrillic or Vietnamese
+characters. A visitor fetches 3 files and 102.6 KB, which is byte-for-byte what
+they fetched from Google before the change, verified by sha256.
+
 **Two deliberate departures from SIL.**
 
 SIL sets **H2 in Caveat**, a handwriting face. Copying that would have put all 21

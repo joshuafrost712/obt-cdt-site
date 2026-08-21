@@ -6,17 +6,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#003049" />
     <script>document.documentElement.classList.add('js')</script>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <!--
       SIL's own type stack, read off global.sil.org: Playfair Display for
       headings, Lora for body copy, Source Sans 3 for navigation and buttons,
       Caveat for pull quotes.
+
+      These are self-hosted from public/fonts/, declared as @font-face in
+      src/index.css and downloaded by scripts/fetch-fonts.mjs. They used to be
+      two preconnects and a stylesheet request to Google, which told Google the
+      IP address of every person who opened the participant handbook. Several
+      people in this cohort work where that is a real cost. Do not add a font
+      link back here; see docs/SECURITY.md.
+
+      The Content-Security-Policy and referrer meta tags are not here either.
+      scripts/csp-hashes.mjs writes them into every generated HTML file after
+      the prerender, because two of those files are built from template
+      literals and never see this template.
     -->
-    <link
-      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Source+Sans+3:wght@400;500;600;700&family=Caveat:wght@500&display=swap"
-      rel="stylesheet"
-    />
     <!--app-head-->
     <title>OBT Consultant Development Track</title>
   </head>

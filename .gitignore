@@ -14,5 +14,9 @@ feedback/processed/*
 !feedback/processed/.gitkeep
 feedback/.pull.json
 
+# generated intermediate from scripts/fetch-fonts.mjs; its content is pasted into
+# src/index.css, which is the committed source of truth for the @font-face rules
+scripts/fonts.generated.css
+
 # editor
 .DS_Store
