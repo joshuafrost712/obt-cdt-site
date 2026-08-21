@@ -193,7 +193,86 @@ every client role with no grant at all**. That is CDT-00's question 7 answered i
 the direction the question asks about. No filled workbook may ever enter this
 repo; the importer refuses a path inside it.
 
+## 6. Who may assess whom: the schema enforces less than it looks like it does
+
+CDT-02's `consultant_qualification` decides who may sit in judgment on an occasion,
+and three things about it must be read together or the guarantee is overstated.
+
+**Scope matching is a hierarchy, not equality.** A grant at `('category',
+'gc-adult-education')` satisfies a bundle row at `('domain','M2')`, because the
+category sits inside that domain. It runs the other way too: a `('domain','M2')`
+grant satisfies a `('category','gc-mentoring')` row. That second direction is a
+deliberate over-grant. A broad qualification really does cover its categories, so
+the control is not the schema, it is that **whoever records a grant picks the
+narrowest scope that is true**. The category level exists so that narrow scope is
+available; it does not force anyone to use it.
+
+**The disjunction moves the over-grant risk from the grant to the bundle map.** A
+consultant qualifies for a bundle if they hold **at least one** row that
+`bundle_qualification` lists for it. So a row added to that table widens who may
+assess whom, and **no other control catches it**. Viji's review of
+`bundle_qualification`'s rows is the control. That is a review task, not a schema
+property, and it is the part of `Bundle-Map.md` most worth her time.
+
+**I-1 is permissive and is named as such rather than made to look tight.** Its
+qualification sentence is "Consultant qualified in the dossier's domains", which is
+a property of the CIT's dossier and not of the bundle. So I-1 lists all six
+domains, and any consultant holding any domain or category grant passes the schema
+check for it. The pairing's real justification is recorded in
+`assignment.qualification_basis` for audit. CDT-05 owns tightening this once
+dossiers exist, and a session that assumes I-1 is already enforced will not add the
+check. CDT-02's criterion 3 prints I-1's rows beside its result so the
+permissiveness is visible rather than implied.
+
+**`scope_kind = 'bundle'` names a credential, not an occasion.** Settled by Joshua
+on 2026-08-21 after the two readings were found to disagree. `bundle_grant` is the
+vocabulary, `obt-cdt-facilitator` is its one row today, and the scope guard
+validates against it. Under the rejected reading I-4's qualifying row would have
+been unenforceable and **no consultant could ever have been assigned to I-4**.
+
+## 7. Storage stops the accident. The handbook stops the rest
+
+Both buckets are private and neither MIME allowlist contains audio or video.
+`cdt-evidence` takes pdf, docx, txt, md, png and jpeg at 10 MB; `cdt-submissions`
+takes pdf, docx, txt, md, vtt and srt at 25 MB.
+
+**Here is where that control ends.** Supabase Storage validates the `Content-Type`
+the *uploader declares*. A consultant who renames `session.mp3` to `session.pdf`
+and sends `application/pdf` stores audio in the bucket. Real enforcement needs
+magic-byte inspection and this host has no server to do it in. So the allowlist
+stops the accident and the handbook stops the deliberate case, with
+`submission_file.retain_until` as the backstop. This is written down because
+CDT-00's own standard is that a threat model overstating its protection is worse
+than none.
+
+The two buckets' policies are **not symmetrical**, and that is not an oversight.
+`cdt-evidence`'s first path segment is the owner's own profile id, so its rule is a
+direct comparison. `cdt-submissions`'s first segment is an assignment id, so its
+rule is an indirection through `assignment` via `may_write_assignment_path()`,
+which regex-guards the uuid shape **before** casting. Without that guard a non-uuid
+first segment raises `invalid input syntax for type uuid`, which is an error page
+rather than a refusal.
+
+## 8. A head mentor without two-factor authentication sees nothing
+
+`is_head_mentor()` carries the same `aal2` requirement as `is_portal_admin()`, and
+it fails closed: a token with no `aal` claim is treated as single-factor. Since it
+appears in all three read helpers and in every head-mentor RPC, a head mentor whose
+session has not completed two-factor authentication **reads zero rows everywhere
+and is refused by every approval call**.
+
+That will look like a bug the first time it happens, and it is not. It is also
+ordering-sensitive in the same way CDT-00 D6 is: enrol first, then rely on it.
+`20260821120000_admin_mfa.sql` still refuses to apply until some portal
+administrator holds a verified factor, which as of 2026-08-21 none does.
+
 ## What has and has not run, as of 2026-08-21
+
+**Superseded in part. The schema IS applied.** The paragraph below was written
+before the dedicated account's token was available; it now is, and five migrations
+plus CDT-02's own have been applied to `lvzwmzqqvbnurumygcnt` (`sil-obt-cdt
+website`). What remains unwritten is **rows**, not schema. See "As of the CDT-02
+build session" at the end of this file.
 
 The migration and both scripts are written and reviewed. The **schema has not been
 applied and no row has been written**, because the portal's Supabase project lives
@@ -217,3 +296,59 @@ against live rows, and the prerequisite sentence rendered from a real join.
 Its groupings are transcribed from the approved plan rather than invented, so
 everything above could be built and dry-run, and the seed **refuses to write**
 while `signed_off: false` unless passed `--allow-unsigned-domain-map`.
+
+## As of the CDT-02 build session, 2026-08-21
+
+**The database exists and the schema is on it.** The portal project was created
+2026-08-17 but its `public` schema was empty until this session: phase 1 had
+shipped as code, never as a running system. Applied in order, with
+`scripts/apply-migration.mjs`: the baseline, `portal_admin`, `publication`, CDT-01's
+`competency_registry`, CDT-02's `assessment_spine`, and a fix migration described
+below. None is recorded in `supabase_migrations.schema_migrations`, so a linked
+machine needs `supabase migration repair --status applied <version>` for each
+before its next `db push`.
+
+**`20260821120000_admin_mfa.sql` is still unapplied, and refused correctly.** Its
+own DO block stops it until a portal administrator holds a verified MFA factor.
+There are no `auth.users` rows at all, so nothing can hold one yet. Enable TOTP in
+the project's Auth settings, run `scripts/mfa-enrol.mjs`, confirm an `aal2` token,
+then apply it.
+
+**No rows are seeded, and that is deliberate.** Both source documents are unsigned
+(`Domain-Map.md` and `Bundle-Map.md`, both due for Viji's review 2026-08-26), and
+rows that decide who may assess whom are not written from an unreviewed document.
+The only durable row in the whole assessment schema is `platform_setting`'s
+`head_mentor_approval_mode = "approve-all"`, seeded by the migration because the
+safe default has to exist before anything can read it.
+
+**The criteria still ran against the real data.** Both seeds gained `--emit-sql`,
+which runs the seed's own gate and then writes its rows as SQL without touching a
+database or reading a credential. `scripts/cdt02-assertions.mjs` prepends those
+rows to `scripts/cdt02-assertions.sql` and posts the lot inside a transaction it
+**rolls back**. So criteria 3 to 10 were asserted against the real 41-unit registry
+and the real I-1 to I-4 rows, with nothing persisted. Re-run it any time with
+`node scripts/cdt02-assertions.mjs`; it needs no arguments.
+
+Result: **61 checks, 61 passed**, including six mutation tests. Each mutation drops
+a control, watches the check go red, restores it, and then asserts the restoration,
+because a harness that leaves a guard off is worse than one that never dropped it.
+
+**One shipped defect was found, by criterion 11 on its first real run.**
+`20260817120200_publication.sql:247` revoked `admin_unmatched_publications` from
+`public, anon` and **not `authenticated`**, so Supabase's default grants stood and
+`authenticated` held INSERT, UPDATE, DELETE and TRUNCATE on the view. This is
+exactly the mistake `20260817120100_portal_admin.sql:42-47` documents as having
+already shipped once in the sibling project; the warning existed as prose and never
+as an assertion. Exposure was **latent, not live**: the view carries
+`security_invoker = on` and `authenticated` holds only SELECT on the underlying
+`publication`, so a delete attempt was refused with 42501, verified against the live
+project. But it sat two independent changes away from being real. Fixed in
+`20260908120100_fix_view_overgrant.sql`, which asserts the outcome with
+`has_table_privilege` rather than trusting its own revoke.
+
+Two things the criteria do **not** prove, stated rather than folded into the pass
+count. The `aal2` checks forge `request.jwt.claims`, which tests the predicate a
+policy evaluates and not Supabase Auth's issuing of a real two-factor token; that
+needs the TOTP enrolment above. And `src/lib/backend/assessApi.ts` typechecks and
+builds but appears in no bundle chunk, because nothing imports it yet. CDT-04 builds
+the UI that will.
