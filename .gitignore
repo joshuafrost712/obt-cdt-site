@@ -28,3 +28,11 @@ __pycache__/
 # CDT-04 UI fixture ids, written by scripts/cdt04-fixtures.mjs --setup.
 # Holds fixture uuids and a throwaway fixture password; never a participant.
 scripts/.cdt04-fixture-ids.json
+
+# CDT-06a boundary-harness fixture ids, written by scripts/cdt06-fixtures.mjs --setup.
+# Same rule: fixture uuids and a throwaway password, never a participant.
+scripts/.cdt06-fixture-ids.json
+
+# CDT-06a screenshots. Criterion 10 has a person open these; criterion 13 checks
+# them, because a fixture name in an image is still a name in the repo.
+feedback/cdt06-shots/

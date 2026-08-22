@@ -410,3 +410,41 @@ Joshua's decision, 2026-08-21: **patch and continue, pause only on disclosure.**
 hole that let one consultant read another's write-up for the same CIT pauses the
 affected pairings, because the second-rating design depends on that blindness.
 Anything else is patched and the affected checks are re-run.
+
+## The boundary harness (CDT-06a, 2026-08-22)
+
+`scripts/cdt06-rls-tests.sql` and `scripts/cdt06-ui.mjs` are the standing gate over
+the merged tree. Run them before the round opens and after any schema change:
+
+```
+node scripts/cdt06-fixtures.mjs --setup
+node scripts/cdt06-fixtures.mjs --sql scripts/cdt06-rls-tests.sql
+node --dns-result-order=ipv4first scripts/cdt06-ui.mjs
+node scripts/cdt06-fixtures.mjs --sql scripts/cdt06-rls-restore.sql
+node scripts/cdt06-fixtures.mjs --teardown
+```
+
+Read the restore step as mandatory rather than tidy: the UI half replaces
+`may_see_submission()` on the live project and puts it back, and a run that dies
+in between leaves it widened. `docs/SECURITY.md` records the same thing.
+
+**What it proved on 2026-08-22.** Second rating is blind: a second rater on the
+same CIT reads zero of the primary's write-ups, both on the rendered page and on
+their own session's wire read, and widening the helper opens it, which is what
+shows the blindness is the database's doing. A CIT cannot read a write-up before
+release, and cannot drive their own assignment through the state graph. A
+consultant cannot see the name of a CIT they have no assignment with. `anon` reads
+nothing anywhere, `member_allowlist` refuses every client role with `42501`, and
+so does `self_assessment_intake`, which is where a participant's email address
+lands.
+
+**What it found, and it is the one thing to fix before the round.** An
+administrator holding only a password reads the whole cohort, because
+`is_portal_admin()` has no assurance clause on the live project. The head mentor
+is gated correctly; the administrator is not. `docs/SECURITY.md` carries the
+measurement and the reason. Seed the allowlist and apply
+`20260821120000_admin_mfa.sql` in the same sitting.
+
+**One number to distrust.** `member_alias` and `unit_revision` hold zero rows, so
+their "reads nothing" cells pass for free. The harness prints which tables those
+are on every run, under section 8, rather than folding them into the pass total.

@@ -392,6 +392,62 @@ and RPCs that refuse. RLS cannot tell them why, because a denial is a silent
 filter. A message saying "complete two-factor authentication" is CDT-05's, and
 until it exists that empty page is the experience.
 
+### Everything above describes the migration. It is NOT applied, and that is the live state
+
+Measured by CDT-06a's harness on 2026-08-22, against the live project rather than
+against this file. `pg_get_functiondef('public.is_portal_admin()')` carries **no
+`aal2` clause**, and `supabase_migrations.schema_migrations` has no row for
+`20260821120000`. The requirement described in this section is written, reviewed,
+committed and not in force.
+
+The cause is the ordering guard above working exactly as designed, and it is a
+deadlock rather than a mistake: the migration refuses to run until a
+`portal_admin` already holds a verified factor, `member_allowlist` is still empty,
+so no account can be created, so no administrator exists to enrol. It opens the
+moment the allowlist is seeded and one administrator runs `scripts/mfa-enrol.mjs`.
+
+**What it means until then**, measured rather than reasoned. With fourteen fixture
+accounts and four write-ups on the project, an administrator holding only a
+password read every one of: 8 assignments, 24 assignment events, 4 write-ups, 44
+ratings, 2 attachments, 6 consultant records, 198 qualifications, 4 enrolments,
+and the name of a CIT they had no assignment with. The same ten pairs run against
+the head mentor, whose helper *does* carry the clause, returned zero rows at
+`aal1` and the full set at `aal2`, which is what shows this is a missing clause
+and not a broken test.
+
+Two consequences worth stating plainly. `is_portal_admin()` is called by
+`may_see_assignment`, `may_see_submission`, `may_see_subject` and
+`may_see_profile` as well as by six policies of its own, so the reach is the whole
+cohort rather than one admin surface. And the September round can start without
+this being closed only if no portal administrator exists yet, which is currently
+true and stops being true the day the allowlist is seeded. **Seeding the allowlist
+and applying this migration belong in the same sitting.**
+
+## A harness temporarily replaces two objects on the live project
+
+CDT-06a's boundary harness mutates live SQL, and this section exists because
+CDT-00's standard is that a document overstating its protections is worse than
+none. Two objects, one at a time, one check wide:
+
+- `is_head_mentor()`, stripped of its `aal2` clause to watch the `aal1` half of
+  every oversight pair go red. This one runs inside `begin; … rollback;` in
+  `scripts/cdt06-rls-tests.sql`, so a killed connection reverts it rather than
+  leaving the clause off.
+- `may_see_submission()`, widened to reach by subject, to watch a second rater
+  reach the primary's write-up about the same CIT. This one must **commit**,
+  because the browser reads over its own connection, so it is captured with
+  `pg_get_functiondef`, restored from `scripts/cdt06-rls-restore.sql` in a
+  `finally` that runs on success, failure and throw alike, and then re-read and
+  diffed against the capture.
+
+`scripts/cdt06-rls-restore.sql` carries both original definitions verbatim and is
+safe to run at any time. If a session ever dies mid-run, run it by hand:
+`node scripts/cdt06-fixtures.mjs --sql scripts/cdt06-rls-restore.sql`.
+
+The harness never issues a grant on `member_allowlist`, never selects from it, and
+deletes only the fourteen fixture addresses it inserted, named one by one. The
+rest of that table is the cohort roster.
+
 ## Repo history
 
 The repo is **public** (`gh repo view --json isPrivate`). Scanned in full on
