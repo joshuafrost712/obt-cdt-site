@@ -6,12 +6,13 @@
   "description": "Public website for the OBT Consultant Development Track (OBT-CDT).",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build && vite build --ssr src/prerender-entry.tsx --outDir dist-ssr && node scripts/prerender.mjs && node scripts/csp-hashes.mjs",
+    "build": "tsc -b && node scripts/check-labels.mjs && vite build && vite build --ssr src/prerender-entry.tsx --outDir dist-ssr && node scripts/prerender.mjs && node scripts/csp-hashes.mjs",
     "preview": "vite preview",
     "pull-feedback": "node scripts/pull-feedback.mjs",
     "fonts": "node scripts/fetch-fonts.mjs",
     "fonts:check": "node scripts/fetch-fonts.mjs --check",
-    "serve:dist": "node scripts/serve-dist.mjs"
+    "serve:dist": "node scripts/serve-dist.mjs",
+    "labels": "node scripts/check-labels.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.108.0",

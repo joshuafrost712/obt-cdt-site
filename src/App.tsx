@@ -23,6 +23,13 @@ import { NotFoundPage } from './pages/NotFoundPage'
 // people read and a memo describing deleted files becomes archaeology.
 const PortalPage = lazy(() => import('./pages/backend/PortalPage'))
 const PortalReportPage = lazy(() => import('./pages/backend/PortalReportPage'))
+// Spec CDT-04. `/portal/a/:assignmentId` is the PERMANENT anchor: once an
+// invitation email carries it the shape cannot change, so the id is the opaque
+// uuid from `assignment.id` and never a name-derived slug. The queue lives at
+// /portal/assignments rather than at /portal, because /portal is the member's
+// report list and a consultant is usually also a member.
+const AssignmentsPage = lazy(() => import('./pages/backend/AssignmentsPage'))
+const AssignmentPage = lazy(() => import('./pages/backend/AssignmentPage'))
 
 function Deferred({ children }: { children: ReactNode }) {
   return <Suspense fallback={<p className="mx-auto max-w-3xl px-5 py-16 text-ink-faint">Loading…</p>}>{children}</Suspense>
@@ -78,6 +85,8 @@ export default function App() {
           <>
             <Route path="/portal" element={<Deferred><PortalPage /></Deferred>} />
             <Route path="/portal/r/:reportId" element={<Deferred><PortalReportPage /></Deferred>} />
+            <Route path="/portal/assignments" element={<Deferred><AssignmentsPage /></Deferred>} />
+            <Route path="/portal/a/:assignmentId" element={<Deferred><AssignmentPage /></Deferred>} />
           </>
         )}
         <Route path="*" element={<NotFoundPage />} />

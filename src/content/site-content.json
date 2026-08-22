@@ -205,6 +205,596 @@
         "id": "portal.report.superseded",
         "type": "labelToken",
         "label": "A later version of this report was sent. This is the version you received on the date above."
+      },
+      {
+        "id": "portal.assess.consultant.queue.title",
+        "type": "labelToken",
+        "label": "Your assessment sessions"
+      },
+      {
+        "id": "portal.assess.consultant.queue.loading",
+        "type": "labelToken",
+        "label": "Loading your sessions…"
+      },
+      {
+        "id": "portal.assess.consultant.queue.empty",
+        "type": "labelToken",
+        "label": "You have no assessment sessions yet. When one is assigned to you it appears here, with the date and the units it covers."
+      },
+      {
+        "id": "portal.assess.consultant.queue.section.undated",
+        "type": "labelToken",
+        "label": "Waiting on a date"
+      },
+      {
+        "id": "portal.assess.consultant.queue.section.undated.note",
+        "type": "labelToken",
+        "label": "Agree a time with the CIT, then confirm it here."
+      },
+      {
+        "id": "portal.assess.consultant.queue.section.dated",
+        "type": "labelToken",
+        "label": "Coming up"
+      },
+      {
+        "id": "portal.assess.consultant.queue.section.writeup",
+        "type": "labelToken",
+        "label": "Waiting on your write-up"
+      },
+      {
+        "id": "portal.assess.consultant.queue.section.writeup.note",
+        "type": "labelToken",
+        "label": "File these while the conversation is still fresh."
+      },
+      {
+        "id": "portal.assess.consultant.queue.section.done",
+        "type": "labelToken",
+        "label": "Finished"
+      },
+      {
+        "id": "portal.assess.consultant.queue.section.cancelled",
+        "type": "labelToken",
+        "label": "Cancelled"
+      },
+      {
+        "id": "portal.assess.consultant.queue.commitment.label",
+        "type": "labelToken",
+        "label": "Still ahead"
+      },
+      {
+        "id": "portal.assess.consultant.queue.commitment.hours",
+        "type": "labelToken",
+        "label": "hours"
+      },
+      {
+        "id": "portal.assess.consultant.queue.commitment.note",
+        "type": "labelToken",
+        "label": "Prep, meeting and write-up time for the sessions you have not filed yet. Finished and cancelled sessions are not counted."
+      },
+      {
+        "id": "portal.assess.consultant.queue.state.proposed",
+        "type": "labelToken",
+        "label": "Needs a date"
+      },
+      {
+        "id": "portal.assess.consultant.queue.state.scheduled",
+        "type": "labelToken",
+        "label": "Scheduled"
+      },
+      {
+        "id": "portal.assess.consultant.queue.state.held",
+        "type": "labelToken",
+        "label": "Held, not yet written up"
+      },
+      {
+        "id": "portal.assess.consultant.queue.state.submitted",
+        "type": "labelToken",
+        "label": "Filed"
+      },
+      {
+        "id": "portal.assess.consultant.queue.state.returned",
+        "type": "labelToken",
+        "label": "Sent back to you"
+      },
+      {
+        "id": "portal.assess.consultant.queue.state.closed",
+        "type": "labelToken",
+        "label": "Closed"
+      },
+      {
+        "id": "portal.assess.consultant.queue.state.cancelled",
+        "type": "labelToken",
+        "label": "Cancelled"
+      },
+      {
+        "id": "portal.assess.consultant.queue.role.primary",
+        "type": "labelToken",
+        "label": "Primary rating"
+      },
+      {
+        "id": "portal.assess.consultant.queue.role.second",
+        "type": "labelToken",
+        "label": "Second rating"
+      },
+      {
+        "id": "portal.assess.consultant.queue.cit.label",
+        "type": "labelToken",
+        "label": "CIT"
+      },
+      {
+        "id": "portal.assess.consultant.queue.cit.unknown",
+        "type": "labelToken",
+        "label": "Name not available"
+      },
+      {
+        "id": "portal.assess.consultant.queue.open",
+        "type": "labelToken",
+        "label": "Open"
+      },
+      {
+        "id": "portal.assess.consultant.queue.returned.reason",
+        "type": "labelToken",
+        "label": "Why it came back"
+      },
+      {
+        "id": "portal.assess.consultant.assignment.title",
+        "type": "labelToken",
+        "label": "Assessment session"
+      },
+      {
+        "id": "portal.assess.consultant.assignment.loading",
+        "type": "labelToken",
+        "label": "Loading this session…"
+      },
+      {
+        "id": "portal.assess.consultant.assignment.back",
+        "type": "labelToken",
+        "label": "Back to your sessions"
+      },
+      {
+        "id": "portal.assess.consultant.assignment.meta.bundle",
+        "type": "labelToken",
+        "label": "Occasion"
+      },
+      {
+        "id": "portal.assess.consultant.assignment.meta.format",
+        "type": "labelToken",
+        "label": "Format"
+      },
+      {
+        "id": "portal.assess.consultant.assignment.meta.date",
+        "type": "labelToken",
+        "label": "Date"
+      },
+      {
+        "id": "portal.assess.consultant.assignment.meta.undated",
+        "type": "labelToken",
+        "label": "No date agreed yet"
+      },
+      {
+        "id": "portal.assess.consultant.assignment.meta.language",
+        "type": "labelToken",
+        "label": "Meeting language"
+      },
+      {
+        "id": "portal.assess.consultant.assignment.meta.language.unknown",
+        "type": "labelToken",
+        "label": "Not set"
+      },
+      {
+        "id": "portal.assess.consultant.assignment.meta.l1.yes",
+        "type": "labelToken",
+        "label": "This is the CIT's first language"
+      },
+      {
+        "id": "portal.assess.consultant.assignment.meta.l1.no",
+        "type": "labelToken",
+        "label": "Not the CIT's first language"
+      },
+      {
+        "id": "portal.assess.consultant.assignment.meta.prep",
+        "type": "labelToken",
+        "label": "Prep"
+      },
+      {
+        "id": "portal.assess.consultant.assignment.meta.meeting",
+        "type": "labelToken",
+        "label": "Meeting"
+      },
+      {
+        "id": "portal.assess.consultant.assignment.meta.writeup",
+        "type": "labelToken",
+        "label": "Write-up"
+      },
+      {
+        "id": "portal.assess.consultant.assignment.meta.minutes",
+        "type": "labelToken",
+        "label": "minutes"
+      },
+      {
+        "id": "portal.assess.consultant.assignment.meta.units",
+        "type": "labelToken",
+        "label": "Units rated"
+      },
+      {
+        "id": "portal.assess.consultant.assignment.meta.state",
+        "type": "labelToken",
+        "label": "Where this stands"
+      },
+      {
+        "id": "portal.assess.consultant.assignment.meta.role",
+        "type": "labelToken",
+        "label": "Your role"
+      },
+      {
+        "id": "portal.assess.consultant.assignment.meta.basis",
+        "type": "labelToken",
+        "label": "Why you were assigned"
+      },
+      {
+        "id": "portal.assess.consultant.assignment.meta.assessment-language",
+        "type": "labelToken",
+        "label": "The CIT's assessment language"
+      },
+      {
+        "id": "portal.assess.consultant.assignment.confirm.heading",
+        "type": "labelToken",
+        "label": "Confirm the date"
+      },
+      {
+        "id": "portal.assess.consultant.assignment.confirm.body",
+        "type": "labelToken",
+        "label": "Put in the time you agreed with the CIT. You can change it until the session is held."
+      },
+      {
+        "id": "portal.assess.consultant.assignment.confirm.date",
+        "type": "labelToken",
+        "label": "Date and time"
+      },
+      {
+        "id": "portal.assess.consultant.assignment.confirm.url",
+        "type": "labelToken",
+        "label": "Meeting link"
+      },
+      {
+        "id": "portal.assess.consultant.assignment.confirm.cta",
+        "type": "labelToken",
+        "label": "Save the date"
+      },
+      {
+        "id": "portal.assess.consultant.assignment.confirm.working",
+        "type": "labelToken",
+        "label": "Saving…"
+      },
+      {
+        "id": "portal.assess.consultant.assignment.held.heading",
+        "type": "labelToken",
+        "label": "Ready to write up"
+      },
+      {
+        "id": "portal.assess.consultant.assignment.held.body",
+        "type": "labelToken",
+        "label": "The session is marked as held. Fill in the ratings below and file them in one go."
+      },
+      {
+        "id": "portal.assess.consultant.assignment.mark-held.cta",
+        "type": "labelToken",
+        "label": "The session happened"
+      },
+      {
+        "id": "portal.assess.consultant.assignment.filed.heading",
+        "type": "labelToken",
+        "label": "What you filed"
+      },
+      {
+        "id": "portal.assess.consultant.assignment.filed.note",
+        "type": "labelToken",
+        "label": "Filed and waiting on the head mentor. You can see it here; the CIT sees it once it has been released."
+      },
+      {
+        "id": "portal.assess.consultant.assignment.returned.heading",
+        "type": "labelToken",
+        "label": "Sent back for revision"
+      },
+      {
+        "id": "portal.assess.consultant.assignment.returned.body",
+        "type": "labelToken",
+        "label": "The head mentor has asked for a change. Revise the ratings below and file again."
+      },
+      {
+        "id": "portal.assess.consultant.assignment.closed.heading",
+        "type": "labelToken",
+        "label": "This session is closed"
+      },
+      {
+        "id": "portal.assess.consultant.assignment.cancelled.heading",
+        "type": "labelToken",
+        "label": "This session was cancelled"
+      },
+      {
+        "id": "portal.assess.consultant.assignment.cancelled.body",
+        "type": "labelToken",
+        "label": "Nothing is owed on it. If that looks wrong, ask the track administrator."
+      },
+      {
+        "id": "portal.assess.consultant.assignment.readonly.heading",
+        "type": "labelToken",
+        "label": "This session is about you"
+      },
+      {
+        "id": "portal.assess.consultant.assignment.readonly.body",
+        "type": "labelToken",
+        "label": "This page shows what has been arranged. Your consultant fills in the rating, and you see it once it has been released to you."
+      },
+      {
+        "id": "portal.assess.consultant.form.heading",
+        "type": "labelToken",
+        "label": "Write up the session"
+      },
+      {
+        "id": "portal.assess.consultant.form.intro",
+        "type": "labelToken",
+        "label": "Rate every unit the occasion covers. The one sentence of evidence per unit is what makes a rating defensible a year from now."
+      },
+      {
+        "id": "portal.assess.consultant.form.progress.label",
+        "type": "labelToken",
+        "label": "Units rated"
+      },
+      {
+        "id": "portal.assess.consultant.form.consent.label",
+        "type": "labelToken",
+        "label": "The CIT agreed to this session going into the track's record"
+      },
+      {
+        "id": "portal.assess.consultant.form.consent.note",
+        "type": "labelToken",
+        "label": "Required. Ask at the start of the call, then tick it here."
+      },
+      {
+        "id": "portal.assess.consultant.form.body.label",
+        "type": "labelToken",
+        "label": "How the session went"
+      },
+      {
+        "id": "portal.assess.consultant.form.body.help",
+        "type": "labelToken",
+        "label": "A paragraph or two in your own words."
+      },
+      {
+        "id": "portal.assess.consultant.form.strength.label",
+        "type": "labelToken",
+        "label": "One thing they did well"
+      },
+      {
+        "id": "portal.assess.consultant.form.growth1.label",
+        "type": "labelToken",
+        "label": "First thing to grow"
+      },
+      {
+        "id": "portal.assess.consultant.form.growth2.label",
+        "type": "labelToken",
+        "label": "Second thing to grow"
+      },
+      {
+        "id": "portal.assess.consultant.form.context.label",
+        "type": "labelToken",
+        "label": "Anything that affected the session"
+      },
+      {
+        "id": "portal.assess.consultant.form.context.help",
+        "type": "labelToken",
+        "label": "Illness, a bad line, an interruption. It changes how the rating should be read."
+      },
+      {
+        "id": "portal.assess.consultant.form.connection.label",
+        "type": "labelToken",
+        "label": "Connection quality"
+      },
+      {
+        "id": "portal.assess.consultant.form.connection.good",
+        "type": "labelToken",
+        "label": "Good"
+      },
+      {
+        "id": "portal.assess.consultant.form.connection.patchy",
+        "type": "labelToken",
+        "label": "Patchy"
+      },
+      {
+        "id": "portal.assess.consultant.form.connection.poor",
+        "type": "labelToken",
+        "label": "Poor"
+      },
+      {
+        "id": "portal.assess.consultant.form.transcript.label",
+        "type": "labelToken",
+        "label": "Transcript"
+      },
+      {
+        "id": "portal.assess.consultant.form.transcript.none",
+        "type": "labelToken",
+        "label": "None"
+      },
+      {
+        "id": "portal.assess.consultant.form.transcript.manual-upload",
+        "type": "labelToken",
+        "label": "Uploaded separately"
+      },
+      {
+        "id": "portal.assess.consultant.form.source.label",
+        "type": "labelToken",
+        "label": "Link to the document, if you wrote it up elsewhere"
+      },
+      {
+        "id": "portal.assess.consultant.form.source.help",
+        "type": "labelToken",
+        "label": "A Google Doc link is fine. Paste it here so the record points at it."
+      },
+      {
+        "id": "portal.assess.consultant.form.scale.heading",
+        "type": "labelToken",
+        "label": "What the levels mean"
+      },
+      {
+        "id": "portal.assess.consultant.form.unit.observed",
+        "type": "labelToken",
+        "label": "Observed"
+      },
+      {
+        "id": "portal.assess.consultant.form.unit.recommended",
+        "type": "labelToken",
+        "label": "Recommend to CBC"
+      },
+      {
+        "id": "portal.assess.consultant.form.unit.confidence",
+        "type": "labelToken",
+        "label": "Confidence"
+      },
+      {
+        "id": "portal.assess.consultant.form.unit.evidence",
+        "type": "labelToken",
+        "label": "Evidence, one sentence"
+      },
+      {
+        "id": "portal.assess.consultant.form.unit.evidence.help",
+        "type": "labelToken",
+        "label": "Name the specific thing said or done."
+      },
+      {
+        "id": "portal.assess.consultant.form.unit.plain",
+        "type": "labelToken",
+        "label": "Could they explain it in plain language?"
+      },
+      {
+        "id": "portal.assess.consultant.form.unit.plain.help",
+        "type": "labelToken",
+        "label": "To a mother-tongue translator with six years of school and no theological training."
+      },
+      {
+        "id": "portal.assess.consultant.form.unit.plain.yes",
+        "type": "labelToken",
+        "label": "Yes"
+      },
+      {
+        "id": "portal.assess.consultant.form.unit.plain.partly",
+        "type": "labelToken",
+        "label": "Partly"
+      },
+      {
+        "id": "portal.assess.consultant.form.unit.plain.no",
+        "type": "labelToken",
+        "label": "No"
+      },
+      {
+        "id": "portal.assess.consultant.form.unit.plainnote",
+        "type": "labelToken",
+        "label": "Note on the plain-language check"
+      },
+      {
+        "id": "portal.assess.consultant.form.unit.escalate",
+        "type": "labelToken",
+        "label": "Flag this unit for the head mentor"
+      },
+      {
+        "id": "portal.assess.consultant.form.unit.primary",
+        "type": "labelToken",
+        "label": "Primary"
+      },
+      {
+        "id": "portal.assess.consultant.form.unit.secondary",
+        "type": "labelToken",
+        "label": "Secondary"
+      },
+      {
+        "id": "portal.assess.consultant.form.unit.descriptors",
+        "type": "labelToken",
+        "label": "What this unit covers"
+      },
+      {
+        "id": "portal.assess.consultant.form.confidence.low",
+        "type": "labelToken",
+        "label": "Low"
+      },
+      {
+        "id": "portal.assess.consultant.form.confidence.medium",
+        "type": "labelToken",
+        "label": "Medium"
+      },
+      {
+        "id": "portal.assess.consultant.form.confidence.high",
+        "type": "labelToken",
+        "label": "High"
+      },
+      {
+        "id": "portal.assess.consultant.form.submit.cta",
+        "type": "labelToken",
+        "label": "File the write-up"
+      },
+      {
+        "id": "portal.assess.consultant.form.submit.working",
+        "type": "labelToken",
+        "label": "Filing…"
+      },
+      {
+        "id": "portal.assess.consultant.form.submit.error",
+        "type": "labelToken",
+        "label": "The write-up was not filed. Nothing is lost: your draft is still on this device."
+      },
+      {
+        "id": "portal.assess.consultant.form.submit.incomplete",
+        "type": "labelToken",
+        "label": "Every unit needs an observed level, a recommendation, a confidence and a sentence of evidence before this can be filed."
+      },
+      {
+        "id": "portal.assess.consultant.form.draft.saved",
+        "type": "labelToken",
+        "label": "Saved on this device"
+      },
+      {
+        "id": "portal.assess.consultant.form.draft.never",
+        "type": "labelToken",
+        "label": "Not saved yet"
+      },
+      {
+        "id": "portal.assess.consultant.form.draft.failed",
+        "type": "labelToken",
+        "label": "This browser refused to save the draft. Finish and file in one sitting, or keep your notes somewhere else as well."
+      },
+      {
+        "id": "portal.assess.consultant.form.draft.restore.heading",
+        "type": "labelToken",
+        "label": "There is an unfinished write-up for this session on this device."
+      },
+      {
+        "id": "portal.assess.consultant.form.draft.restore.cta",
+        "type": "labelToken",
+        "label": "Pick up where I left off"
+      },
+      {
+        "id": "portal.assess.consultant.form.draft.restore.discard",
+        "type": "labelToken",
+        "label": "Start again"
+      },
+      {
+        "id": "portal.assess.consultant.form.draft.device-note",
+        "type": "labelToken",
+        "label": "Drafts are held in this browser on this device only. They are not on the server, and clearing your browser data removes them."
+      },
+      {
+        "id": "portal.assess.consultant.absence.not-yours",
+        "type": "labelToken",
+        "label": "This session is not on your list. If you were expecting it, ask the track administrator to check who it is assigned to."
+      },
+      {
+        "id": "portal.assess.consultant.absence.second-blind",
+        "type": "labelToken",
+        "label": "You are the second rater on this session. The first rating is hidden from you until you have filed yours, so that your judgement is independent."
+      },
+      {
+        "id": "portal.assess.consultant.absence.unreleased",
+        "type": "labelToken",
+        "label": "Your consultant has filed this write-up. You see it once it has been checked and released to you."
       }
     ]
   },

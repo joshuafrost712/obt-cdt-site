@@ -24,3 +24,7 @@ scripts/fonts.generated.css
 # python bytecode from scripts/
 __pycache__/
 *.pyc
+
+# CDT-04 UI fixture ids, written by scripts/cdt04-fixtures.mjs --setup.
+# Holds fixture uuids and a throwaway fixture password; never a participant.
+scripts/.cdt04-fixture-ids.json

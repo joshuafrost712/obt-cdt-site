@@ -352,3 +352,61 @@ policy evaluates and not Supabase Auth's issuing of a real two-factor token; tha
 needs the TOTP enrolment above. And `src/lib/backend/assessApi.ts` typechecks and
 builds but appears in no bundle chunk, because nothing imports it yet. CDT-04 builds
 the UI that will.
+
+## The consultant's queue and the write-up form (CDT-04, 2026-08-22)
+
+`assessApi.ts` now has the UI that imports it. Two routes, both inside the
+`backendEnabled` block and both lazy: `/portal/assignments` is the queue, and
+**`/portal/a/:assignmentId` is the permanent anchor**. Once an invitation email
+carries that URL its shape cannot change, so the id is the opaque uuid from
+`assignment.id` and never a name-derived slug.
+
+### A draft is a device event, not a system event
+
+`submission.consent_recorded` is `not null` with no default and
+`submission_rating.evidence_sentence` is `not null` per unit, so the schema
+accepts nothing until everything exists. I-1 is 16 units at seven fields each over
+nine header fields: **121 inputs**, filled after a two-hour conversation. The form
+therefore saves every keystroke to `localStorage` under `cdt04.draft.<uuid>`.
+
+**That draft lives in one browser on one device and nowhere else.** It is not on
+the server, clearing browser data removes it, and Safari and iOS evict
+unvisited-origin storage after seven days. The UI says "Saved on this device" for
+exactly this reason. A consultant who loses a draft will ask whether the system had
+it, and the honest answer is no. The draft is cleared only after the write returns
+successfully, so a refused submit keeps the work.
+
+### One write-up per assignment, filed in one call
+
+`submit_writeup()` (`20260909120000_writeup_submit.sql`) takes the whole write-up
+and every rating in a single call, because PostgREST gives the client no
+transaction and three separate inserts leave a reachable `submission` with zero
+ratings the first time a connection drops mid-file.
+
+It also holds the rule the form can only ask for politely: **a write-up rates every
+unit in its bundle, or it is refused.** A form check is a courtesy; a database
+check is a rule, and this is the thing a rushed consultant at 10pm can otherwise
+get wrong on the way to CBC.
+
+A `returned` write-up is revised in place rather than re-filed, and
+`20260909120200_one_writeup_per_assignment.sql` makes that structural: one
+submission per assignment, enforced by a unique index. A second rating is a second
+**assignment** carrying `rating_role = 'second'`, with its own submission, so the
+second-rating design is untouched by this.
+
+### A consultant can now see who their CIT is
+
+`profiles` read reach used to be `auth.uid() = id`, which is right for a member
+portal and wrong for an assessment round: it meant nothing anywhere told a
+consultant the name of the person they were about to examine.
+`20260909120100_profile_counterparty_read.sql` opens exactly one step of reach,
+following an assignment in both directions, plus oversight. There is no
+"all participants" read, and `member_allowlist` stays revoked from every client
+role, so the cohort roster is still not readable by anyone.
+
+### If a boundary turns out not to hold mid-round
+
+Joshua's decision, 2026-08-21: **patch and continue, pause only on disclosure.** A
+hole that let one consultant read another's write-up for the same CIT pauses the
+affected pairings, because the second-rating design depends on that blindness.
+Anything else is patched and the affected checks are re-run.

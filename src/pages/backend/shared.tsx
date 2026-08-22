@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent, type ReactNode } from 'react'
+import { useEffect, useState, type ElementType, type FormEvent, type ReactNode } from 'react'
 import type { Session } from '@supabase/supabase-js'
 import { supabase } from '../../lib/backend/client'
 import { useSession } from '../../lib/backend/useSession'
@@ -15,7 +15,31 @@ import { clearHadAccount, hadAccount, markHadAccount } from '../../lib/backend/s
  * genuinely different situations, and collapsing any of them into a blank panel
  * is the failure the Collaborative-Data-Protocol calls absence-is-not-a-status.
  */
-export function AuthGate({ title, children }: { title: string; children: (session: Session) => ReactNode }) {
+/**
+ * `compact` trims the page chrome above the content, and it exists for a measured
+ * reason rather than a stylistic one.
+ *
+ * CDT-04's criterion 10 requires the CIT's name, the occasion and the date inside
+ * the first 200px at a 390px viewport, because a consultant opens an assignment
+ * from an email on a phone and the first thing they need is who, what and when.
+ * Measured on 2026-08-21 with the default chrome: 262px. The sticky site header
+ * is 57px of that and is not negotiable, but the kicker is decoration on a page
+ * reached from a direct link, and a 4xl heading reading "Assessment session" says
+ * less than the name directly beneath it.
+ *
+ * So a compact page drops the kicker and shrinks the heading. Every other portal
+ * page keeps the full chrome: this is one page's answer to one measurement, not a
+ * redesign of the portal.
+ */
+export function AuthGate({
+  title,
+  compact,
+  children,
+}: {
+  title: string
+  compact?: boolean
+  children: (session: Session) => ReactNode
+}) {
   const { session } = useSession()
 
   useEffect(() => {
@@ -23,11 +47,21 @@ export function AuthGate({ title, children }: { title: string; children: (sessio
   }, [session])
 
   return (
-    <div className="mx-auto max-w-3xl px-5 pb-16 pt-12">
-      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent-deep">
-        {siteLabel('portal.kicker', 'For enrolled participants')}
-      </p>
-      <h1 className="mt-2 font-display text-4xl font-semibold tracking-tight text-ink">{title}</h1>
+    <div className={`mx-auto max-w-3xl px-5 pb-16 ${compact ? 'pt-5' : 'pt-12'}`}>
+      {!compact && (
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent-deep">
+          {siteLabel('portal.kicker', 'For enrolled participants')}
+        </p>
+      )}
+      <h1
+        className={
+          compact
+            ? 'font-display text-xl font-semibold tracking-tight text-ink'
+            : 'mt-2 font-display text-4xl font-semibold tracking-tight text-ink'
+        }
+      >
+        {title}
+      </h1>
 
       {session === undefined && (
         <p className="mt-8 text-ink-faint">{siteLabel('portal.checking', 'Checking your session…')}</p>
@@ -35,7 +69,7 @@ export function AuthGate({ title, children }: { title: string; children: (sessio
       {session === null && <SignInCard returning={hadAccount()} />}
       {session && (
         <>
-          <MemberBar email={session.user.email ?? ''} />
+          <MemberBar email={session.user.email ?? ''} compact={compact} />
           {children(session)}
         </>
       )}
@@ -43,9 +77,13 @@ export function AuthGate({ title, children }: { title: string; children: (sessio
   )
 }
 
-function MemberBar({ email }: { email: string }) {
+function MemberBar({ email, compact }: { email: string; compact?: boolean }) {
   return (
-    <div className="mt-6 flex flex-wrap items-center gap-3 border-b border-ink/10 pb-4">
+    <div
+      className={`flex flex-wrap items-center gap-3 border-b border-ink/10 ${
+        compact ? 'mt-3 pb-2' : 'mt-6 pb-4'
+      }`}
+    >
       <span className="text-xs text-ink-faint">{email}</span>
       <button
         type="button"
@@ -253,6 +291,38 @@ function Panel({ children }: { children: ReactNode }) {
 
 export function ErrorNote({ error }: { error: string }) {
   return <p className="mt-6 rounded-lg bg-accent-soft/50 px-4 py-3 text-sm text-accent-deep">{error}</p>
+}
+
+/**
+ * A content-layer label, rendered AND tagged for edit-in-place. CDT-04 decision 1.
+ *
+ * `siteLabel()` alone returns a bare string, so a portal page built on it puts
+ * text on screen that highlight-to-edit cannot reach: `SelectionLayer.tsx:52-53`
+ * resolves a selection through `dataset.dfbNode` and `dataset.dfbField`, and
+ * before this component no `portal.*` node carried either. The public site has
+ * had this everywhere since it was built (`src/components/text.tsx:37`); this is
+ * the same two attributes for the id-plus-fallback call shape the portal uses.
+ *
+ * Use `siteLabel()` directly only where a string cannot carry attributes: a
+ * `placeholder`, an `aria-label`, or a prop like `AuthGate`'s `title`.
+ */
+export function L({
+  id,
+  fallback,
+  as,
+  className,
+}: {
+  id: string
+  fallback: string
+  as?: ElementType
+  className?: string
+}) {
+  const Tag: ElementType = as ?? 'span'
+  return (
+    <Tag className={className} data-dfb-node={id} data-dfb-field="label">
+      {siteLabel(id, fallback)}
+    </Tag>
+  )
 }
 
 /** "2026-08-24" (+ optional end) → "24 Aug 2026" / "24 Aug – 4 Sep 2026". */

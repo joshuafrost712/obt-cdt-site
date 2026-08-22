@@ -32,6 +32,33 @@
  */
 import { supabase } from './client'
 
+/**
+ * Retry once, briefly, when PostgREST rejects a token it should accept.
+ *
+ * Observed in this repo's own walkthrough on 2026-08-21: a consultant signs in
+ * and the queue's first read comes back 401 `JWT issued at future`. The token is
+ * minted by GoTrue and validated by PostgREST, and the two do not share a clock
+ * to the second, so a read fired within a second or two of sign-in can be
+ * rejected for being too new. Measured at the time: this machine's clock was
+ * about 2.9 seconds behind the database's.
+ *
+ * It is transient by construction, and without this a real consultant's first
+ * sight of the portal is the words "JWT issued at future". One retry, one delay,
+ * and only for this error class: a blanket retry would paper over refusals that
+ * mean something, and every other error here is either a real denial or a real
+ * bug and must surface.
+ */
+async function retryIfTooNew<T>(run: () => Promise<T>): Promise<T> {
+  try {
+    return await run()
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e)
+    if (!/issued at future|JWT.*not yet valid/i.test(msg)) throw e
+    await new Promise((r) => setTimeout(r, 1500))
+    return run()
+  }
+}
+
 // ---------------------------------------------------------------- row types
 
 export type AssignmentState =
@@ -171,23 +198,27 @@ export async function listBundleUnits(bundleKey: string): Promise<BundleUnit[]> 
 // ------------------------------------------------------------- assignments
 
 export async function listMyAssignments(): Promise<AssignmentRow[]> {
-  const { data, error } = await supabase()
-    .from('assignment')
-    .select(ASSIGNMENT_COLUMNS)
-    .order('scheduled_at', { ascending: true, nullsFirst: false })
-  if (error) throw new Error(error.message)
-  return (data ?? []) as AssignmentRow[]
+  return retryIfTooNew(async () => {
+    const { data, error } = await supabase()
+      .from('assignment')
+      .select(ASSIGNMENT_COLUMNS)
+      .order('scheduled_at', { ascending: true, nullsFirst: false })
+    if (error) throw new Error(error.message)
+    return (data ?? []) as AssignmentRow[]
+  })
 }
 
 /** Null covers both "no such assignment" and "one exists and RLS filtered it". */
 export async function getAssignment(id: string): Promise<AssignmentRow | null> {
-  const { data, error } = await supabase()
-    .from('assignment')
-    .select(ASSIGNMENT_COLUMNS)
-    .eq('id', id)
-    .maybeSingle()
-  if (error) throw new Error(error.message)
-  return (data ?? null) as AssignmentRow | null
+  return retryIfTooNew(async () => {
+    const { data, error } = await supabase()
+      .from('assignment')
+      .select(ASSIGNMENT_COLUMNS)
+      .eq('id', id)
+      .maybeSingle()
+    if (error) throw new Error(error.message)
+    return (data ?? null) as AssignmentRow | null
+  })
 }
 
 export async function listAssignmentEvents(assignmentId: string): Promise<AssignmentEventRow[]> {
@@ -398,4 +429,213 @@ export async function setApprovalMode(mode: 'approve-all' | 'trust-mentors'): Pr
     _value: mode,
   })
   if (error) throw new Error(error.message)
+}
+
+// ###########################################################################
+// Spec CDT-04's additions. This is CDT-02's module by ownership, so these live
+// here rather than in a second API module: two modules against one schema is the
+// two-code-systems failure the Web-App-Build-Protocol records.
+// ###########################################################################
+
+export interface ScalePoint {
+  level: 0 | 1 | 2 | 3
+  label: string
+  definition: string
+}
+
+export interface UnitForForm {
+  unit_key: string
+  is_primary: boolean
+  statement: string
+  category_key: string
+  sub_area: string | null
+  descriptors: string[]
+}
+
+export interface CounterpartyProfile {
+  id: string
+  full_name: string
+  email: string
+  org: string
+}
+
+/**
+ * The 0-3 anchors, from CDT-01's seeded registry. Never retyped into a
+ * component: a correction goes into the vault matrix and the seed re-runs, and a
+ * hard-coded copy here is a second definition that will drift from the one CBC
+ * receives.
+ */
+export async function listScale(): Promise<ScalePoint[]> {
+  const { data, error } = await supabase()
+    .from('competency_scale')
+    .select('level, label, definition')
+    .order('level')
+  if (error) throw new Error(error.message)
+  return (data ?? []) as ScalePoint[]
+}
+
+/**
+ * Every unit the form must render for a bundle, with its statement and its
+ * component descriptors, in one round trip.
+ *
+ * `bundle_unit` carries foreign keys to both `assessment_bundle` and
+ * `competency_unit`, and `unit_descriptor` to `competency_unit`, so PostgREST can
+ * embed two levels down. All four tables read `using (true)`: a CIT must be able
+ * to read the instrument they are sitting, so the registry is deliberately not
+ * reader-scoped and this is not an over-fetch.
+ *
+ * Secondaries are included, per decision 4's stated default, and `is_primary`
+ * comes back so the form can label them rather than hide them. A secondary
+ * observed in passing is evidence that otherwise goes unrecorded.
+ */
+export async function listUnitsForBundle(bundleKey: string): Promise<UnitForForm[]> {
+  const { data, error } = await supabase()
+    .from('bundle_unit')
+    .select(
+      'unit_key, is_primary, competency_unit(statement, category_key, sub_area, ordinal, unit_descriptor(ordinal, text))',
+    )
+    .eq('bundle_key', bundleKey)
+  if (error) throw new Error(error.message)
+
+  type Embedded = {
+    unit_key: string
+    is_primary: boolean
+    competency_unit: {
+      statement: string
+      category_key: string
+      sub_area: string | null
+      ordinal: number
+      unit_descriptor: { ordinal: number; text: string }[]
+    } | null
+  }
+
+  return ((data ?? []) as unknown as Embedded[])
+    .map((r) => ({
+      unit_key: r.unit_key,
+      is_primary: r.is_primary,
+      statement: r.competency_unit?.statement ?? '',
+      category_key: r.competency_unit?.category_key ?? '',
+      sub_area: r.competency_unit?.sub_area ?? null,
+      ordinal: r.competency_unit?.ordinal ?? 0,
+      descriptors: (r.competency_unit?.unit_descriptor ?? [])
+        .slice()
+        .sort((a, b) => a.ordinal - b.ordinal)
+        .map((d) => d.text),
+    }))
+    // The registry's own order, not the unit_key string order: U9 sorts after U10
+    // as text, and a form whose units are out of the matrix's order is a form a
+    // consultant cannot check against the paper instrument.
+    .sort((a, b) => a.ordinal - b.ordinal)
+    .map(({ ordinal: _ordinal, ...unit }) => unit)
+}
+
+/**
+ * The other party to an assignment: the CIT for a consultant, the consultant for
+ * a CIT. Returns null for both "no such profile" and "RLS filtered it", which
+ * here means the reader shares no assignment with them.
+ *
+ * This read is why `20260909120100_profile_counterparty_read.sql` exists. Before
+ * it, `profiles` was `using (auth.uid() = id)` and a consultant could not learn
+ * the name of the person they were assessing.
+ */
+export async function getCounterparty(profileId: string): Promise<CounterpartyProfile | null> {
+  const { data, error } = await supabase()
+    .from('profiles')
+    .select('id, full_name, email, org')
+    .eq('id', profileId)
+    .maybeSingle()
+  if (error) throw new Error(error.message)
+  return (data ?? null) as CounterpartyProfile | null
+}
+
+/** The CIT's enrolment facts a consultant needs before the call. */
+export async function getEnrollment(
+  profileId: string,
+): Promise<{ assessment_language: string | null; note: string; cohort_event_id: string | null } | null> {
+  const { data, error } = await supabase()
+    .from('cit_enrollment')
+    .select('assessment_language, note, cohort_event_id')
+    .eq('profile_id', profileId)
+    .maybeSingle()
+  if (error) throw new Error(error.message)
+  return (data ?? null) as { assessment_language: string | null; note: string; cohort_event_id: string | null } | null
+}
+
+/**
+ * The write-up already filed against an assignment, if the reader may see it.
+ *
+ * Null is three cases and the page must not distinguish them: none filed, one
+ * filed by someone else for the same CIT (a second rater — deliberately blind),
+ * and one filed for a CIT who has not had it released. `may_see_submission()`
+ * decides, and the difference is not knowable on the wire.
+ */
+export async function getSubmissionForAssignment(assignmentId: string): Promise<SubmissionRow | null> {
+  const { data, error } = await supabase()
+    .from('submission')
+    .select(SUBMISSION_COLUMNS)
+    .eq('assignment_id', assignmentId)
+    .maybeSingle()
+  if (error) throw new Error(error.message)
+  return (data ?? null) as SubmissionRow | null
+}
+
+export interface WriteupRating {
+  unit_key: string
+  observed_level: 0 | 1 | 2 | 3
+  recommended_level: 0 | 1 | 2 | 3
+  confidence: 'low' | 'medium' | 'high'
+  evidence_sentence: string
+  plain_language_check: 'yes' | 'partly' | 'no'
+  plain_language_note?: string | null
+  escalate?: boolean
+}
+
+/**
+ * File a write-up in ONE call. `20260909120000_writeup_submit.sql`.
+ *
+ * The reason this is an RPC and not three table writes is that PostgREST gives
+ * the client no transaction. Insert `submission`, then `submission_rating`, then
+ * `submission_file`, and a failure between the first and second leaves a write-up
+ * that exists and says nothing, permanently reachable in the table the head
+ * mentor's queue reads.
+ *
+ * The RPC also holds the coverage gate: a write-up rates every unit in its
+ * bundle or it is refused. That check cannot live in this file, because a rule
+ * enforced in the browser is a courtesy.
+ *
+ * `consentRecorded` is required rather than defaulted, all the way down: the
+ * column has no default precisely so that absence cannot mean yes.
+ */
+export async function submitWriteup(args: {
+  assignmentId: string
+  consentRecorded: boolean
+  bodyMd?: string
+  strengthNote?: string | null
+  growthNote1?: string | null
+  growthNote2?: string | null
+  contextNote?: string | null
+  connectionQuality?: 'good' | 'patchy' | 'poor' | null
+  transcriptSource?: 'manual-upload' | 'none'
+  ratings: WriteupRating[]
+  sourceUrl?: string | null
+}): Promise<string> {
+  const { data, error } = await supabase().rpc('submit_writeup', {
+    _assignment: args.assignmentId,
+    _submission: {
+      body_md: args.bodyMd ?? '',
+      strength_note: args.strengthNote ?? null,
+      growth_note_1: args.growthNote1 ?? null,
+      growth_note_2: args.growthNote2 ?? null,
+      context_note: args.contextNote ?? null,
+      connection_quality: args.connectionQuality ?? null,
+      consent_recorded: args.consentRecorded,
+      transcript_source: args.transcriptSource ?? 'none',
+    },
+    _ratings: args.ratings,
+    _file: args.sourceUrl
+      ? { kind: 'writeup', source_url: args.sourceUrl, filename: 'write-up (external document)' }
+      : null,
+  })
+  if (error) throw new Error(error.message)
+  return data as string
 }
