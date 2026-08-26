@@ -106,6 +106,14 @@ RESERVED_COLUMNS = [
 NAME_COLUMN_KEY = "p-name"
 NAME_COLUMN_TITLE = "Your name (optional)"
 
+# The audience field, added 2026-08-26 when Joshua widened the round from CITs
+# only to CITs, facilitators and ethnoarts specialists. It is required, and it is
+# required because of SITE-00 finding 7: one anonymous sheet mixing a CIT's rating
+# of a session with the rating given by the person who taught it produces an
+# aggregate nobody can interpret. The groups and the prompt are read from
+# Question-Set.md, never written here, per rubric row 4.
+AUDIENCE_COLUMN_KEY = "p-group"
+
 # Week 2 day 4 has no content decided (Workshop Plan §6.2, SITE-00 finding 6), so
 # its row is provisional and a round-2 run refuses rather than quietly omitting a
 # day of the workshop.
@@ -143,6 +151,25 @@ def _flag(value: str, where: str, what: str) -> bool:
     if v not in ("true", "false"):
         raise ContractError(f"{where}: {what} must be true or false, got {value!r}")
     return v == "true"
+
+
+def _active(value: str, title: str, where: str) -> tuple[bool, bool]:
+    """`active` accepts true, false, or `auto`.
+
+    `auto` means "active if this row has a title", and it exists so Joshua can
+    fill a blank row in from memory by typing the title and nothing else. The
+    failure it removes is the two-step edit: before this, naming a devotional and
+    forgetting to flip `active` left the row silently out of the form, and the
+    only symptom was a shorter form. Explicit true or false still wins, so a row
+    that is titled but deliberately not asked about stays possible.
+
+    Returns (active, auto), so the count report can say which rows decided
+    themselves rather than being told.
+    """
+    v = _plain(value).lower()
+    if v == "auto":
+        return bool(_plain(title)), True
+    return _flag(value, where, "active"), False
 
 
 def _int(value: str, where: str, what: str) -> int:
@@ -228,6 +255,7 @@ def parse_session_map(text: str, path: str) -> tuple[list[dict], dict]:
                 f"{rnd!r}. The section and the round column must agree, because "
                 "`day` is per week and a mismatch shifts a whole week silently."
             )
+        active, auto = _active(cells[8], cells[5], where)
         rows.append(
             {
                 "typed_key": _plain(cells[0]),
@@ -239,7 +267,8 @@ def parse_session_map(text: str, path: str) -> tuple[list[dict], dict]:
                 "title": _plain(cells[5]),
                 "facilitator": _plain(cells[6]),
                 "ordinal": _int(cells[7], where, "ordinal"),
-                "active": _flag(cells[8], where, "active"),
+                "active": active,
+                "auto": auto,
                 "note": _plain(cells[9]),
                 "where": where,
             }
@@ -306,6 +335,8 @@ def parse_question_set(text: str, path: str) -> dict:
     prompts: dict[str, str] = {}
     questions: list[dict] = []
     sentence_lines: list[str] = []
+    audience_lines: list[str] = []
+    groups: list[dict] = []
     section = None
 
     for n, line in enumerate(text.split("\n"), start=1):
@@ -317,6 +348,8 @@ def parse_question_set(text: str, path: str) -> dict:
                 section = "sentence"
             elif h.startswith("The comment prompt"):
                 section = "prompts"
+            elif h.startswith("Who is answering"):
+                section = "audience"
             elif h.startswith("Round "):
                 section = "questions"
             else:
@@ -326,6 +359,9 @@ def parse_question_set(text: str, path: str) -> dict:
         if section == "sentence":
             if line.startswith(">"):
                 sentence_lines.append(line.lstrip("> ").rstrip())
+            continue
+        if section == "audience" and line.startswith(">"):
+            audience_lines.append(line.lstrip("> ").rstrip())
             continue
         s = line.strip()
         if section is None or not s.startswith("|"):
@@ -369,6 +405,22 @@ def parse_question_set(text: str, path: str) -> dict:
                     f"{', '.join(KINDS)}, got {head!r}"
                 )
             prompts[head] = _plain(cells[1])
+        elif section == "audience":
+            if head in ("group_key", ""):
+                continue
+            if len(cells) != 2:
+                raise ContractError(
+                    f"{where}: an audience row needs 2 columns "
+                    f"(group_key, label), found {len(cells)}"
+                )
+            if not re.fullmatch(r"[a-z][a-z0-9-]*", head):
+                raise ContractError(
+                    f"{where}: group_key must be lower-case kebab, got {head!r}"
+                )
+            label = _plain(cells[1])
+            if not label:
+                raise ContractError(f"{where}: audience group {head!r} has no label")
+            groups.append({"group_key": head, "label": label, "where": where})
         elif section == "questions":
             if not QUESTION_KEY.fullmatch(head):
                 continue
@@ -425,11 +477,43 @@ def parse_question_set(text: str, path: str) -> dict:
             "what makes the scale mean one thing and it is rendered to the "
             "participant, not stored."
         )
+    if len(groups) < 2:
+        raise ContractError(
+            f"{path}: '## Who is answering' needs at least two audience groups, "
+            f"found {len(groups)}. The round is answered by CITs, facilitators and "
+            "ethnoarts specialists, and without this column a facilitator's rating "
+            "of their own session is averaged in with the CITs' and nobody can see "
+            "it happening (SITE-00 finding 7)."
+        )
+    seen_groups: dict[str, dict] = {}
+    for g in groups:
+        if g["group_key"] in seen_groups:
+            raise ContractError(
+                f"{g['where']}: group_key {g['group_key']!r} is already defined at "
+                f"{seen_groups[g['group_key']]['where']}"
+            )
+        if g["label"] in {x["label"] for x in seen_groups.values()}:
+            raise ContractError(
+                f"{g['where']}: two audience groups carry the label {g['label']!r}. "
+                "The label is what arrives in the export, so duplicates cannot be "
+                "told apart."
+            )
+        seen_groups[g["group_key"]] = g
+    if not audience_lines:
+        raise ContractError(
+            f"{path}: '## Who is answering' has no block-quote prompt. The question "
+            "text is a contract like every other on-screen string, and a literal in "
+            "the script would put it outside the digest."
+        )
     return {
         "scale": scale,
         "prompts": prompts,
         "questions": questions,
         "sentence": " ".join(x for x in sentence_lines if x),
+        "audience": {
+            "prompt": " ".join(x for x in audience_lines if x),
+            "groups": groups,
+        },
     }
 
 
@@ -482,7 +566,16 @@ def build_columns(rows: list[dict], qs: dict, rnd: str) -> list[dict]:
             "title": NAME_COLUMN_TITLE,
             "item_type": "text",
             "required": False,
-        }
+        },
+        {
+            "column_kind": "audience",
+            "key": AUDIENCE_COLUMN_KEY,
+            "title": qs["audience"]["prompt"],
+            "item_type": "multiple_choice",
+            "required": True,
+            "choices": [g["label"] for g in qs["audience"]["groups"]],
+            "group_keys": [g["group_key"] for g in qs["audience"]["groups"]],
+        },
     ]
     for r in active:
         columns.append(
@@ -585,6 +678,12 @@ def form_description(rnd: str, qs: dict, columns: list[dict]) -> str:
             f"that you can leave empty, and {questions} questions at the end. "
             f"({comments} comment boxes, all optional.) The comments are the part "
             "we read most closely.",
+            "We are asking the consultants in training, the facilitators and the "
+            "ethnoarts specialists, so the second question asks which of those you "
+            "are. It is the one question you have to answer. Ratings are read per "
+            "group, because a facilitator rating a session they taught and a CIT "
+            "rating the same session are not the same measurement, and averaging "
+            "them together would hide that.",
             "What happens to what you write, plainly. These answers land in a "
             "spreadsheet in Josh's Google Drive. Josh reads them, and Josh is one "
             "of the people you are rating. Nobody else sees the raw responses. "
@@ -651,6 +750,10 @@ def render_appsscript(
     a(f"function {fn}() {{")
     a(f"  var SCALE = {json.dumps(rating_choices, ensure_ascii=False)};")
     a(f"  var OVERALL = {json.dumps(overall_choices, ensure_ascii=False)};")
+    a(
+        f"  var GROUPS = "
+        f"{json.dumps([g['label'] for g in qs['audience']['groups']], ensure_ascii=False)};"
+    )
     a("")
     a(f"  var form = FormApp.create({js(form_title(rnd))});")
     a(f"  form.setTitle({js(form_title(rnd))});")
@@ -678,6 +781,23 @@ def render_appsscript(
                 + ")"
             )
             a("    .setRequired(false);")
+            a("")
+            continue
+
+        if c["column_kind"] == "audience":
+            a(f"  // COLUMN {c['position']:03d} audience {c['key']}")
+            a("  form.addMultipleChoiceItem()")
+            a(f"    .setTitle({js(c['title'])})")
+            a(
+                "    .setHelpText("
+                + js(
+                    "Required. Ratings are read per group, so a facilitator's "
+                    "rating of a session is never averaged in with the CITs'."
+                )
+                + ")"
+            )
+            a("    .setChoiceValues(GROUPS)")
+            a("    .setRequired(true);")
             a("")
             continue
 
@@ -888,6 +1008,19 @@ def manifest_for(
         "comment_title_suffix": " (comments)",
         "reserved_columns": RESERVED_COLUMNS,
         "scale": qs["scale"],
+        # The audience mapping is frozen here for the same reason the scale is: the
+        # export carries the LABEL, and the importer needs the group_key. Without
+        # this the September import would have to re-derive the mapping from
+        # Question-Set.md as it then stands, which is the campaign-binding finding
+        # about a document signed in August and read in September, applied to a
+        # column instead of to an item.
+        "audience": {
+            "prompt": qs["audience"]["prompt"],
+            "groups": [
+                {"group_key": g["group_key"], "label": g["label"]}
+                for g in qs["audience"]["groups"]
+            ],
+        },
         "columns": [
             {
                 "position": c["position"],
@@ -1184,6 +1317,13 @@ def main() -> int:
         help="generate round 2 while week 2 day 4 has no content decided",
     )
     ap.add_argument(
+        "--list-blanks",
+        action="store_true",
+        help="list every map row that still has no title, with its key and its "
+        "note, and say what filling it in would do. Reads the map and writes "
+        "nothing, so it is safe to run at any time.",
+    )
+    ap.add_argument(
         "--regenerate-manifest",
         action="store_true",
         help="overwrite an existing column manifest whose digest differs. The "
@@ -1252,8 +1392,45 @@ def main() -> int:
         print("\ncurrent. The delivered script matches both contracts.")
         return 0
 
+    if args.list_blanks:
+        try:
+            rows, _meta = parse_session_map(sources[SESSION_MAP_NAME], str(session_map))
+            derive_keys(rows, str(session_map))
+        except ContractError as e:
+            print(f"refused: {e}", file=sys.stderr)
+            return 1
+        blanks = [r for r in rows if not r["title"]]
+        print(f"{session_map}\n")
+        if not blanks:
+            print(
+                f"No blank rows. All {len(rows)} rows carry a title, so nothing is "
+                "waiting on anyone."
+            )
+            return 0
+        print(
+            f"{len(blanks)} of {len(rows)} rows still have no title. Type the title "
+            "into the row's `title` cell and save; a row whose `active` reads `auto`\n"
+            "activates itself, so there is no second edit to remember. Then re-run "
+            "the generator for that round.\n"
+        )
+        for rnd_ in ROUNDS:
+            mine = [r for r in blanks if r["round"] == rnd_]
+            if not mine:
+                continue
+            print(f"  round {rnd_}")
+            for r in sorted(mine, key=lambda r: (r["day"], r["ordinal"])):
+                mode = "auto" if r["auto"] else ("true" if r["active"] else "false")
+                print(
+                    f"    {r['item_key']:<10} day {r['day']}  {r['kind']:<11} "
+                    f"active={mode:<5} {r['note'] or ''}"
+                )
+            print()
+        return 0
+
     if not args.round:
-        ap.error("--round is required unless you are using --check-digest")
+        ap.error(
+            "--round is required unless you are using --check-digest or --list-blanks"
+        )
     rnd = args.round
 
     try:
@@ -1377,11 +1554,23 @@ def main() -> int:
     print(f"  rows in this round            {sum(1 for r in rows if r['round'] == rnd):>4}")
     print(f"  active, emitted               {len(active):>4}   floor {floor}")
     print(f"  inactive, skipped             {len(skipped):>4}")
-    for kind in ("identity", "rating", "comment", "question"):
+    # Every column_kind that exists, not a hard-coded list, so the breakdown adds
+    # up to the total. It stopped adding up the moment the audience column was
+    # added, and a count report that does not reconcile is worse than none.
+    kinds = ("identity", "audience", "rating", "comment", "question")
+    unlisted = sorted({c["column_kind"] for c in columns} - set(kinds))
+    for kind in kinds + tuple(unlisted):
         print(
             f"  columns, {kind:<20}{sum(1 for c in columns if c['column_kind'] == kind):>4}"
         )
     print(f"  columns, total                {len(columns):>4}")
+    listed = sum(1 for c in columns if c["column_kind"] in set(kinds) | set(unlisted))
+    if listed != len(columns):
+        raise ContractError(
+            f"the count report lists {listed} columns and there are {len(columns)}. "
+            "A breakdown that does not reconcile with its own total is how a "
+            "silently dropped column looks."
+        )
     print(f"  required inputs               {sum(1 for c in columns if c['required']):>4}")
     by_day: dict[int, int] = {}
     for c in columns:
