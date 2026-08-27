@@ -36,3 +36,10 @@ scripts/.cdt06-fixture-ids.json
 # CDT-06a screenshots. Criterion 10 has a person open these; criterion 13 checks
 # them, because a fixture name in an image is still a name in the repo.
 feedback/cdt06-shots/
+
+# Spec SITE-03. Screenshots of member pages are a disclosure channel no text gate
+# can read (program finding 11): a fixture name, a base address or a schedule in an
+# image is still in the repo. Six such PNGs are already tracked under
+# feedback/cdt04-shots/ and are reported rather than deleted, because removing a
+# file from the working tree does not remove it from a public history.
+feedback/site03-shots/

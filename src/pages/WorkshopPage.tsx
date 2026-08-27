@@ -11,6 +11,16 @@ export function WorkshopPage() {
   const workshop = slug ? workshopBySlug(slug) : undefined
   if (!workshop) return <NotFoundPage />
 
+  // Spec SITE-03 finding 2, and it is the one that would have shipped a fully
+  // public page certified as gated. `/workshops/:slug` is registered as a
+  // PATTERN and resolved here out of the statically inlined JSON, so removing a
+  // workshop from allRoutes() removes its prerendered directory and nothing
+  // else: the route still matches, this component still runs, and every block
+  // is still in the bundle. No list can unregister a pattern — the component
+  // itself has to decline. A member workshop is reached through its member
+  // route instead. Criterion 3 removes this line and watches the body appear.
+  if (workshop.access === 'member') return <NotFoundPage />
+
   // A workshop that carries its own participant handbook renders as one long
   // document instead of a short marketing page: photo hero, contents rail,
   // print stylesheet. Bali 2026 is the first (see docs/HANDBOOK.md).

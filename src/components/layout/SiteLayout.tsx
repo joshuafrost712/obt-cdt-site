@@ -1,15 +1,22 @@
-import { useState, type ReactNode } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import { getContent, navItems, siteLabel } from '../../lib/content/loader'
 import { backendEnabled } from '../../lib/backend/config'
+import { hasLiveSession, SESSION_EVENT } from '../../lib/backend/sessionHint'
 import { Txt } from '../text'
 import { DevFeedbackMount } from './DevFeedbackMount'
+import { MovedAnchors } from './MovedAnchors'
 
 export function SiteLayout({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen flex flex-col">
       <SiteHeader />
-      <main className="flex-1">{children}</main>
+      <main className="flex-1">
+        {children}
+        {/* Spec SITE-03 D6. One call site, so a moved fragment keeps its id
+            whatever page component is rendering above it. */}
+        <MovedAnchors />
+      </main>
       <SiteFooter />
       <DevFeedbackMount />
     </div>
@@ -18,8 +25,24 @@ export function SiteLayout({ children }: { children: ReactNode }) {
 
 function SiteHeader() {
   const [open, setOpen] = useState(false)
+  // Resolved after mount, never during render. The prerendered HTML is the
+  // signed-out nav for everyone, so reading storage during the first render
+  // would be a hydration mismatch on every page of the site.
+  const [signedIn, setSignedIn] = useState(false)
+  useEffect(() => {
+    const read = () => setSignedIn(backendEnabled && hasLiveSession())
+    read()
+    // `storage` alone is not enough: it fires for other tabs and never for the
+    // one that signed in, so the nav would stay wrong until a reload.
+    window.addEventListener(SESSION_EVENT, read)
+    window.addEventListener('storage', read)
+    return () => {
+      window.removeEventListener(SESSION_EVENT, read)
+      window.removeEventListener('storage', read)
+    }
+  }, [])
   const site = getContent().site
-  const items = navItems()
+  const items = navItems({ signedIn })
 
   return (
     <header className="sticky top-0 z-40 border-b border-ink/10 bg-paper/90 backdrop-blur">

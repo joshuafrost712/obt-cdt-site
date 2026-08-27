@@ -1,6 +1,6 @@
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { lazy, Suspense, useEffect, type ReactNode } from 'react'
-import { getContent, redirects } from './lib/content/loader'
+import { getContent, memberPages, redirects } from './lib/content/loader'
 import { getRouteMeta } from './lib/meta'
 import { backendEnabled } from './lib/backend/config'
 import { SiteLayout } from './components/layout/SiteLayout'
@@ -30,6 +30,10 @@ const PortalReportPage = lazy(() => import('./pages/backend/PortalReportPage'))
 // report list and a consultant is usually also a member.
 const AssignmentsPage = lazy(() => import('./pages/backend/AssignmentsPage'))
 const AssignmentPage = lazy(() => import('./pages/backend/AssignmentPage'))
+// Spec SITE-03. One component for every member route: the body comes from
+// `member_page` / `member_block` behind RLS, not from site-content.json, so the
+// route is all that distinguishes one from another.
+const MemberPage = lazy(() => import('./pages/backend/MemberPage'))
 
 function Deferred({ children }: { children: ReactNode }) {
   return <Suspense fallback={<p className="mx-auto max-w-3xl px-5 py-16 text-ink-faint">Loading…</p>}>{children}</Suspense>
@@ -65,8 +69,17 @@ export default function App() {
       <TitleSync />
       <Routes>
         <Route path="/" element={<HomePage />} />
+        {/* `p.access !== 'member'` is a control and not tidiness (SITE-03
+            finding 3). This map is what actually registers a content page:
+            App.tsx never reads allRoutes(), so dropping a member route from
+            that list removes its prerendered directory and leaves this
+            registration standing. The member route below would then be the
+            SECOND match for the same path, and the tie resolves in tree order
+            to this one — the ungated component. Criterion 4 removes this filter
+            and watches the sign-in card disappear. */}
         {pages
           .filter((p) => p.route !== '/' && p.route !== '/workshops')
+          .filter((p) => p.access !== 'member')
           .map((p) => (
             <Route
               key={p.id}
@@ -83,6 +96,17 @@ export default function App() {
         <Route path="/workshops/:slug" element={<WorkshopPage />} />
         {backendEnabled && (
           <>
+            {/* Member routes. Registered only with the backend on, because a
+                member page with no way to sign in is a permanent spinner; with
+                the flag off these paths fall through to the 404 below, which is
+                the same answer a stranger gets. */}
+            {memberPages().map((p) => (
+              <Route
+                key={p.id}
+                path={p.route}
+                element={<Deferred><MemberPage route={p.route} pageId={p.id} /></Deferred>}
+              />
+            ))}
             <Route path="/portal" element={<Deferred><PortalPage /></Deferred>} />
             <Route path="/portal/r/:reportId" element={<Deferred><PortalReportPage /></Deferred>} />
             <Route path="/portal/assignments" element={<Deferred><AssignmentsPage /></Deferred>} />

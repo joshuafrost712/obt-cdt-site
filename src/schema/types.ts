@@ -89,6 +89,29 @@ export interface Block {
   items?: Block[]
 }
 
+/**
+ * A fragment that used to be on a public page and now lives behind the gate.
+ *
+ * Spec SITE-03 finding 7, and it exists because a fragment never reaches a
+ * server. Participants hold `…/psalms-bali-2026#s13-accommodation` in email; no
+ * redirect, prerender or Pages rule can act on the part after the `#`. Only
+ * client JS on the page they land on can, and only if an element with that id is
+ * there to be jumped to. So the public page keeps a stub per moved anchor.
+ *
+ * `note` is public prose and is per-anchor on purpose: "this section has moved"
+ * fourteen times tells a reader nothing about whether they are in the right
+ * place, and the whole reason the anchor was kept is that they arrived looking
+ * for one specific thing.
+ */
+export interface MovedAnchor {
+  /** The fragment id, without the `#`. */
+  id: string
+  /** The member route it moved to. */
+  to: string
+  /** One sentence naming what used to be here. */
+  note: string
+}
+
 export type WorkshopStatus = 'complete' | 'fully-booked' | 'planned'
 
 export interface WorkshopFacts {
@@ -127,6 +150,33 @@ export interface PageDef {
   navHidden?: boolean
   /** Which page component renders this page. Default is the generic ContentPage. */
   layout?: 'default' | 'handbook'
+  /**
+   * Who may read this page's BODY. Absent means public, so every node written
+   * before spec SITE-03 keeps exactly the meaning it had.
+   *
+   * This is not `hidden`, and the difference is the whole point. `hidden` is
+   * noindex on a file anyone can fetch. `access: 'member'` means the body is not
+   * in this file at all: it lives in `member_block` in the portal database,
+   * behind RLS, and the node here carries `blocks: []`. The route, the title and
+   * the nav label stay public by decision 4 of that spec, because the router
+   * cannot build its route table until a session resolves otherwise.
+   *
+   * Three things enforce it and all three are needed. `allRoutes()` drops the
+   * route so it is never prerendered; `App.tsx` drops it from the `content.pages`
+   * map so it keeps no public registration; and `WorkshopPage` refuses to render
+   * it, because `/workshops/:slug` matches by pattern and no list can unregister
+   * a pattern. `scripts/member-content-gate.mjs` fails the build if any of that
+   * stops being true, and asserts `blocks` is empty here first.
+   *
+   * Not a boolean: a third audience (a cohort, a role) is the likely next value.
+   */
+  access?: 'public' | 'member'
+  /**
+   * Fragments that have moved off this page and behind the gate. Rendered as
+   * stubs at the foot of the page so an emailed deep link still lands on
+   * something that tells the reader where the thing went.
+   */
+  movedAnchors?: MovedAnchor[]
   blocks: Block[]
 }
 

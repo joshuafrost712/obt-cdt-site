@@ -795,6 +795,21 @@
         "id": "portal.assess.consultant.absence.unreleased",
         "type": "labelToken",
         "label": "Your consultant has filed this write-up. You see it once it has been checked and released to you."
+      },
+      {
+        "id": "portal.member.title",
+        "type": "labelToken",
+        "label": "Member area"
+      },
+      {
+        "id": "portal.member.loading",
+        "type": "labelToken",
+        "label": "Loading this page…"
+      },
+      {
+        "id": "portal.member.empty",
+        "type": "labelToken",
+        "label": "This page has not been published yet. It is being written; nothing has gone missing."
       }
     ]
   },
@@ -2568,6 +2583,16 @@
         }
       ],
       "layout": "handbook"
+    },
+    {
+      "id": "members",
+      "route": "/members",
+      "navLabel": "Members",
+      "title": "Member area",
+      "kicker": "For enrolled participants",
+      "metaDescription": "The members-only area of the OBT Consultant Development Track. Sign in with the email address you gave when you registered.",
+      "access": "member",
+      "blocks": []
     }
   ],
   "workshops": [
@@ -3688,6 +3713,24 @@
         }
       ],
       "layout": "handbook"
+    },
+    {
+      "id": "member-gate-check",
+      "route": "/workshops/member-gate-check",
+      "navLabel": "Member gate check",
+      "title": "Member gate check",
+      "kicker": "Not a workshop",
+      "metaDescription": "A fixture route, kept so the member gate is never checked against an empty set. There is no workshop here and nothing is scheduled.",
+      "access": "member",
+      "facts": {
+        "genre": "None",
+        "location": "None",
+        "startDate": "2026-01-01",
+        "endDate": "2026-01-01",
+        "dateLabel": "Not scheduled",
+        "status": "planned"
+      },
+      "blocks": []
     }
   ]
 }

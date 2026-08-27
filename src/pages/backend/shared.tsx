@@ -5,6 +5,7 @@ import { useSession } from '../../lib/backend/useSession'
 import { siteLabel } from '../../lib/content/loader'
 import { classifySignInError, SIGNIN_ERROR_NODE } from '../../lib/backend/signinErrors'
 import { clearHadAccount, hadAccount, markHadAccount } from '../../lib/backend/seen'
+import { notifySessionChanged } from '../../lib/backend/sessionHint'
 
 /**
  * Wraps every portal page: resolves the session, shows the sign-in card when
@@ -44,6 +45,12 @@ export function AuthGate({
 
   useEffect(() => {
     if (session) markHadAccount()
+    // Spec SITE-03. The nav's signed-in variant is read by `SiteLayout`, which
+    // is in the entry chunk and must never import supabase-js. This is the one
+    // place a session change is already observed, so it is the one place that
+    // tells the shell. Dispatched on sign-out too, which is what retires the
+    // member entry without a reload.
+    notifySessionChanged()
   }, [session])
 
   return (

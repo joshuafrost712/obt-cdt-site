@@ -5,7 +5,7 @@
  * everywhere the text appears.
  */
 import rawContent from '../../content/site-content.json'
-import type { PageDef, SiteContent, WorkshopDef } from '../../schema/types'
+import type { MovedAnchor, PageDef, SiteContent, WorkshopDef } from '../../schema/types'
 
 const content = rawContent as unknown as SiteContent
 
@@ -87,20 +87,95 @@ export interface NavItem {
  * workshop page, and a nav that grows an entry per workshop-specific document
  * stops being a nav.
  */
-export function navItems(): NavItem[] {
+export function navItems({ signedIn = false }: { signedIn?: boolean } = {}): NavItem[] {
   return content.pages
     .filter((p) => !p.hidden && !p.navHidden)
+    // A member page's entry is shown only to someone who could open it. The
+    // route and the label are public either way (SITE-03 decision 4); this is
+    // courtesy, not a control, and SiteLayout is the one call site.
+    .filter((p) => p.access !== 'member' || signedIn)
     .map((p) => ({ route: p.route, label: p.navLabel, nodeId: p.id }))
 }
 
-/** Every concrete route the site serves; the prerender script walks this. */
+/**
+ * Every PUBLIC route the site serves; the prerender script walks exactly this
+ * list, so a member route returned here would get a directory in `dist/` with
+ * its body rendered into the HTML.
+ *
+ * Spec SITE-03. Dropping a route from here is necessary and nowhere near
+ * sufficient: `App.tsx` maps `content.pages` directly and `/workshops/:slug` is
+ * a pattern, so two more controls sit beside this one. See `PageDef.access`.
+ */
 export function allRoutes(): string[] {
-  return [...content.pages.map((p) => p.route), ...content.workshops.map((w) => w.route)]
+  return [
+    ...content.pages.filter((p) => p.access !== 'member').map((p) => p.route),
+    ...content.workshops.filter((w) => w.access !== 'member').map((w) => w.route),
+  ]
+}
+
+/**
+ * The mirror of `allRoutes()`: routes whose body lives in the portal database
+ * behind RLS. Registered client-side only, served by the 404 shell, never
+ * prerendered and never in the sitemap.
+ *
+ * These two functions partition the content routes, which is what lets the
+ * build gate assert per route by name rather than comparing two counts that
+ * both derive from the same source and therefore move together.
+ */
+export function memberRoutes(): string[] {
+  return [
+    ...content.pages.filter((p) => p.access === 'member').map((p) => p.route),
+    ...content.workshops.filter((w) => w.access === 'member').map((w) => w.route),
+  ]
+}
+
+/**
+ * Fragments that have moved off this route and behind the gate, if any.
+ *
+ * Keyed by route rather than by node so the one call site (`SiteLayout`) needs
+ * no knowledge of which page component is rendering.
+ */
+export function movedAnchorsFor(route: string): MovedAnchor[] {
+  return pageByRoute(route)?.movedAnchors ?? []
+}
+
+/** Every member node, page or workshop. What the build gate iterates. */
+export function memberNodes(): (PageDef | WorkshopDef)[] {
+  return [
+    ...content.pages.filter((p) => p.access === 'member'),
+    ...content.workshops.filter((w) => w.access === 'member'),
+  ]
+}
+
+/**
+ * The member nodes that get a gated route of their own: PAGES ONLY.
+ *
+ * A member WORKSHOP is refused rather than re-rendered, and the asymmetry is
+ * deliberate. A workshop node carries `facts` — dates, location, status — that
+ * the index cards and the facts panel render and that no member page component
+ * knows about, so routing one here would publish a half-rendered workshop. More
+ * to the point, nobody needs the shape: SITE-05 keeps `/workshops/psalms-bali-2026`
+ * public and moves its specifics to a member PAGE. `access: 'member'` on a
+ * workshop therefore means "this workshop is not published", enforced by
+ * `WorkshopPage`'s own refusal, which is the only door a route PATTERN can have.
+ *
+ * This corrects SITE-03 D2's "a member workshop is registered through the member
+ * path instead"; the build record says why.
+ */
+export function memberPages(): PageDef[] {
+  return content.pages.filter((p) => p.access === 'member')
 }
 
 /**
  * Routes that are prerendered but unlisted: no sitemap entry, noindex in the
  * head, no nav link. The prerender script reads this to decide both.
+ *
+ * `hidden` IS NOISE-SUPPRESSION AND NOT ACCESS CONTROL, and this comment exists
+ * because that was assumed to be stronger than it is (program finding 2). The
+ * HTML is still built, still in `dist/`, still in the public repository and
+ * still served to anyone holding the URL: `/general-travel-advice` carries
+ * `hidden: true` today and is fetchable by a stranger. To keep a body private,
+ * use `access: 'member'`, which is a different mechanism entirely.
  *
  * Workshops are included as well as pages. A workshop is never in the top nav
  * anyway, but `hidden` also has to keep it out of the sitemap and put noindex in
