@@ -62,6 +62,37 @@ ROUNDS = ("w1", "w2")
 ROUND_NUMBER = {"w1": 1, "w2": 2}
 ROUND_WEEK_LABEL = {"w1": "week one", "w2": "the fortnight"}
 
+# How a round's form is shaped, declared per round in Session-Map.md as
+# `form_shape_w1:` / `form_shape_w2:`. Added 2026-08-28 at Joshua's decision: the
+# per-session round 1 came to 46 inputs and he asked for five to seven questions.
+#
+#   per_session  every active map row becomes a rating plus a comment box, one
+#                page per day. The original shape, and still round 2's.
+#   aggregate    no map row is asked. The form is the question set alone, and the
+#                ratings in it are block-level `rating_choice` questions.
+#
+# `aggregate` deliberately does NOT deactivate the map rows. The map stays the
+# record of what the workshop taught, because the portal seeder reads the same
+# table, and a row marked inactive to shorten one Google Form would tell the
+# portal that the session was never rateable. The shape belongs to the form; the
+# rows belong to the workshop.
+FORM_SHAPES = ("per_session", "aggregate")
+DEFAULT_FORM_SHAPE = "per_session"
+
+# Question-Set.md's question kinds. `choice` and `rating_choice` are both
+# multiple-choice and the difference is the absence option, which is the whole
+# point of keeping them apart:
+#
+#   choice         the 5 attended choices only. For a question everybody can
+#                  answer, like round 2's "taking the fortnight as a whole".
+#   rating_choice  the same 5 plus "I wasn't there", so a facilitator who was not
+#                  at the devotionals has an answer that is not a guess.
+#
+# A `rating_choice` arrives in the export as a string and maps through the scale
+# contract exactly as a per-session rating does, so the manifest marks it
+# scale-mapped and the importer needs no new branch.
+QUESTION_KINDS = ("long_text", "short_text", "choice", "rating_choice")
+
 # Session-Map.md's vocabularies. SITE-00 finding 5 added `fullday`, `workblock`
 # and `ceremony` after the first draft's vocabularies failed to cover the schedule
 # they are transcribed from.
@@ -113,6 +144,15 @@ NAME_COLUMN_TITLE = "Your name (optional)"
 # aggregate nobody can interpret. The groups and the prompt are read from
 # Question-Set.md, never written here, per rubric row 4.
 AUDIENCE_COLUMN_KEY = "p-group"
+
+# Help text under every `rating_choice`. It says the absence option is real,
+# because on a block rating the temptation to guess is stronger than on a single
+# session: a facilitator who caught two devotionals out of five will average them
+# in their head and answer, and that answer is not a measurement.
+RATING_CHOICE_HELP = (
+    "Rate the block as a whole. If you were not at any of it, choose \"I wasn't "
+    "there\" rather than guessing, and if you were at some of it rate what you saw."
+)
 
 # Week 2 day 4 has no content decided (Workshop Plan §6.2, SITE-00 finding 6), so
 # its row is provisional and a round-2 run refuses rather than quietly omitting a
@@ -191,12 +231,28 @@ ITEM_KEY = re.compile(r"w(\d)d(\d)-([a-z0-9]+)")
 
 
 def parse_session_map(text: str, path: str) -> tuple[list[dict], dict]:
-    """Rows and the file's own metadata: the sign-off and the per-round floors.
+    """Rows and the file's own metadata: sign-off, per-round floors, form shapes.
 
     Rows are read only inside a `## Week <n>` section, so the vocabulary and
     transcription tables elsewhere in the document cannot be mistaken for data.
     """
     signed = bool(re.search(r"^signed_off:\s*true\s*$", text, re.M))
+
+    # The shape is optional and defaults to per_session, so a map written before
+    # shapes existed keeps its old behaviour instead of silently changing form.
+    # A present-but-misspelled value is a refusal: the failure it would otherwise
+    # cause is a 46-input form going out when someone asked for seven.
+    shapes: dict[str, str] = {}
+    for rnd in ROUNDS:
+        m = re.search(rf"^form_shape_{rnd}:\s*(\S+)\s*$", text, re.M)
+        shape = m.group(1) if m else DEFAULT_FORM_SHAPE
+        if shape not in FORM_SHAPES:
+            raise ContractError(
+                f"{path}: form_shape_{rnd} must be one of "
+                f"{', '.join(FORM_SHAPES)}, got {shape!r}"
+            )
+        shapes[rnd] = shape
+
     floors: dict[str, int] = {}
     for rnd in ROUNDS:
         m = re.search(rf"^min_items_{rnd}:\s*(\d+)\s*$", text, re.M)
@@ -279,7 +335,7 @@ def parse_session_map(text: str, path: str) -> tuple[list[dict], dict]:
             "Either the tables moved out of their sections or the file is not the "
             "session map."
         )
-    return rows, {"signed_off": signed, "floors": floors}
+    return rows, {"signed_off": signed, "floors": floors, "shapes": shapes}
 
 
 def derive_keys(rows: list[dict], path: str) -> None:
@@ -435,10 +491,10 @@ def parse_question_set(text: str, path: str) -> dict:
                     f"{where}: question round must be w1, w2 or both, got {rnd!r}"
                 )
             kind = _plain(cells[3])
-            if kind not in ("long_text", "short_text", "choice"):
+            if kind not in QUESTION_KINDS:
                 raise ContractError(
-                    f"{where}: question kind must be long_text, short_text or "
-                    f"choice, got {kind!r}"
+                    f"{where}: question kind must be one of "
+                    f"{', '.join(QUESTION_KINDS)}, got {kind!r}"
                 )
             prompt = _plain(cells[5])
             if not prompt:
@@ -548,11 +604,21 @@ def comment_title(row: dict) -> str:
     return f"{emitted_title(row)} (comments)"
 
 
-def build_columns(rows: list[dict], qs: dict, rnd: str) -> list[dict]:
-    """The ordered column list: what the form asks, in the order it asks it."""
-    active = sorted(
-        (r for r in rows if r["round"] == rnd and r["active"]),
-        key=lambda r: (r["day"], r["ordinal"], r["item_key"]),
+def build_columns(
+    rows: list[dict], qs: dict, rnd: str, shape: str = DEFAULT_FORM_SHAPE
+) -> list[dict]:
+    """The ordered column list: what the form asks, in the order it asks it.
+
+    An `aggregate` round asks no map row at all, so the per-session ratings and
+    their comment boxes are absent and the form is the question set alone.
+    """
+    active = (
+        []
+        if shape == "aggregate"
+        else sorted(
+            (r for r in rows if r["round"] == rnd and r["active"]),
+            key=lambda r: (r["day"], r["ordinal"], r["item_key"]),
+        )
     )
     questions = sorted(
         (q for q in qs["questions"] if q["round"] in (rnd, "both")),
@@ -613,6 +679,7 @@ def build_columns(rows: list[dict], qs: dict, rnd: str) -> list[dict]:
                     "long_text": "paragraph",
                     "short_text": "text",
                     "choice": "multiple_choice",
+                    "rating_choice": "multiple_choice",
                 }[q["kind"]],
                 "required": q["required"],
                 "question_kind": q["kind"],
@@ -665,22 +732,76 @@ def form_description(rnd: str, qs: dict, columns: list[dict]) -> str:
     ratings = sum(1 for c in columns if c["column_kind"] == "rating")
     comments = sum(1 for c in columns if c["column_kind"] == "comment")
     questions = sum(1 for c in columns if c["column_kind"] == "question")
+    block_ratings = sum(
+        1 for c in columns if c.get("question_kind") == "rating_choice"
+    )
+    written = sum(
+        1
+        for c in columns
+        if c["column_kind"] == "question"
+        and c.get("question_kind") in ("long_text", "short_text")
+    )
     scope = ROUND_WEEK_LABEL[rnd]
+
+    # The length sentence is measured from the columns, never written by hand.
+    # It was wrong once already, when the audience question changed the counts.
+    # "session" is the right word when the items ARE sessions. On an aggregate
+    # round they are blocks of the week, and a participant told to answer about a
+    # session they cannot find on the form will read the absence option as a
+    # mistake rather than an invitation.
+    if ratings:
+        absence = (
+            "If you were not in a session, choose \"I wasn't there\". That is a "
+            "real answer and it is better than a guess: a guessed rating moves "
+            "the average and nobody can see it happening."
+        )
+    else:
+        absence = (
+            "Each rating covers a block of the week rather than one session. If "
+            "you were not at a block at all, choose \"I wasn't there\": that is a "
+            "real answer and it is better than a guess, because a guessed rating "
+            "moves the average and nobody can see it happening. If you were at "
+            "some of a block, rate what you saw."
+        )
+
+    # This replaced "It is the one question you have to answer", which was false on
+    # both rounds: the ratings are required too, so a participant who believed it
+    # met a required-field error on submit and read it as a broken form. Counted
+    # from the columns, so it cannot drift out of true again.
+    optional = sum(1 for c in columns if not c["required"])
+    required_n = len(columns) - optional
+    if optional == 0:
+        required_sentence = "Every question on the form is required."
+    else:
+        required_sentence = (
+            f"{required_n} of the {len(columns)} inputs are required and "
+            f"{optional} are optional, including the name field."
+        )
+
+    if ratings:
+        length = (
+            f"There are {ratings} things to rate, a comment box beside each one "
+            f"that you can leave empty, and {questions} questions at the end. "
+            f"({comments} comment boxes, all optional.) The comments are the part "
+            "we read most closely."
+        )
+    else:
+        length = (
+            f"It is short on purpose: {block_ratings} ratings and "
+            f"{written} things to write. The written answers are the part we read "
+            "most closely, and they are where the detail we act on comes from."
+        )
+
     return "\n\n".join(
         [
             f"This is your evaluation of {scope}. It shapes what we change, and "
             "for the sessions we teach again it shapes them directly.",
             qs["sentence"],
-            "If you were not in a session, choose \"I wasn't there\". That is a "
-            "real answer and it is better than a guess: a guessed rating moves "
-            "the average and nobody can see it happening.",
-            f"There are {ratings} things to rate, a comment box beside each one "
-            f"that you can leave empty, and {questions} questions at the end. "
-            f"({comments} comment boxes, all optional.) The comments are the part "
-            "we read most closely.",
+            absence,
+            length,
             "We are asking the consultants in training, the facilitators and the "
             "ethnoarts specialists, so the second question asks which of those you "
-            "are. It is the one question you have to answer. Ratings are read per "
+            f"are, and it is required. {required_sentence} Ratings are read per "
             "group, because a facilitator rating a session they taught and a CIT "
             "rating the same session are not the same measurement, and averaging "
             "them together would hide that.",
@@ -721,6 +842,7 @@ def render_appsscript(
     choices = [s["choice"] for s in qs["scale"]]
     rating_choices = choices
     overall_choices = [s["choice"] for s in qs["scale"] if s["rating"] is not None]
+    has_session_ratings = any(c["column_kind"] == "rating" for c in columns)
     fn = f"createPsalmsEvaluationForm{ROUND_NUMBER[rnd]}"
     sheet = (
         f"Bali 2026 Psalms - {'Week 1' if rnd == 'w1' else 'End of course'} "
@@ -743,7 +865,16 @@ def render_appsscript(
     if overrides:
         a(" *")
         a(" * REFUSALS OVERRIDDEN AT GENERATION: " + ", ".join(overrides))
-    if skipped:
+    if not has_session_ratings:
+        # Naming one inactive row here would imply the other twenty were asked.
+        # On an aggregate round none of them was, so say that instead.
+        a(" *")
+        a(
+            " * FORM SHAPE: aggregate. No Session-Map row is asked on this form; "
+            "its"
+        )
+        a(" * ratings are block-level questions from Question-Set.md.")
+    elif skipped:
         a(" *")
         a(" * Skipped as inactive: " + ", ".join(s["typed_key"] for s in skipped))
     a(" */")
@@ -829,12 +960,16 @@ def render_appsscript(
 
         if not in_questions:
             in_questions = True
-            a(
-                "  form.addPageBreakItem().setTitle("
-                + js("Looking back over the whole of it")
-                + ");"
-            )
-            a("")
+            # Only when there are day pages to look back over. On an aggregate
+            # round the questions ARE the form, and a page break before the first
+            # one would push all of it onto page 2 behind an empty page 1.
+            if has_session_ratings:
+                a(
+                    "  form.addPageBreakItem().setTitle("
+                    + js("Looking back over the whole of it")
+                    + ");"
+                )
+                a("")
         a(f"  // COLUMN {c['position']:03d} question {c['key']}")
         if c["item_type"] == "paragraph":
             a("  form.addParagraphTextItem()")
@@ -843,6 +978,14 @@ def render_appsscript(
         elif c["item_type"] == "text":
             a("  form.addTextItem()")
             a(f"    .setTitle({js(c['title'])})")
+            a(f"    .setRequired({'true' if c['required'] else 'false'});")
+        elif c.get("question_kind") == "rating_choice":
+            # SCALE, not OVERALL: this is a block rating and somebody may not have
+            # been at the block. "I wasn't there" maps to null, never to a zero.
+            a("  form.addMultipleChoiceItem()")
+            a(f"    .setTitle({js(c['title'])})")
+            a(f"    .setHelpText({js(RATING_CHOICE_HELP)})")
+            a("    .setChoiceValues(SCALE)")
             a(f"    .setRequired({'true' if c['required'] else 'false'});")
         else:
             a("  form.addMultipleChoiceItem()")
@@ -933,7 +1076,13 @@ def reextract(source: str) -> list[dict]:
     return out
 
 
-def gate(columns: list[dict], source: str, rows: list[dict], rnd: str) -> list[str]:
+def gate(
+    columns: list[dict],
+    source: str,
+    rows: list[dict],
+    rnd: str,
+    shape: str = DEFAULT_FORM_SHAPE,
+) -> list[str]:
     """Set equality on the item keys, ORDERED equality on the titles.
 
     The two directions are deliberate and opposite. Set equality on the seed side,
@@ -945,7 +1094,14 @@ def gate(columns: list[dict], source: str, rows: list[dict], rnd: str) -> list[s
     report: list[str] = []
     emitted = reextract(source)
 
-    expected_keys = {r["item_key"] for r in rows if r["round"] == rnd and r["active"]}
+    # On an aggregate round the expectation is that NOTHING per-session is
+    # emitted, which is a real assertion and not a waived one: if a map row ever
+    # leaks into an aggregate form it lands in `extra` below and this refuses.
+    expected_keys = (
+        set()
+        if shape == "aggregate"
+        else {r["item_key"] for r in rows if r["round"] == rnd and r["active"]}
+    )
     emitted_keys = {c["key"] for c in emitted if c["column_kind"] == "rating"}
 
     missing = sorted(expected_keys - emitted_keys)
@@ -960,10 +1116,18 @@ def gate(columns: list[dict], source: str, rows: list[dict], rnd: str) -> list[s
             "the seed-side gate failed. " + "; ".join(detail) + ". A count would "
             "have passed at least one of these."
         )
-    report.append(
-        f"seed-side gate: set equality holds, {len(expected_keys)} active item(s) "
-        "in the map and the same set emitted, both directions checked"
-    )
+    if shape == "aggregate":
+        in_round = sum(1 for r in rows if r["round"] == rnd and r["active"])
+        report.append(
+            f"seed-side gate: aggregate round, so no per-session item is asked. "
+            f"{in_round} active map row(s) exist for {rnd} and none was emitted, "
+            "checked both directions"
+        )
+    else:
+        report.append(
+            f"seed-side gate: set equality holds, {len(expected_keys)} active "
+            "item(s) in the map and the same set emitted, both directions checked"
+        )
 
     want = [(c["position"], c["title"]) for c in columns]
     got = [(c["position"], c["title"]) for c in emitted]
@@ -995,10 +1159,12 @@ def manifest_for(
     generated_from: dict,
     generated_on: str,
     overrides: list[str],
+    shape: str = DEFAULT_FORM_SHAPE,
 ) -> dict:
     return {
         "round": rnd,
         "round_number": ROUND_NUMBER[rnd],
+        "form_shape": shape,
         "generated_on": generated_on,
         "generated_by": "scripts/build_evaluation_form.py",
         "source_digest": digest,
@@ -1030,6 +1196,21 @@ def manifest_for(
                 "participant_key": c["key"] if c["column_kind"] == "identity" else None,
                 "title": c["title"],
                 "required": c["required"],
+                "question_kind": c.get("question_kind"),
+                # Which columns the importer runs through `scale` above. Stated
+                # per column rather than inferred from column_kind, because an
+                # aggregate round's ratings are questions and an importer keying
+                # on column_kind == "rating" would drop every one of them.
+                "scale_mapped": (
+                    c["column_kind"] == "rating"
+                    or c.get("question_kind") in ("choice", "rating_choice")
+                ),
+                # A `choice` has no absence option and a `rating_choice` does, so
+                # a null rating is expected in one and impossible in the other.
+                "absence_option": (
+                    c["column_kind"] == "rating"
+                    or c.get("question_kind") == "rating_choice"
+                ),
             }
             for c in columns
         ],
@@ -1048,10 +1229,7 @@ Change `Session-Map.md` or `Question-Set.md` and regenerate.
 
 `source_digest: {digest}`
 
-Its frozen column manifest is `{manifest_name}`, beside this file. That file is
-the record of what the form actually **asked**, and it does not follow the map: the
-map still has rows for Joshua to close on site, so by September it will have moved
-and an importer re-deriving titles from it would fail to map every changed column.
+{manifest_note}
 
 {unsigned}## How to run it
 
@@ -1097,8 +1275,7 @@ fabricates a rating for every item a participant scrolls past.
 the 1-to-5 range's arithmetic and drags every mean toward the floor with nobody
 able to see it happening.
 
-**One page per day, plus a page for the closing questions.** A form this long
-arriving as one scroll is a form people abandon halfway.
+{notes_pages}
 
 **The name field is optional and the description says what the trade is.** Without
 a name an imported response can never attach to a person, so nothing can ever be
@@ -1119,13 +1296,37 @@ def render_delivery_doc(
     manifest_name: str,
     skipped: list[dict],
     overrides: list[str],
+    shape: str = DEFAULT_FORM_SHAPE,
+    rows: list[dict] | None = None,
 ) -> str:
     ratings = sum(1 for c in columns if c["column_kind"] == "rating")
     comments = sum(1 for c in columns if c["column_kind"] == "comment")
     questions = sum(1 for c in columns if c["column_kind"] == "question")
+    block_ratings = sum(
+        1 for c in columns if c.get("question_kind") == "rating_choice"
+    )
+    written = questions - block_ratings
     days = sorted({c["day"] for c in columns if c["column_kind"] == "rating"})
 
-    if rnd == "w1":
+    if rnd == "w1" and shape == "aggregate":
+        heading = "Round 1 evaluation form, end of week one (Apps Script)"
+        intro = (
+            "The week-one evaluation for the Bali 2026 Psalms workshop, on one "
+            "page and deliberately short. Joshua cut it on 2026-08-28: the "
+            "per-session version asked 46 inputs, and a form that long at the end "
+            "of a teaching week is a form people abandon halfway or fill in "
+            "carelessly, which is worse than a short one. So it asks three block "
+            "ratings and two written answers, and the written answers are where "
+            "the detail comes from.\n\n"
+            "What this costs is named rather than hidden: **the numbers can no "
+            "longer point at a session.** A low score on the mornings does not say "
+            "which morning. That detail now has to come from the two written "
+            "answers, from the debriefs, and later from the member portal, which "
+            "can ask per-session without asking it all at once. The per-session "
+            "items still exist in `Session-Map.md` and the portal seeder still "
+            "reads them; it is this Google Form that does not ask them."
+        )
+    elif rnd == "w1":
         heading = "Round 1 evaluation form, end of week one (Apps Script)"
         intro = (
             "The week-one evaluation for the Bali 2026 Psalms workshop, built in "
@@ -1145,12 +1346,24 @@ def render_delivery_doc(
             "to answer."
         )
 
+    if shape == "aggregate":
+        summary = (
+            f"An optional name field, one required role question, "
+            f"**{block_ratings} block rating(s)** and **{written} written "
+            f"answer(s)**. {len(columns)} inputs in total on a single page, of "
+            f"which {sum(1 for c in columns if c['required'])} are required. No "
+            "per-session ratings and no comment boxes."
+        )
+    else:
+        summary = (
+            f"An optional name field, then **{ratings} things to rate** across "
+            f"{len(days)} day page(s), each with an optional comment box "
+            f"({comments} in all), then **{questions} closing question(s)**. "
+            f"{1 + ratings + comments + questions} inputs in total, of which "
+            f"{sum(1 for c in columns if c['required'])} are required."
+        )
     shape_lines = [
-        f"An optional name field, then **{ratings} things to rate** across "
-        f"{len(days)} day page(s), each with an optional comment box "
-        f"({comments} in all), then **{questions} closing question(s)**. "
-        f"{1 + ratings + comments + questions} inputs in total, of which "
-        f"{sum(1 for c in columns if c['required'])} are required.",
+        summary,
         "",
         "| # | what | key | title |",
         "| --- | --- | --- | --- |",
@@ -1159,9 +1372,20 @@ def render_delivery_doc(
         shape_lines.append(
             f"| {c['position']} | {c['column_kind']} | `{c['key']}` | {c['title']} |"
         )
-    shape = "\n".join(shape_lines)
 
-    if skipped:
+    if shape == "aggregate":
+        in_round = sum(
+            1 for r in (rows or []) if r["round"] == rnd and r["active"]
+        )
+        skipped_text = (
+            f"**No map row is asked on this form, and that is the shape, not a "
+            f"fault.** `Session-Map.md` holds {in_round} active item(s) for {rnd} "
+            "and this form asks none of them. They are left active on purpose: the "
+            "map is the record of what the workshop taught and the portal seeder "
+            "reads the same table, so deactivating rows to shorten one Google Form "
+            "would tell the portal those sessions were never rateable."
+        )
+    elif skipped:
         skipped_text = (
             "**Skipped as inactive, and reported rather than refused.** "
             + ", ".join(
@@ -1176,7 +1400,24 @@ def render_delivery_doc(
         skipped_text = "Every row in this round's map is active. Nothing was skipped."
 
     unsigned = ""
-    if "--allow-unsigned-session-map" in overrides:
+    if "--allow-unsigned-session-map" in overrides and shape == "aggregate":
+        # The sign-off exists because a participant should not be asked to rate a
+        # session under a title nobody used. An aggregate form shows no session
+        # title, so that risk is absent here and this form is not blocked on it.
+        unsigned = (
+            "## The unsigned map does not block this form\n\n"
+            "`Session-Map.md` is still `signed_off: false`, and on the per-session "
+            "version that mattered a great deal: it would have asked people to "
+            "rate sessions under titles transcribed from a plan rather than from "
+            "what was delivered. **This form shows no session title at all**, so "
+            "there is nothing here for a wrong title to corrupt, and you can send "
+            "it without touching the map.\n\n"
+            "The sign-off still matters for two other things, neither of them "
+            "today: the round-2 form, which is still per-session, and the member "
+            "portal, whose seeder reads the same table. Close the map before "
+            "either of those.\n\n"
+        )
+    elif "--allow-unsigned-session-map" in overrides:
         unsigned = (
             "## Read this first, because the map is not signed off yet\n\n"
             "Every session title below is transcribed from the Workshop Plan, which "
@@ -1221,6 +1462,42 @@ def render_delivery_doc(
                 "round-2 form asks about nine days of a ten-day workshop."
             )
 
+    if shape == "aggregate":
+        manifest_note = (
+            f"Its frozen column manifest is `{manifest_name}`, beside this file. "
+            "That file is the record of what the form actually **asked**, and on "
+            "this round it is the only such record: the form asks no map row, so "
+            "`Session-Map.md` cannot be read backwards to reconstruct these "
+            "columns. Each column carries `scale_mapped` and `absence_option`, "
+            "which is how the importer knows that the three block ratings run "
+            "through the scale and may be null."
+        )
+    else:
+        manifest_note = (
+            f"Its frozen column manifest is `{manifest_name}`, beside this file. "
+            "That file is the record of what the form actually **asked**, and it "
+            "does not follow the map: the map still has rows for Joshua to close "
+            "on site, so by September it will have moved and an importer "
+            "re-deriving titles from it would fail to map every changed column."
+        )
+
+    if shape == "aggregate":
+        notes_pages = (
+            "**One page, no page breaks.** With three ratings and two written "
+            "answers there is nothing to paginate, and a page break before the "
+            "written answers would hide them behind a Next button, which is "
+            "exactly where a written answer goes to die.\n\n"
+            "**The block ratings carry the absence option and the per-block help "
+            "text.** A block rating invites averaging in your head more than a "
+            "single session does, so each one says to rate what you saw and to "
+            "choose \"I wasn't there\" over a guess."
+        )
+    else:
+        notes_pages = (
+            "**One page per day, plus a page for the closing questions.** A form "
+            "this long arriving as one scroll is a form people abandon halfway."
+        )
+
     return DELIVERY_DOC.format(
         heading=heading,
         intro=intro,
@@ -1229,8 +1506,10 @@ def render_delivery_doc(
         digest=digest,
         manifest_name=manifest_name,
         unsigned=unsigned,
-        shape=shape,
+        shape="\n".join(shape_lines),
         skipped=skipped_text,
+        notes_pages=notes_pages,
+        manifest_note=manifest_note,
         code=code,
     )
 
@@ -1483,8 +1762,10 @@ def main() -> int:
                 return 1
             overrides.append("--allow-undecided-w2d4")
 
+    shape = meta["shapes"][rnd]
+
     try:
-        columns = build_columns(rows, qs, rnd)
+        columns = build_columns(rows, qs, rnd, shape)
     except ContractError as e:
         print(f"refused: {e}", file=sys.stderr)
         return 1
@@ -1495,7 +1776,24 @@ def main() -> int:
         key=lambda r: (r["day"], r["ordinal"]),
     )
     floor = meta["floors"][rnd]
-    if len(active) < floor:
+    if shape == "aggregate":
+        # The floor guards against a map that accidentally deactivates itself. An
+        # aggregate round asks no map row BY DECLARATION, so the floor has nothing
+        # to protect and is not an override to be waived. What replaces it is the
+        # question-side floor below: a form with no questions is the failure mode
+        # here, and it is the one worth refusing.
+        asked = sum(1 for c in columns if c["column_kind"] == "question")
+        if asked == 0:
+            print(
+                f"refused: round {rnd} is declared form_shape_{rnd}: aggregate, so "
+                "it asks no map row, and its question set is empty too. That is a "
+                "form with a name field and nothing else.\n"
+                f"  Add {rnd} rows to the Round tables in {question_set.name}, or "
+                f"set form_shape_{rnd} back to per_session.",
+                file=sys.stderr,
+            )
+            return 1
+    elif len(active) < floor:
         if not args.allow_short_round:
             print(
                 f"refused: round {rnd} emits {len(active)} item(s) but "
@@ -1548,6 +1846,7 @@ def main() -> int:
     print(f"session map   {session_map}")
     print(f"question set  {question_set}")
     print(f"round         {rnd}")
+    print(f"form shape    {shape}")
     print()
     print("counts, re-measured from the sources in this run")
     print(f"  rows in the map, all rounds   {len(rows):>4}")
@@ -1603,7 +1902,7 @@ def main() -> int:
     print()
 
     try:
-        for line in gate(render_columns, code, rows, rnd):
+        for line in gate(render_columns, code, rows, rnd, shape):
             print(line)
     except ContractError as e:
         print(f"\nrefused: {e}", file=sys.stderr)
@@ -1615,7 +1914,8 @@ def main() -> int:
             print(
                 json.dumps(
                     manifest_for(
-                        rnd, columns, qs, digest, per_file, generated_on, overrides
+                        rnd, columns, qs, digest, per_file, generated_on, overrides,
+                        shape,
                     ),
                     indent=2,
                     ensure_ascii=False,
@@ -1632,7 +1932,7 @@ def main() -> int:
         manifest_name = f"Round-{ROUND_NUMBER[rnd]}-Columns.json"
         manifest_path = args.out.parent / manifest_name
         manifest = manifest_for(
-            rnd, columns, qs, digest, per_file, generated_on, overrides
+            rnd, columns, qs, digest, per_file, generated_on, overrides, shape
         )
         if manifest_path.is_file():
             existing = json.loads(manifest_path.read_text(encoding="utf-8"))
@@ -1655,7 +1955,7 @@ def main() -> int:
         if args.out.suffix == ".md":
             body = render_delivery_doc(
                 rnd, code, columns, digest, generated_on, manifest_name, skipped,
-                overrides,
+                overrides, shape, rows,
             )
         elif args.out.suffix == ".js":
             body = code
