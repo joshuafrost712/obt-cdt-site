@@ -38,7 +38,7 @@ links are **not authored in the database**. They are parsed out of:
 
 - `Projects/cbc-competency/cbc-matrix/`, holding 26 sub-matrix files plus
   `CBC_Master_Matrix.md`, in the vault,
-- `Projects/OBT/OBT Consultant Track/Intake Assessments/Domain-Map.md`, the
+- `Projects/OBT/OBT Consultant Track/Intake Assessment/Instruments/Domain-Map.md`, the
   macro-domain grouping, which appears nowhere in the matrix.
 
 `scripts/seed_competency_registry.py` reads all 28, gates them, and writes. So:

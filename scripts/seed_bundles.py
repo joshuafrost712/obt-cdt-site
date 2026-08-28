@@ -57,7 +57,7 @@ DEFAULT_VAULT = Path(
     )
 )
 MATRIX_SUBDIR = "Projects/cbc-competency/cbc-matrix"
-INTAKE_SUBDIR = "Projects/OBT/OBT Consultant Track/Intake Assessments"
+INTAKE_SUBDIR = "Projects/OBT/OBT Consultant Track/Intake Assessment/Instruments"
 DOMAIN_MAP_NAME = "Domain-Map.md"
 BUNDLE_MAP_NAME = "Bundle-Map.md"
 

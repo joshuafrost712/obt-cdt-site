@@ -59,7 +59,7 @@ DEFAULT_VAULT = Path(
     )
 )
 MATRIX_SUBDIR = "Projects/cbc-competency/cbc-matrix"
-DOMAIN_MAP_SUBDIR = "Projects/OBT/OBT Consultant Track/Intake Assessments/Domain-Map.md"
+DOMAIN_MAP_SUBDIR = "Projects/OBT/OBT Consultant Track/Intake Assessment/Instruments/Domain-Map.md"
 
 # The seven data tables, in insert order. Dependencies first: a unit references a
 # category, a descriptor references a unit.

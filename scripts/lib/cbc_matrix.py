@@ -32,7 +32,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 # Counts measured 2026-08-21 against Projects/cbc-competency/cbc-matrix/ and
-# Intake Assessments/Domain-Map.md. A count that has moved is a real event: the
+# Intake Assessment/Instruments/Domain-Map.md. A count that has moved is a real event: the
 # right response is a human reading the diff, not a session editing a constant.
 EXPECTED = {
     "units": 41,
