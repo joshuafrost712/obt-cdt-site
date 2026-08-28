@@ -768,6 +768,18 @@ def form_description(rnd: str, qs: dict, columns: list[dict]) -> str:
     # both rounds: the ratings are required too, so a participant who believed it
     # met a required-field error on submit and read it as a broken form. Counted
     # from the columns, so it cannot drift out of true again.
+    # Built from the contract's own labels. It used to name "the consultants in
+    # training, the facilitators and the ethnoarts specialists" in prose, which
+    # silently went stale the moment the groups changed: the form would have
+    # listed four options while its own description promised three.
+    labels = [g["label"] for g in qs["audience"]["groups"]]
+    if len(labels) == 1:
+        group_list = labels[0]
+    else:
+        group_list = (
+            f"{len(labels)} groups: " + ", ".join(labels[:-1]) + f" and {labels[-1]}"
+        )
+
     optional = sum(1 for c in columns if not c["required"])
     required_n = len(columns) - optional
     if optional == 0:
@@ -799,12 +811,11 @@ def form_description(rnd: str, qs: dict, columns: list[dict]) -> str:
             qs["sentence"],
             absence,
             length,
-            "We are asking the consultants in training, the facilitators and the "
-            "ethnoarts specialists, so the second question asks which of those you "
-            f"are, and it is required. {required_sentence} Ratings are read per "
-            "group, because a facilitator rating a session they taught and a CIT "
-            "rating the same session are not the same measurement, and averaging "
-            "them together would hide that.",
+            f"We are asking {group_list}. The second question asks which of those "
+            f"you are, and it is required. {required_sentence} Ratings are read "
+            "per group, because someone rating a session they taught and someone "
+            "rating a session they sat in are not the same measurement, and "
+            "averaging them together would hide that.",
             "What happens to what you write, plainly. These answers land in a "
             "spreadsheet in Josh's Google Drive. Josh reads them, and Josh is one "
             "of the people you are rating. Nobody else sees the raw responses. "
@@ -922,8 +933,10 @@ def render_appsscript(
             a(
                 "    .setHelpText("
                 + js(
-                    "Required. Ratings are read per group, so a facilitator's "
-                    "rating of a session is never averaged in with the CITs'."
+                    "Required. Ratings are read per group, so a rating given by "
+                    "someone who taught or evaluated a session is never averaged "
+                    "in with the ratings from the people who sat in it. Pick the "
+                    "one that best describes your part this week."
                 )
                 + ")"
             )
