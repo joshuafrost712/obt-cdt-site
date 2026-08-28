@@ -1,6 +1,7 @@
 {
   "_README": "Spec SITE-03. Route to opaque sentinel token, written by scripts/seed_member_pages.py and read by scripts/member-content-gate.mjs. The tokens carry no prose, so publishing them in a public repo leaks nothing; finding one of them in dist/ or src/ means member content has been pasted into a public artifact. A member node with no entry here fails the build: its body has never been checked.",
   "sentinels": {
-    "/members": "mbr-a32613349c9aa1df028de91db5e1a540"
+    "/members": "mbr-a32613349c9aa1df028de91db5e1a540",
+    "/members/materials": "mbr-1f81b52d2ea0fbe07f6bd3d6d0c84192"
   }
 }

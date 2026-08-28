@@ -43,3 +43,18 @@ feedback/cdt06-shots/
 # feedback/cdt04-shots/ and are reported rather than deleted, because removing a
 # file from the working tree does not remove it from a public history.
 feedback/site03-shots/
+
+# Spec SITE-04. Same reason as SITE-03's entry above, and this spec adds a second
+# channel to it: a screenshot of the links register shows the register's URLs, and
+# for an anyone-with-link Drive file the URL IS the credential (SITE-04 finding 5).
+# So a picture of this page publishes the files it links to, in a form no text grep
+# can read. Added BEFORE the first screenshot was taken, per criterion 9.
+feedback/site04-shots/
+
+# SITE-04 fixture ids, written by scripts/site04-fixtures.mjs --setup.
+scripts/.site04-fixture-ids.json
+
+# SITE-04's Drive permission report. It names file ids, so it is written to the
+# private vault beside the register (finding 5) and never committed here; this
+# entry exists so a stray --report path cannot land the report in a public repo.
+scripts/.site04-link-report.json

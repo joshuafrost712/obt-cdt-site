@@ -810,6 +810,26 @@
         "id": "portal.member.empty",
         "type": "labelToken",
         "label": "This page has not been published yet. It is being written; nothing has gone missing."
+      },
+      {
+        "id": "portal.materials.intro",
+        "type": "labelToken",
+        "label": "Everything the workshops taught from, and the applications the track runs on, in one place."
+      },
+      {
+        "id": "portal.materials.access",
+        "type": "labelToken",
+        "label": "Every row says what you need to get in, because a link does not."
+      },
+      {
+        "id": "portal.materials.forwarding",
+        "type": "labelToken",
+        "label": "Please do not forward these links. A file that opens for anyone with the link opens for anyone who is ever sent it."
+      },
+      {
+        "id": "portal.materials.wrong",
+        "type": "labelToken",
+        "label": "If a link does not open for you, or opens something other than what it says, write to Joshua."
       }
     ]
   },
@@ -2591,6 +2611,16 @@
       "title": "Member area",
       "kicker": "For enrolled participants",
       "metaDescription": "The members-only area of the OBT Consultant Development Track. Sign in with the email address you gave when you registered.",
+      "access": "member",
+      "blocks": []
+    },
+    {
+      "id": "members-materials",
+      "route": "/members/materials",
+      "navLabel": "Materials",
+      "title": "Teaching materials and applications",
+      "kicker": "For enrolled participants",
+      "metaDescription": "The OBT Consultant Development Track's register of teaching materials and applications, for enrolled participants. Sign in with the email address you gave when you registered.",
       "access": "member",
       "blocks": []
     }

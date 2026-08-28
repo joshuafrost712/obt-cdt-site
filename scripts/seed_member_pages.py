@@ -238,6 +238,64 @@ def _body_of(lines: list[str]) -> str:
     return re.sub(r"\n{3,}", "\n\n", text)
 
 
+def _split_table(lines: list[str], path: Path) -> tuple[list[str], list[dict] | None]:
+    """Split a heading's body into prose and ONE markdown table's rows.
+
+    Spec SITE-04 D3's contribution to SITE-03's authoring format, and the second
+    of the two entries in its mapping table. `##` to a section was already here;
+    this is a markdown table to a block's `items`.
+
+    Read BY HEADER NAME, so the two register tables can carry different columns
+    and adding a column to one cannot shift another's values one place left. A
+    header naming something that is not a `Block` field is a REFUSAL rather than
+    a drop, because a silently dropped column is a field that never reaches the
+    page and looks exactly like a field nobody filled in.
+    """
+    prose: list[str] = []
+    rows: list[dict] = []
+    header: list[str] | None = None
+    in_table = False
+    for line in lines:
+        stripped = line.strip()
+        if stripped.startswith("|"):
+            cells = [c.strip() for c in stripped.strip("|").split("|")]
+            if header is None:
+                header = [c.strip("`") for c in cells]
+                unknown = [h for h in header if h not in BLOCK_FIELDS]
+                if unknown:
+                    raise SeedError(
+                        f"{path}: table column(s) {', '.join(unknown)} are not Block "
+                        f"fields. Known fields: {', '.join(sorted(BLOCK_FIELDS))}. A "
+                        "column the seed cannot map is refused rather than dropped."
+                    )
+                in_table = True
+                continue
+            if all(set(c) <= set("-: ") for c in cells):
+                continue
+            if len(cells) != len(header):
+                raise SeedError(
+                    f"{path}: a table row has {len(cells)} cells and its header has "
+                    f"{len(header)}"
+                )
+            row = {k: v.replace("\\|", "|") for k, v in zip(header, cells) if v}
+            if not row.get("id"):
+                raise SeedError(
+                    f"{path}: a table row has no `id`. The renderer keys its cards on "
+                    "it, so a row without one collides with its neighbour."
+                )
+            row.setdefault("type", "cta")
+            rows.append(row)
+            continue
+        if in_table and stripped:
+            raise SeedError(
+                f"{path}: prose after a table inside one section. Put it above the "
+                "table or open a new section, or the reading order stops matching "
+                "the source."
+            )
+        prose.append(line)
+    return prose, (rows if in_table else None)
+
+
 def _slug(text: str) -> str:
     s = re.sub(r"[^a-z0-9]+", "-", text.lower()).strip("-")
     return s or "block"
@@ -267,8 +325,9 @@ def parse_blocks(doc_body: str, route: str, path: Path) -> tuple[list[dict], boo
 
     for level, heading, chunk in sections:
         fields, rest = _key_lines(chunk)
+        rest, table = _split_table(rest, path)
         body = _body_of(rest)
-        if level == 0 and not body:
+        if level == 0 and not body and not table:
             continue  # no preamble
 
         counter += 1
@@ -286,6 +345,10 @@ def parse_blocks(doc_body: str, route: str, path: Path) -> tuple[list[dict], boo
             block[key] = int(value) if key in INT_FIELDS else value
         if body:
             block["body"] = body
+        if table is not None:
+            if not table:
+                raise SeedError(f"{path}: a table under {heading!r} has a header and no rows")
+            block["items"] = table
 
         if level == 3:
             if not blocks:

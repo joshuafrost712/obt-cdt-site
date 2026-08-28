@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { AuthGate, ErrorNote, L } from './shared'
 import { BlockRenderer } from '../../components/blocks/BlockRenderer'
 import { getMemberPage, type MemberPageBody } from '../../lib/backend/memberApi'
+import { MemberIntro, MemberOutro } from './memberIntros'
 import { pageByRoute, siteLabel } from '../../lib/content/loader'
 
 /**
@@ -77,6 +78,10 @@ function MemberBody({ route, pageId }: { route: string; pageId: string }) {
 
   return (
     <div className="mt-6" data-member-page={pageId}>
+      {/* SITE-04 decision 6: the page's own framing copy is a literal-id call
+          site in src/, so check-labels.mjs covers it; the rows below are member
+          content and come from the database. */}
+      <MemberIntro route={route} />
       {page.kicker && (
         <p className="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-accent-deep">{page.kicker}</p>
       )}
@@ -89,6 +94,7 @@ function MemberBody({ route, pageId }: { route: string; pageId: string }) {
           <BlockRenderer blocks={[block]} />
         </div>
       ))}
+      <MemberOutro route={route} />
     </div>
   )
 }
