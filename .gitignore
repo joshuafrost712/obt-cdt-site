@@ -58,3 +58,8 @@ scripts/.site04-fixture-ids.json
 # private vault beside the register (finding 5) and never committed here; this
 # entry exists so a stray --report path cannot land the report in a public repo.
 scripts/.site04-link-report.json
+
+# Screenshots of member pages, taken by scripts/verify-member-access.mjs against
+# REAL participant accounts. Program finding 11: an image is a disclosure channel
+# that no text gate can read, and these ones photograph a live cohort's page.
+feedback/verify-shots/
