@@ -30,7 +30,7 @@
  * button appears once `progress > 0.04` and would add `href="#handbook-top"` to
  * a driven page, so the two sets would not be comparable.
  */
-import { readFileSync, writeFileSync } from 'node:fs'
+import { readFileSync, writeFileSync, existsSync, readdirSync } from 'node:fs'
 import path from 'node:path'
 
 const REPO = path.resolve(import.meta.dirname, '..')
@@ -302,6 +302,166 @@ function stubsMode() {
   return failures
 }
 
+// ------------------------------------------------------------------ absence
+
+/**
+ * Criterion 8. The moved text and the four named nodes are gone from the live
+ * artifacts, and history is DISCLOSED rather than asserted absent.
+ *
+ * Finding 7 is why the two halves are different in kind. Moving a section
+ * behind the gate does not unpublish it: the base's address is in this
+ * repository's history and in the deployed bundle until the next deploy, and
+ * history on a public repo does not retract. What the split buys is that the
+ * LIVE page stops being the source and the NEXT cohort's specifics are never
+ * published at all. A build record claiming "the address is now private" would
+ * be false, so this prints the history count instead of asserting a zero.
+ */
+function absenceMode() {
+  const node = workshop()
+  let failures = 0
+  console.log('site05-anchors --absence, criterion 8')
+
+  // The sample: substantial lines of the moved sections, read from the member
+  // document, plus the street line in full.
+  const memberDoc = process.env.SITE05_MEMBER_DOC ?? defaultMemberDoc()
+  const docText = readFileSync(memberDoc, 'utf8')
+  const sample = docText
+    .split('\n')
+    .map((l) => l.trim())
+    .filter((l) => l && !/^(#|\||>|---|[a-zA-Z][a-zA-Z0-9_]*:\s)/.test(l))
+    .filter((l) => l.length >= 60 && l.split(/\s+/).length >= 10)
+  /*
+   * The street line is READ from the member document, never written here.
+   *
+   * The first version of this check hardcoded a fragment of it, and the check
+   * then found itself: this file is in a public repository, so the address
+   * written into it is the exact leak the whole spec exists to prevent, and it
+   * would have jammed the seed too — the line would then be in a TRACKED file,
+   * so the vault-aware gate would refuse to re-seed the document it came from.
+   * SITE-03's harness recorded the same lesson about a member sentence. The
+   * harness holds no member prose at rest.
+   */
+  const addressRow = docText
+    .split('\n')
+    .find((l) => l.includes('bali.03.venue.address'))
+  if (!addressRow) {
+    failures++
+    console.log('  FAIL  no bali.03.venue.address row in the member document; nothing to check')
+  }
+  const street = addressRow?.split('|').map((c) => c.trim()).filter(Boolean).at(-1) ?? ''
+  const strings = [...sample.slice(0, 12), street].filter(Boolean)
+  console.log(`  population: ${strings.length} string(s) — ${sample.length} substantial lines available, ` +
+    `12 sampled, plus the street line in full`)
+  if (strings.length < 5) {
+    failures++
+    console.log('  FAIL  the population is too small for this check to mean anything')
+  }
+
+  const trees = ['dist', 'src', 'docs', 'scripts']
+  for (const needle of strings) {
+    const hits = []
+    for (const tree of trees) {
+      const dir = path.join(REPO, tree)
+      if (!existsSync(dir)) continue
+      const found = grepTree(dir, needle)
+      hits.push(...found)
+    }
+    if (hits.length) {
+      failures++
+      console.log(`  FAIL  present in ${hits.length} file(s): ${needle.slice(0, 50)}…`)
+      for (const h of hits.slice(0, 4)) console.log(`          ${h}`)
+    }
+  }
+  if (!failures) {
+    console.log(`   ok   all ${strings.length} string(s) absent from dist/, src/, docs/ and scripts/`)
+    // Printed as a length and a first word, not in full: a build record is
+    // pasted into a session log and a vault note, and the point of the check is
+    // that this string has one home.
+    console.log(`   ok   including the street line in full ` +
+      `(${street.split(/\s+/).length} words, ${street.length} chars, begins "${street.split(' ')[0]}")`)
+  }
+
+  // The four named nodes of finding 17, asserted INDIVIDUALLY by id. An absence
+  // scoped to "the address string" would go green with the venue name, the area
+  // and the promise that logistics are here, all still public.
+  console.log('\n  the four named nodes of finding 17, by id')
+  const all = content()
+  const venue = findById(all, 'bali.hero.venue')
+  const ccVenue = findById(all, 'cc.hero.venue')
+  const card = findById(all, 'cc.03.next.psalms')
+  const hero = findById(all, 'bali.hero')
+
+  const NAME = 'University of the Nations'
+  const forms = new Set([venue?.label, ccVenue?.label].filter(Boolean))
+  failures += report('bali.hero.venue and cc.hero.venue carry ONE normalised form',
+    forms.size === 1 && [...forms][0].startsWith(NAME))
+  console.log(`          the form: ${[...forms][0]}`)
+  failures += report('and neither says "YWAM"', ![...forms][0].includes('YWAM'))
+  failures += report('the hero body no longer advertises "where the base is"',
+    !hero?.body?.includes('where the base is'))
+  failures += report('the metaDescription no longer claims to be the participant handbook',
+    !node.metaDescription.includes('This page is also the participant handbook'))
+  failures += report("cc.03.next.psalms no longer promises that logistics live there",
+    !card?.note?.includes('Logistics live here') && !card?.body?.includes('laundry'))
+
+  // The third venue node moved, so it is asserted where it now lives.
+  const memberVenue = docText.includes(`${NAME} base, Jimbaran, Bali`)
+  failures += report('bali.03.venue.venue, now gated, carries the same normalised form', memberVenue)
+
+  console.log(failures ? `\n  ${failures} check(s) FAILED` : '\n  criterion 8: all checks pass.')
+  console.log('\n  History is DISCLOSED and not asserted absent (finding 7). Run:')
+  console.log('    node scripts/cdt00-history-scan.mjs')
+  return failures
+}
+
+function report(name, ok) {
+  console.log(`  ${ok ? ' ok ' : 'FAIL'}  ${name}`)
+  return ok ? 0 : 1
+}
+
+function findById(tree, id) {
+  if (Array.isArray(tree)) {
+    for (const item of tree) {
+      const hit = findById(item, id)
+      if (hit) return hit
+    }
+    return null
+  }
+  if (tree && typeof tree === 'object') {
+    if (tree.id === id) return tree
+    for (const value of Object.values(tree)) {
+      const hit = findById(value, id)
+      if (hit) return hit
+    }
+  }
+  return null
+}
+
+/**
+ * A directory grep, deliberately: `dist/` is gitignored but on disk, and it is
+ * the artifact this criterion is about (finding 18 is the same fact pointed the
+ * other way, for the seed's gate, where a directory grep would be wrong).
+ */
+function grepTree(dir, needle) {
+  const out = []
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name)
+    if (entry.isDirectory()) {
+      out.push(...grepTree(full, needle))
+      continue
+    }
+    if (/\.(png|jpg|jpeg|webp|woff2?|ico|pdf)$/i.test(entry.name)) continue
+    let text
+    try {
+      text = readFileSync(full, 'utf8')
+    } catch {
+      continue
+    }
+    if (text.includes(needle)) out.push(path.relative(REPO, full))
+  }
+  return out
+}
+
 function defaultMemberDoc() {
   const vault = process.env.OBT_CDT_VAULT ??
     path.join(process.env.HOME, 'Documents/Josh & Katie Vault/Claude Can Access PARA')
@@ -316,7 +476,8 @@ if (mode === '--count') countMode()
 else if (mode === '--capture') captureMode(argv[1] ?? 'anchors.json')
 else if (mode === '--compare') process.exit(compareMode(argv[1], argv[2]) ? 1 : 0)
 else if (mode === '--stubs') process.exit(stubsMode() ? 1 : 0)
+else if (mode === '--absence') process.exit(absenceMode() ? 1 : 0)
 else {
-  console.error('usage: site05-anchors.mjs --count | --capture FILE | --compare A B | --stubs')
+  console.error('usage: site05-anchors.mjs --count | --capture FILE | --compare A B | --stubs | --absence')
   process.exit(2)
 }

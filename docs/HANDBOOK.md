@@ -19,16 +19,32 @@ wayfinding.
 ## Wayfinding appears from four sections up
 
 The rail, the reading-progress bar and the `sectionNav` contents grid are
-navigation aids for a document too long to hold in your head. Bali 2026 is 3,700
-words over six sections and needs all three. The marketing pages are 280 to 560
-words over two to four sections, and a sticky contents rail beside three headings
-is scaffolding around nothing. That is the same over-signposting this document was
-cut back for the day before (see "Five sections, not twenty-one" below).
+navigation aids for a document too long to hold in your head. Bali 2026 is about
+2,400 public words over five sections and needs all three. The marketing pages
+are 280 to 560 words over two to four sections, and a sticky contents rail beside
+three headings is scaffolding around nothing. That is the same over-signposting
+this document was cut back for the day before (see "Five sections, not
+twenty-one" below).
 
 So `HandbookLayout` gates all three on `sections.length >= 4`. Below that the
-sections read straight down a full-width column. Today only Bali (6) and Method
+sections read straight down a full-width column. Today only Bali (5) and Method
 (4) clear the bar. If you add a fifth section to a page, give it a `sectionNav`
 block too, or the mobile jump grid will be missing.
+
+**And the same rule REMOVING a section, which is the direction that bites.**
+Four is a floor, not a target: a page sitting on exactly four loses the rail,
+the progress bar and the whole contents grid the moment anyone takes one away,
+and every fragment `href` the grid and the rail render goes with it. Nothing
+warns you. When SITE-05 moved two of Bali's six sections behind the member gate
+it put the fourteen moved anchors into a new section of their own rather than
+scattering them, which is what keeps this page at five and a section clear of
+the floor. Measured by mutation on 2026-09-03: at four sections the rail
+survives; at three it and the progress bar are both gone from the served HTML.
+
+The member half of a split page is the other side of this. It renders through
+the same `HandbookLayout`, and at two sections `wayfinding` is false, so it
+reads straight down a `max-w-4xl` column with no rail. That is correct for a
+two-section document rather than something to fix.
 
 ## Marketing blocks inside a handbook section
 
@@ -67,7 +83,7 @@ block list into three zones:
 | Zone | What it is | On the Psalms page |
 | --- | --- | --- |
 | intro | blocks before the first `handbookSection` | the fully-booked notice, the vision prose, one photo |
-| sections | the `handbookSection` blocks, with the rail and progress bar | the six handbook sections |
+| sections | the `handbookSection` blocks, with the rail and progress bar | the five public handbook sections |
 | outro | blocks after the last `handbookSection` | the "Missed this one?" call to action |
 
 The workshop's own header (kicker, title, facts panel) is not rendered in this
@@ -110,21 +126,31 @@ write to Josh if they lost it. Do not add it back as a convenience.
 The Exegetical Guide link is fine to keep: it is read-only and already
 circulated to the cohort.
 
-## Six sections, not twenty-one
+## Five public sections and two gated, not twenty-one
 
 The handbook shipped with 21 top-level sections. A reviewer read that as a sign
 the document had been machine-generated, and he was right about the cause:
 nobody divides a document into 21 parts on purpose. On 2026-07-28 it became five,
-each holding the old sections as subsections. A sixth arrived on 2026-07-31.
+each holding the old sections as subsections. A sixth arrived on 2026-07-31. On
+2026-09-03 two of the six moved behind the member gate and a stub section took
+their place, so the public page carries five again and the member page carries
+two.
 
-| Section | Absorbs |
-| --- | --- |
-| 01 Welcome to Workshop 3 | old 01 welcome, 06 learning outcomes, 07 facilitators |
-| 02 Dates and programme | 02 dates, 04 how the weeks build, 05 programme |
-| 03 Your preparation | 17 prework, 18 documents |
-| 04 Travel, visas and packing | 08 travel, 09 transfers, 10 before you fly, 11 entry, 12 packing, 20 departure |
-| 05 Life on the base | 03 location, 13 venue, 14 meals, 15 Wi-Fi, 16 laundry, 21 free time, 19 health |
-| 06 Cost and financial support | new on 2026-07-31; nothing folded in |
+| Section | Where it is | Absorbs |
+| --- | --- | --- |
+| 01 Welcome to Workshop 3 | public | old 01 welcome, 06 learning outcomes, 07 facilitators |
+| 02 Dates and programme | public | 02 dates, 04 how the weeks build, 05 programme |
+| 03 Your preparation | public | 17 prework, 18 documents |
+| 04 Travel and life on the base | public, and it is the stub section | the fourteen moved anchors and one link to the member page |
+| 05 Cost and financial support | public | new on 2026-07-31; nothing folded in |
+| 04 Travel, visas and packing | **gated**, `/members/psalms-bali-2026` | 08 travel, 09 transfers, 10 before you fly, 11 entry, 12 packing, 20 departure |
+| 05 Life on the base | **gated**, same page | 03 location, 13 venue, 14 meals, 15 Wi-Fi, 16 laundry, 21 free time, 19 health |
+
+The two numbering columns are deliberately not unified. The gated sections keep
+the numbers `04` and `05` they have always had, because their content and their
+anchors did not change; the public page renumbers Cost from `06` to `05` so its
+chips read `01` to `05` with no gap. **`number` is a display chip and `anchor` is
+the permanent name**: Cost is still `s06-cost` and always will be.
 
 Section 06 is a real addition rather than a regression toward twenty-one. Until
 2026-07-31 the site said nothing about what a workshop costs, while the two
@@ -160,6 +186,27 @@ Two of them moved on 2026-07-28 when their content left the page.
 `s20-departure` on "Closing well". When you delete a block, check whether it was
 carrying an anchor and rehome it on whatever now stands in that place.
 
+**There are now TWO ways to keep a fragment alive, and the second one is newer
+than most of this document.** Rehoming the anchor onto whatever stands in that
+place is the first, and it is still right when the content stays on the page.
+When the content LEAVES the page, rehoming is not available, and the answer is a
+stub: put the fragment in the node's `movedAnchors` array with one sentence
+saying what used to be there and the route it went to, and `MovedAnchors` renders
+an element carrying that id at the foot of the page. Fourteen of Bali's anchors
+went this way on 2026-09-03 — thirteen as stubs, and `s04-travel` as the anchor
+of the stub section itself, so the contents entry a reader already clicks still
+lands on a real section.
+
+Write the sentence per anchor. "This section has moved" thirteen times tells a
+reader nothing about whether they are in the right place, and the only reason the
+anchor was kept is that they arrived looking for one specific thing.
+
+**A stub is a disclosure, and that is a deliberate trade.** Thirteen stubs and a
+section named for them tell any reader that travel and base sections exist. The
+alternative is a dead fragment, and a dead fragment is worse: `TitleSync` fails
+open, so a reader following a missing id gets a page that renders correctly,
+reports nothing, and sits wherever the browser left it.
+
 The facilitator credits moved out of section 03 into 01 later the same day, on
 the reading that who you will be working with is orientation rather than prework
 (feedback, 2026-07-28). `s07-team` travelled with the block, so the link still
@@ -178,9 +225,15 @@ with `"layout": "handbook"`. Its `blocks` array is:
 1. one `hero` (with `mediaId` for the full-bleed photo, and `labelToken` items
    for the date chips)
 2. the intro blocks, ordinary page blocks like `prose` and `imageSlot`
-3. one `sectionNav` (the contents grid, six entries)
-4. six `handbookSection` blocks
+3. one `sectionNav` (the contents grid, five entries since 2026-09-03)
+4. five `handbookSection` blocks, one of which is the stub section
 5. the outro `ctaGroup`
+
+and, since the split, one `movedAnchors` array of thirteen entries. Those are
+not blocks: they are `{ id, to, note }` triples that `SiteLayout` renders through
+`MovedAnchors` at the foot of whatever page declares them, so an emailed
+fragment still finds an element with its id. The member half's blocks are not
+here at all; they are in `member_block` and their source is a vault document.
 
 ## The revision line, and the mirror rule
 
@@ -319,9 +372,16 @@ it, and the cost section, and worth re-checking after any substantial edit:
 | Words | 3,775 | ~3,700 | ~3,500 | ~3,755 |
 
 The cost section added a `glanceGrid` and three `subsection` blocks and no
-callout, which is why the panel count did not move. `action-required` is still at
-its four and `note` at its two. A settled fee is a fact for the rows table, not a
+callout, which is why the panel count did not move. `action-required` was at its
+four and `note` at its two. A settled fee is a fact for the rows table, not a
 stop-and-read panel.
+
+**The 2026-09-03 split divided those four.** `bali.08.action` (the registration
+form) and `bali.14.action` (allergies) were inside the moving sections, so the
+public page now carries **two** `action-required` panels and the member page
+carries **two**. The ceiling is per page, so each half has room for one more,
+and the discipline behind the number has not changed: a fifth panel on either
+page means one of the four is not really an action.
 
 The 2026-08-17 round held to the same rule. It added a `glanceGrid` and a
 `linkGrid` for laundry and extended four existing bodies, so sections stayed at

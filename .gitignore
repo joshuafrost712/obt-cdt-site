@@ -70,6 +70,12 @@ feedback/verify-shots/
 # gate can read.
 feedback/site06-shots/
 
+# Spec SITE-05's fixture ids, which carry the fixture account's password. Every
+# sibling spec ignores its own equivalent; this one was staged by `git add -A`
+# and caught by criterion 18's pre-commit diff scan rather than by the pattern
+# above, because the pattern is per-spec and a new spec adds a new name.
+scripts/.site05-fixture-ids.json
+
 # Spec SITE-05's shots. Criterion 10 photographs the member handbook SIGNED IN
 # at three widths, so every one of these frames a cohort's rooming, meals and
 # base details. Program finding 11: an image is a disclosure channel no text
