@@ -2294,8 +2294,8 @@
                   "type": "cta",
                   "label": "Psalms workshop handbook",
                   "route": "/workshops/psalms-bali-2026",
-                  "body": "Dates, the base, meals, laundry, travel and visas, and the Psalms programme itself.",
-                  "note": "Logistics live here, not on this page"
+                  "body": "The dates, the Psalms programme itself, how to prepare, and what the fortnight costs.",
+                  "note": "Travel and base details are behind sign-in"
                 }
               ]
             }
@@ -2831,6 +2831,17 @@
       "metaDescription": "The OBT Consultant Development Track's register of teaching materials and applications, for enrolled participants. Sign in with the email address you gave when you registered.",
       "access": "member",
       "blocks": []
+    },
+    {
+      "id": "members-psalms-bali-2026",
+      "route": "/members/psalms-bali-2026",
+      "navLabel": "Psalms handbook",
+      "title": "Psalms in Bali · travel and life on the base",
+      "kicker": "For confirmed participants",
+      "metaDescription": "Travel and base details for confirmed participants of the Psalms workshop in Bali, 2026. Sign in with the email address you gave when you registered.",
+      "access": "member",
+      "layout": "handbook",
+      "blocks": []
     }
   ],
   "workshops": [
@@ -2956,7 +2967,7 @@
       "navLabel": "Psalms · Bali 2026",
       "title": "Psalms",
       "kicker": "Workshop three",
-      "metaDescription": "The third OBT-CDT workshop, in Bali, Indonesia: Hebrew poetry exegesis for OBT and facilitating the translation of Psalms into local artistic genres. Fully booked. This page is also the participant handbook.",
+      "metaDescription": "The third OBT-CDT workshop, in Bali, Indonesia: Hebrew poetry exegesis for OBT and facilitating the translation of Psalms into local artistic genres. Fully booked. The dates, programme, preparation and cost are here; travel and base details are for signed-in participants.",
       "facts": {
         "genre": "Psalms and Hebrew poetry",
         "location": "Bali, Indonesia",
@@ -2970,8 +2981,8 @@
           "type": "hero",
           "kicker": "Workshop three · Psalms · Bali 2026",
           "title": "Psalms in Bali",
-          "body": "The third workshop of the OBT Consultant Development Track, and the participant handbook for it: what the weeks hold, where the base is, what to put in your bag, and what to do before you fly.",
-          "note": "Last updated 21 August 2026 · the weekend meal sign-up link is now on this page, in section five, and the Friday deadline is waived for the 22 and 23 August weekend only. Where an older email disagrees with this page, the page is right.",
+          "body": "The third workshop of the OBT Consultant Development Track, and the participant handbook for it: what the weeks hold, how to prepare, and what the fortnight costs.",
+          "note": "Last updated 3 September 2026 · travel, visas, packing and life on the base have moved to a members-only page, reachable from section four and from the notes at the foot of this page. Where an older email disagrees with this page, the page is right.",
           "mediaId": "bali-hero",
           "items": [
             {
@@ -3049,14 +3060,7 @@
               "type": "cta",
               "number": "04",
               "anchor": "s04-travel",
-              "label": "Travel, visas and packing"
-            },
-            {
-              "id": "bali.contents.s05-base",
-              "type": "cta",
-              "number": "05",
-              "anchor": "s05-base",
-              "label": "Life on the base"
+              "label": "Travel and life on the base"
             },
             {
               "id": "bali.contents.s06-cost",
@@ -3493,371 +3497,25 @@
           ]
         },
         {
-          "id": "bali.s4",
+          "id": "bali.s45",
           "type": "handbookSection",
           "number": "04",
           "anchor": "s04-travel",
-          "kicker": "Getting there and back",
-          "title": "Travel, visas and packing",
-          "body": "Book against the dates in section 2, then tell us what you booked. Everything the organisers arrange for you, from visas to the ride from the airport, is planned off the flight details on your registration form.",
-          "mediaId": "bali-departure",
-          "caption": "The international terminal at I Gusti Ngurah Rai, built in Balinese style.",
+          "kicker": "For confirmed participants",
+          "title": "Travel and life on the base",
+          "body": "Travel, visas, packing, rooming, meals, laundry and getting online are now on a page only confirmed participants can open. They are the details of one cohort's fortnight on one base, and they belong to the people who are coming rather than to anyone who finds this page.\n\nSign in and everything that used to be in sections four and five is there, in the same order, under the same headings. A link from an email will still land on the right line: every section that moved leaves a note at the foot of this page saying where it went.",
           "items": [
             {
-              "id": "bali.08.arrive",
-              "type": "subsection",
-              "title": "When to arrive",
-              "body": "If you are joining the Crash Course, plan to be in Bali on Monday 17 August, during the afternoon. If you are coming only for the Psalms workshop, be on the base by Sunday 23 August.\n\nYou are very welcome to come a couple of days early and stay at the base beforehand. We especially encourage that for anyone crossing four or five time zones or more. A day or two lets your body catch up so you can work properly from the first session instead of pushing through jet lag.",
-              "anchor": "s08-travel"
-            },
-            {
-              "id": "bali.08.depart",
-              "type": "subsection",
-              "title": "When to leave",
-              "body": "The workshop ends at 5:00 PM on Friday 4 September. Choose a late-evening flight that day, or leave on the 5th or later. Leave real time for the drive to the airport, check-in, security and immigration."
-            },
-            {
-              "id": "bali.08.action",
-              "type": "callout",
-              "variant": "action-required",
-              "title": "Fill in the registration form, and add your flight details as soon as they are booked",
-              "body": "The form link is in the email we sent you. Write to Josh if you cannot find it. One form covers the whole event, so if you are attending both weeks you fill it in once. We use it to arrange visas, accommodation and airport pickups.\n\nWe need your airline, flight number, arrival and departure dates and times, and a mobile or WhatsApp number we can reach you on.\n\nIf you are travelling on a passport that does not get visa on arrival and you will need an invitation letter, say so on the form as early as you can. Those take time to arrange."
-            },
-            {
-              "id": "bali.09.transfers",
-              "type": "subsection",
-              "anchor": "s09-transfers",
-              "title": "Airport transfers",
-              "body": "We have budgeted to cover your transport between the airport and the base, and we arrange it from the flight details on the registration form. Getting yours in early is what lets us group arrivals so nobody waits long after landing.\n\nThe vans are planned around the arrival times we already hold. If we do not have yours, we cannot promise to cover your ride, and you may have to arrange and pay for it yourself. We would far rather meet you at the airport, so send what you know even if the flight is not booked yet.\n\nWait for a direct confirmation before you assume your pickup is booked. If your flight changes, tell us: we re-plan pickups around actual landing times, but only if we know."
-            },
-            {
-              "id": "bali.09.general",
+              "id": "bali.s45.link",
               "type": "linkGrid",
               "items": [
                 {
-                  "id": "bali.09.general.advice",
+                  "id": "bali.s45.link.member",
                   "type": "cta",
-                  "label": "General travel advice",
-                  "route": "/general-travel-advice",
-                  "body": "The ordinary pre-flight and departure checks, kept off this page. Skim it if you want the reminder; most of you will not need it.",
-                  "note": "Optional"
-                }
-              ],
-              "anchor": "s10-before-you-fly"
-            },
-            {
-              "id": "bali.11.responsibility",
-              "type": "callout",
-              "variant": "action-required",
-              "label": "Check before you travel",
-              "title": "Entry rules depend on your nationality and they change",
-              "body": "Every participant is responsible for checking official Indonesian immigration guidance for the passport they will actually travel on."
-            },
-            {
-              "id": "bali.11.list",
-              "type": "list",
-              "title": "Indonesian entry requirements",
-              "items": [
-                {
-                  "id": "bali.11.list.1",
-                  "type": "listItem",
-                  "label": "Passport",
-                  "body": "Official guidance commonly asks for at least six months' validity."
-                },
-                {
-                  "id": "bali.11.list.2",
-                  "type": "listItem",
-                  "label": "Visa",
-                  "body": "Apply for the ordinary 30-day tourist visa, the B1 Visa on Arrival, through the official portal below. Do not select \"work and travel\": that is a separate category and it requires a sponsor inside Indonesia. Some passports, ASEAN ones among them, enter visa-free for 30 days, and that works just as well."
-                },
-                {
-                  "id": "bali.11.list.3",
-                  "type": "listItem",
-                  "label": "Arrival declaration",
-                  "body": "The immigration portal requires an arrival card, submitted within the three days before you arrive. Submitting it returns a QR code. Keep it on your phone: you show it at the checkpoint after immigration."
-                },
-                {
-                  "id": "bali.11.list.4",
-                  "type": "listItem",
-                  "label": "Onward travel",
-                  "body": "Carry evidence of a return or onward ticket in case it is asked for."
-                },
-                {
-                  "id": "bali.11.list.5",
-                  "type": "listItem",
-                  "label": "Bali levy",
-                  "body": "International tourists generally pay the Bali Tourism Levy of IDR 150,000 per person. Keep the voucher."
-                }
-              ],
-              "anchor": "s11-entry",
-              "variant": "numbered"
-            },
-            {
-              "id": "bali.11.official",
-              "type": "linkGrid",
-              "body": "Use government portals only. Do not use agents, or links forwarded to you without checking where they go.",
-              "items": [
-                {
-                  "id": "bali.11.official.evisa",
-                  "type": "cta",
-                  "label": "Indonesia e-Visa and arrival information",
-                  "href": "https://evisa.imigrasi.go.id/",
-                  "note": "Official government portal"
-                },
-                {
-                  "id": "bali.11.official.levy",
-                  "type": "cta",
-                  "label": "Bali Tourism Levy portal",
-                  "href": "https://lovebali.baliprov.go.id/",
-                  "note": "Official government portal"
-                }
-              ]
-            },
-            {
-              "id": "bali.12.packing",
-              "type": "subsection",
-              "title": "What to bring",
-              "anchor": "s12-packing",
-              "body": "For the workshop itself: a laptop and charger, a notebook, and headphones good enough for careful listening to audio. Facilitators may ask for specific Psalms materials or recording gear closer to the date.\n\nBeyond that, pack for the tropics. Late August and early September fall in Bali's dry season, and they are the two driest months of its year: daytime highs of about 29 to 30°C (84 to 86°F), nights around 25°C (77°F), humid throughout, and roughly 40 to 50 mm of rain across a whole month, falling on three or four days as a short heavy shower rather than a wet day. Bring light, breathable clothing, one layer for strong air-conditioning, something modest for worship and for visits to religious or cultural sites, and shoes you can stand in all day. Bring a light blanket for your bed as well; the base does not provide one, and there is more on that under Rooming.\n\nBali also has some of the most beautiful beaches in the world and you should enjoy them. Bring whatever you need to do that safely in equatorial sun: swimwear, a hat, sunglasses and high-factor sunscreen."
-            },
-            {
-              "id": "bali.20.closing",
-              "type": "list",
-              "title": "Closing well",
-              "items": [
-                {
-                  "id": "bali.20.closing.1",
-                  "type": "listItem",
-                  "label": "Complete the workshop evaluation and any consultant-development follow-up."
-                },
-                {
-                  "id": "bali.20.closing.2",
-                  "type": "listItem",
-                  "label": "Save the final shared resources, and note the permissions attached before you use community materials."
-                },
-                {
-                  "id": "bali.20.closing.3",
-                  "type": "listItem",
-                  "label": "Stay in touch with mentors and peers through whatever channels the group agrees on."
-                }
-              ],
-              "anchor": "s20-departure"
-            }
-          ]
-        },
-        {
-          "id": "bali.s5",
-          "type": "handbookSection",
-          "number": "05",
-          "anchor": "s05-base",
-          "kicker": "While you are there",
-          "title": "Life on the base",
-          "body": "Jimbaran sits just south of the airport on Bali's Bukit peninsula.",
-          "items": [
-            {
-              "id": "bali.03.venue",
-              "type": "glanceGrid",
-              "title": "The base",
-              "variant": "rows",
-              "items": [
-                {
-                  "id": "bali.03.venue.venue",
-                  "type": "glanceCard",
-                  "value": "University of the Nations base, Jimbaran",
-                  "label": "Venue"
-                },
-                {
-                  "id": "bali.03.venue.address",
-                  "type": "glanceCard",
-                  "value": "Yayasan Putra Pemenang, Tiara Nusa, Jl. Goa Gong, Jimbaran, Bali, Indonesia",
-                  "label": "Address"
-                },
-                {
-                  "id": "bali.03.venue.area",
-                  "type": "glanceCard",
-                  "value": "Bukit peninsula, south Bali",
-                  "label": "Area"
-                }
-              ],
-              "anchor": "s03-location"
-            },
-            {
-              "id": "bali.03.map",
-              "type": "linkGrid",
-              "items": [
-                {
-                  "id": "bali.03.map.maps",
-                  "type": "cta",
-                  "label": "Open the address in Google Maps",
-                  "href": "https://www.google.com/maps/search/?api=1&query=Yayasan+Putra+Pemenang+Tiara+Nusa+Jl.+Goa+Gong+Jimbaran+Bali",
-                  "note": "External map"
-                }
-              ]
-            },
-            {
-              "id": "bali.03.hosts",
-              "type": "subsection",
-              "title": "Our hosts",
-              "body": "We are guests here. Part of the reason this workshop can happen at a cost that lets fifty people attend is the real generosity of the base, and that shapes some of the practical arrangements further down, meals in particular."
-            },
-            {
-              "id": "bali.13.rooming",
-              "type": "subsection",
-              "title": "Rooming",
-              "body": "You are welcome to stay at the base for the workshop, and accommodation has been planned for confirmed participants. We are working from the base's own rooming layout, and where we can we are pairing people who share a language.\n\n**Bring your own blanket.** The base sheets every bed and gives you a pillow with a case, but it does not provide blankets. The rooms are air-conditioned and nights outside sit around 25°C, so this is about sleeping comfortably rather than keeping warm. If you are travelling a long way and would rather not carry one, write to Josh as soon as you can and we will buy one here for about $4.",
-              "anchor": "s13-accommodation"
-            },
-            {
-              "id": "bali.13.space",
-              "type": "subsection",
-              "title": "The teaching space",
-              "body": "The base is setting up the main teaching room with a projector and screen, a whiteboard, and a sound system with microphones, which matters for the music work. Reliable internet in that room is part of the request."
-            },
-            {
-              "id": "bali.14.meals",
-              "type": "subsection",
-              "anchor": "s14-meals",
-              "title": "Meals and dietary needs",
-              "body": "Meals come through the base kitchen on working days. Part of what keeps the cost low enough for fifty people to attend is the generosity of our hosts, and one of the ways the base runs efficiently is by having large visiting groups help with meal preparation and cleanup.\n\nWe will organise that so those who are able-bodied share the work and it finishes quickly together, rather than anyone losing half an afternoon session to it."
-            },
-            {
-              "id": "bali.14.weekend",
-              "type": "subsection",
-              "title": "Weekends",
-              "body": "The base kitchen does not serve as many meals at the weekend, so we give you a small stipend and you buy your own nearby: roughly Rp 50,000 for the whole weekend, about $3. That is not meant to cover every weekend meal on its own. The two arrangements below are what make it enough. When you do eat out, choose places that follow normal food-safety practice.\n\nWe eat together twice each weekend, on Saturday evening and again on Sunday evening. The meal is cooked on the base and costs you nothing. **You need to opt in by the Friday before.** The kitchen shops on Friday for the whole weekend, so a name added on Saturday cannot be fed. Signing up is a short form that takes a few seconds, and you can submit it again if your plans change. The link is on the card below.\n\n**For the first weekend, 22 and 23 August, that Friday deadline does not apply.** The link reached you later than it should have, which is our doing rather than yours, so the kitchen will cook from whatever we have by Saturday morning. The Friday rule starts with the weekend of 29 and 30 August.\n\nEach weekend you also get three packets of instant noodles and three eggs as a supplement. They are yours to eat whenever you like: a late arrival, a skipped breakfast, or supper in your room."
-            },
-            {
-              "id": "bali.14.signup",
-              "type": "linkGrid",
-              "items": [
-                {
-                  "id": "bali.14.signup.meals",
-                  "type": "cta",
-                  "label": "Sign up for the weekend meals",
-                  "href": "https://forms.gle/A88DoQdWPqgi7hNU6",
-                  "note": "Sign up by the Friday before each weekend. You can submit it again if your plans change."
-                }
-              ]
-            },
-            {
-              "id": "bali.14.action",
-              "type": "callout",
-              "variant": "action-required",
-              "title": "Tell us about allergies and medically necessary dietary requirements, in writing",
-              "body": "If you have not already done so, put it on the registration form or email it. An informal conversation is not something the kitchen can work from."
-            },
-            {
-              "id": "bali.15.list",
-              "type": "list",
-              "title": "Staying online",
-              "items": [
-                {
-                  "id": "bali.15.list.1",
-                  "type": "listItem",
-                  "label": "Download the documents you need before you travel, and keep an offline copy."
-                },
-                {
-                  "id": "bali.15.list.2",
-                  "type": "listItem",
-                  "label": "Do not count on workshop Wi-Fi for large uploads or continuous video calls."
-                },
-                {
-                  "id": "bali.15.list.3",
-                  "type": "listItem",
-                  "label": "A local SIM or eSIM is worth considering if you need reliable data of your own."
-                },
-                {
-                  "id": "bali.15.list.4",
-                  "type": "listItem",
-                  "label": "Take normal care on shared networks, and do not post the Wi-Fi password anywhere public."
-                }
-              ],
-              "anchor": "s15-connectivity",
-              "body": "Plan for less bandwidth than you have at home."
-            },
-            {
-              "id": "bali.16.laundry",
-              "type": "subsection",
-              "anchor": "s16-laundry",
-              "title": "Laundry",
-              "body": "For most participants the workshop runs two weeks, and for anyone also doing the Crash Course it runs three. Pack with laundry in mind either way.\n\nThe base recommends a laundry near us that collects and delivers. Students on the base have used it and been looked after well. Message them on WhatsApp to arrange a pickup; they work by the kilogram, and you choose how fast you need it back."
-            },
-            {
-              "id": "bali.16.laundry.prices",
-              "type": "glanceGrid",
-              "title": "What the laundry charges",
-              "variant": "rows",
-              "body": "Read off their own price list in August 2026, converted at roughly Rp 17,800 to the US dollar. Prices and turnaround are theirs to change, so confirm both, and what each service covers, when you message them.",
-              "items": [
-                {
-                  "id": "bali.16.laundry.prices.fold",
-                  "type": "glanceCard",
-                  "value": "Rp 6,000 per kg",
-                  "label": "Wash and fold",
-                  "body": "About $0.35, back in two days. Rp 10,000 for next day, about $0.55. Rp 14,000 for three hours, about $0.80."
-                },
-                {
-                  "id": "bali.16.laundry.prices.komplit",
-                  "type": "glanceCard",
-                  "value": "Rp 8,000 per kg",
-                  "label": "Cuci komplit",
-                  "body": "Full service. About $0.45, back in two days. Rp 12,000 for next day, about $0.70. Rp 16,000 for three hours, about $0.90."
-                },
-                {
-                  "id": "bali.16.laundry.prices.strika",
-                  "type": "glanceCard",
-                  "value": "Rp 6,000 per kg",
-                  "label": "Strika or kering",
-                  "body": "Ironing or drying only. About $0.35, back in two days. Rp 9,000 for next day, about $0.50. Rp 12,000 for three hours, about $0.70."
-                }
-              ]
-            },
-            {
-              "id": "bali.16.laundry.links",
-              "type": "linkGrid",
-              "items": [
-                {
-                  "id": "bali.16.laundry.links.map",
-                  "type": "cta",
-                  "label": "The laundry on Google Maps",
-                  "href": "https://maps.app.goo.gl/9NTkgRmWo4Fhig969?g_st=iw",
-                  "note": "External map"
-                },
-                {
-                  "id": "bali.16.laundry.links.whatsapp",
-                  "type": "cta",
-                  "label": "Message the laundry on WhatsApp",
-                  "href": "https://wa.me/6289612000302",
-                  "note": "0896-1200-0302"
-                }
-              ]
-            },
-            {
-              "id": "bali.21.free",
-              "type": "subsection",
-              "anchor": "s21-free-time",
-              "title": "Free time and exploring together",
-              "body": "Bali has a great deal to offer and you are warmly welcome to enjoy it. To be clear, the facilitators are not organising or sponsoring outings.\n\nIn past workshops participants decided together where they wanted to go, pooled money for a van, and went as a group. Some very good memories came out of that. We would love it to happen again, organised among yourselves."
-            },
-            {
-              "id": "bali.19.contacts",
-              "type": "glanceGrid",
-              "title": "Numbers to have on you",
-              "variant": "rows",
-              "items": [
-                {
-                  "id": "bali.19.contacts.emergency",
-                  "type": "glanceCard",
-                  "value": "112",
-                  "label": "Indonesia emergency",
-                  "body": "The national emergency line, reachable from any phone."
-                },
-                {
-                  "id": "bali.19.contacts.workshop",
-                  "type": "glanceCard",
-                  "value": "josh_frost@sil.org",
-                  "label": "Workshop contact",
-                  "body": "Josh Frost, lead facilitator."
+                  "label": "Travel and life on the base",
+                  "route": "/members/psalms-bali-2026",
+                  "body": "Sections four and five of this handbook, for participants who have signed in.",
+                  "note": "Sign in required"
                 }
               ]
             }
@@ -3866,7 +3524,7 @@
         {
           "id": "bali.s6",
           "type": "handbookSection",
-          "number": "06",
+          "number": "05",
           "anchor": "s06-cost",
           "kicker": "What it costs",
           "title": "Cost and financial support",
@@ -3950,7 +3608,74 @@
           ]
         }
       ],
-      "layout": "handbook"
+      "layout": "handbook",
+      "movedAnchors": [
+        {
+          "id": "s08-travel",
+          "to": "/members/psalms-bali-2026",
+          "note": "When to arrive, including coming a day or two early, is now on the members' page."
+        },
+        {
+          "id": "s09-transfers",
+          "to": "/members/psalms-bali-2026",
+          "note": "Airport transfers, and what we need from you to arrange one, are now on the members' page."
+        },
+        {
+          "id": "s10-before-you-fly",
+          "to": "/members/psalms-bali-2026",
+          "note": "The general travel advice link is now on the members' page, and the advice page itself is still public."
+        },
+        {
+          "id": "s11-entry",
+          "to": "/members/psalms-bali-2026",
+          "note": "Indonesian entry requirements — passport, visa, arrival declaration, onward travel and the Bali levy — are now on the members' page."
+        },
+        {
+          "id": "s12-packing",
+          "to": "/members/psalms-bali-2026",
+          "note": "What to bring, and what the weather will be doing, is now on the members' page."
+        },
+        {
+          "id": "s20-departure",
+          "to": "/members/psalms-bali-2026",
+          "note": "Closing well, and what to do in the last days, is now on the members' page."
+        },
+        {
+          "id": "s05-base",
+          "to": "/members/psalms-bali-2026",
+          "note": "Life on the base — the base itself, rooming, meals, laundry, getting online and free time — is now on the members' page."
+        },
+        {
+          "id": "s03-location",
+          "to": "/members/psalms-bali-2026",
+          "note": "The base's address and how to find it are now on the members' page."
+        },
+        {
+          "id": "s13-accommodation",
+          "to": "/members/psalms-bali-2026",
+          "note": "Rooming, including the blanket you need to bring, is now on the members' page."
+        },
+        {
+          "id": "s14-meals",
+          "to": "/members/psalms-bali-2026",
+          "note": "Meals, dietary needs and the weekend arrangements are now on the members' page."
+        },
+        {
+          "id": "s15-connectivity",
+          "to": "/members/psalms-bali-2026",
+          "note": "Staying online, and what to download before you travel, is now on the members' page."
+        },
+        {
+          "id": "s16-laundry",
+          "to": "/members/psalms-bali-2026",
+          "note": "The laundry, its prices and how to reach it are now on the members' page."
+        },
+        {
+          "id": "s21-free-time",
+          "to": "/members/psalms-bali-2026",
+          "note": "Free time and exploring together is now on the members' page."
+        }
+      ]
     },
     {
       "id": "member-gate-check",

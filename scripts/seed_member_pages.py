@@ -85,7 +85,20 @@ lets its ids be generated from the heading, so an anchor cannot drift from the
 section it names. A document being MOVED declares every id, because the Psalms
 page's 140 `bali.*` ids are React keys, `data-dfb-node` targets and the DOM-id
 fallback for a section with no anchor, and generating new ones would discard all
-three silently. `block_key` IS the block's own id, never a second string.
+three silently. `block_key` IS the block's own id, never a second string. **The
+modes do not mix**: a document that declares any id and omits one is refused,
+naming the blocks that have none (spec SITE-05 D4).
+
+Three levels, and the third is a table. `##` is a block, `###` is a child, and a
+markdown table under a `###` becomes that child's own `items`, read by header
+name. That is what carries `listItem` under a `list` and `glanceCard` under a
+`glanceGrid`; a `type` column says which, and the column defaults to `cta`.
+
+A key line whose value is exactly `~` **removes** the field. Five of the blocks
+SITE-05 moves carry no `title`, and a heading is what opens a block here, so
+without `~` each would arrive wearing a title its public original never had.
+A field the format cannot express is always a REFUSAL naming the block, the
+field and the value, never a silent drop and never a guess.
 
 ## Writing
 
@@ -232,6 +245,16 @@ def _key_lines(chunk: list[str]) -> tuple[dict, list[str]]:
     return fields, chunk[i:]
 
 
+# A key line whose value is exactly this REMOVES the field rather than setting
+# it. Spec SITE-05 D4: five of the moving blocks carry no `title` at all
+# (`bali.09.general`, `bali.11.official`, `bali.03.map`, `bali.14.signup`,
+# `bali.16.laundry.links`), and a heading is what opens a block here, so without
+# this every one of them would arrive on the member page wearing a title the
+# public page never showed. That is a field-level change to a MOVED document,
+# which is the one thing a move may not do.
+FIELD_UNSET = "~"
+
+
 def _body_of(lines: list[str]) -> str:
     """Paragraphs, blank-line separated, with trailing whitespace dropped."""
     text = "\n".join(lines).strip()
@@ -277,7 +300,11 @@ def _split_table(lines: list[str], path: Path) -> tuple[list[str], list[dict] | 
                     f"{path}: a table row has {len(cells)} cells and its header has "
                     f"{len(header)}"
                 )
-            row = {k: v.replace("\\|", "|") for k, v in zip(header, cells) if v}
+            row = {
+                k: v.replace("\\|", "|")
+                for k, v in zip(header, cells)
+                if v and v != FIELD_UNSET
+            }
             if not row.get("id"):
                 raise SeedError(
                     f"{path}: a table row has no `id`. The renderer keys its cards on "
@@ -321,6 +348,7 @@ def parse_blocks(doc_body: str, route: str, path: Path) -> tuple[list[dict], boo
     prefix = _slug(route.strip("/")) or "member"
     blocks: list[dict] = []
     declared = False
+    generated: list[str] = []
     counter = 0
 
     for level, heading, chunk in sections:
@@ -337,11 +365,15 @@ def parse_blocks(doc_body: str, route: str, path: Path) -> tuple[list[dict], boo
         else:
             base = _slug(heading) if heading else "intro"
             block_id = f"{prefix}.{counter:02d}.{base}"
+            generated.append(f"{heading or '(preamble)'} -> {block_id}")
 
         block: dict = {"id": block_id, "type": fields.pop("type", "prose")}
         if heading:
             block["title"] = heading
         for key, value in fields.items():
+            if value == FIELD_UNSET:
+                block.pop(key, None)
+                continue
             block[key] = int(value) if key in INT_FIELDS else value
         if body:
             block["body"] = body
@@ -358,7 +390,20 @@ def parse_blocks(doc_body: str, route: str, path: Path) -> tuple[list[dict], boo
             blocks.append(block)
 
     # Mixed modes would give one document two id namespaces, which is how an
-    # anchor and the section it names come apart.
+    # anchor and the section it names come apart. Spec SITE-05 D4 makes this a
+    # REFUSAL rather than a comment: a document being moved declares every id,
+    # because the ids it is moving are React keys, `data-dfb-node` targets and
+    # the DOM-id fallback for a section with no anchor (finding 3). One block
+    # left undeclared in such a document gets a generated `psalms-bali-2026.07.x`
+    # id, renders fine, and quietly breaks all three.
+    if declared and generated:
+        listing = "\n".join(f"      {g}" for g in generated[:10])
+        raise SeedError(
+            f"{path}: this document DECLARES block ids, and {len(generated)} block(s) "
+            f"do not:\n{listing}\n"
+            "    A moved document declares every id or none. Add `id:` to each, or "
+            "remove the declared ones and let all of them be generated from headings."
+        )
     ids_seen: set[str] = set()
 
     def walk(bs: list[dict]) -> None:

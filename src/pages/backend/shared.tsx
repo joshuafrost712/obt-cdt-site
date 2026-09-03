@@ -32,13 +32,27 @@ import { notifySessionChanged } from '../../lib/backend/sessionHint'
  * page keeps the full chrome: this is one page's answer to one measurement, not a
  * redesign of the portal.
  */
+/**
+ * `wide` hands the full page width to the children and lets them own the
+ * heading, and it exists for the same kind of reason `compact` does.
+ *
+ * Spec SITE-05 D7. A member handbook renders through `HandbookLayout`, whose
+ * hero is full-bleed and whose reading column is `max-w-4xl`. Inside this
+ * component's own `max-w-3xl` clamp the hero becomes a 48rem band inset in a
+ * white page, and the document reads narrower signed in than the same document
+ * read on the public page. So a wide page keeps the signed-out and checking
+ * states in the panel, where a sign-in card belongs, and renders the signed-in
+ * children unclamped with only the member bar in a container of its own.
+ */
 export function AuthGate({
   title,
   compact,
+  wide,
   children,
 }: {
   title: string
   compact?: boolean
+  wide?: boolean
   children: (session: Session) => ReactNode
 }) {
   const { session } = useSession()
@@ -53,7 +67,9 @@ export function AuthGate({
     notifySessionChanged()
   }, [session])
 
-  return (
+  // The signed-out and checking states are a panel in both modes: a sign-in
+  // card the width of the viewport is not a better sign-in card.
+  const panel = (body: ReactNode) => (
     <div className={`mx-auto max-w-3xl px-5 pb-16 ${compact ? 'pt-5' : 'pt-12'}`}>
       {!compact && (
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent-deep">
@@ -69,18 +85,33 @@ export function AuthGate({
       >
         {title}
       </h1>
-
-      {session === undefined && (
-        <p className="mt-8 text-ink-faint">{siteLabel('portal.checking', 'Checking your session…')}</p>
-      )}
-      {session === null && <SignInCard returning={hadAccount()} />}
-      {session && (
-        <>
-          <MemberBar email={session.user.email ?? ''} compact={compact} />
-          {children(session)}
-        </>
-      )}
+      {body}
     </div>
+  )
+
+  if (session === undefined) {
+    return panel(
+      <p className="mt-8 text-ink-faint">{siteLabel('portal.checking', 'Checking your session…')}</p>,
+    )
+  }
+  if (session === null) return panel(<SignInCard returning={hadAccount()} />)
+
+  if (wide) {
+    return (
+      <div className="pb-16">
+        <div className="mx-auto max-w-6xl px-5 pt-5">
+          <MemberBar email={session.user.email ?? ''} compact />
+        </div>
+        {children(session)}
+      </div>
+    )
+  }
+
+  return panel(
+    <>
+      <MemberBar email={session.user.email ?? ''} compact={compact} />
+      {children(session)}
+    </>,
   )
 }
 
