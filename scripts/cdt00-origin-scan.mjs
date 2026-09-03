@@ -26,6 +26,7 @@
  */
 
 import { readFile, readdir, writeFile } from 'node:fs/promises'
+import { readFileSync } from 'node:fs'
 import path from 'node:path'
 
 const arg = (name, fallback) => {
@@ -63,6 +64,31 @@ const KNOWN_LINK_HOSTS = [
   // in the content. Both forms are kept so a re-measure does not read as drift.
   'www.mechon-mamre.org',
 ]
+
+/**
+ * Spec SITE-06 D7. The suggested-resources page's link hosts are generated, not
+ * hand-maintained, so they arrive from a manifest written by the same run that
+ * writes the page. The eleven hand-written entries above keep their comment and
+ * their meaning; this only widens the set.
+ *
+ * This changes nothing about what FAILS the scan. Only a contacted origin exits
+ * 1, and an `<a href>` is navigation. What the manifest buys is that a new
+ * reading-list host does not print as NEW every time the register grows.
+ */
+const GENERATED_LINK_HOSTS = (() => {
+  const file = new URL('./resource-link-hosts.json', import.meta.url)
+  try {
+    const parsed = JSON.parse(readFileSync(file, 'utf8'))
+    return Array.isArray(parsed.hosts) ? parsed.hosts : []
+  } catch {
+    // Absent is normal: the manifest does not exist until the resources page has
+    // been generated once. Silence here would hide a deleted manifest, so say so.
+    console.log('note: scripts/resource-link-hosts.json is absent; no generated link hosts')
+    return []
+  }
+})()
+
+const ALL_LINK_HOSTS = [...new Set([...KNOWN_LINK_HOSTS, ...GENERATED_LINK_HOSTS])]
 
 // The site's own origin. Canonical and OG tags point at it on every page, so
 // without this it shows up as an external link host on all fourteen files.
@@ -224,11 +250,11 @@ console.log('\nHOSTS THE SITE LINKS TO (excluded: a CSP does not govern navigati
 console.log('  The referrer policy is the control here, not the CSP.')
 const linkHosts = [...linked.keys()].sort()
 for (const host of linkHosts) {
-  const known = KNOWN_LINK_HOSTS.includes(host)
+  const known = ALL_LINK_HOSTS.includes(host)
   console.log(`  ${known ? 'known ' : 'NEW   '} ${host}`)
 }
-const newLinks = linkHosts.filter((h) => !KNOWN_LINK_HOSTS.includes(h))
-const missingLinks = KNOWN_LINK_HOSTS.filter((h) => !linkHosts.includes(h))
+const newLinks = linkHosts.filter((h) => !ALL_LINK_HOSTS.includes(h))
+const missingLinks = ALL_LINK_HOSTS.filter((h) => !linkHosts.includes(h))
 if (missingLinks.length)
   console.log(`  (enumerated but not present in this build: ${missingLinks.join(', ')})`)
 

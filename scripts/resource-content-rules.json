@@ -1,0 +1,72 @@
+{
+  "_readme": [
+    "Content rules for build_resources_page.py, per spec SITE-06 D4 and its findings 13 and 14.",
+    "These are refusals and not warnings, because the register's input is prose typed by",
+    "colleagues who were never told the rules. A warning printed at 4pm is a warning nobody reads.",
+    "",
+    "Extend a list here rather than in the generator, and say in the commit why the entry was added."
+  ],
+
+  "do_not_route": {
+    "_why": [
+      "The track's routing mapping is canonical, not a tone preference. A public list of what",
+      "to read next is the track routing people, so a programme that is not a default route",
+      "must not arrive on it by a contributor's good intentions.",
+      "Match is case-insensitive and on whole words, so an author affiliated with one of these",
+      "institutions can still be cited by name without tripping the rule; only the programme",
+      "being named as a route trips it."
+    ],
+    "phrases": [
+      "Dallas International University",
+      "Whole Word Institute"
+    ]
+  },
+
+  "preferred_routes": {
+    "_why": [
+      "Recorded here so a later session can see what the rule sends people TO, not only what",
+      "it keeps off. Not enforced; there is no sensible refusal for failing to mention these."
+    ],
+    "biblical_languages": ["Biblingo"],
+    "foundational_linguistics": ["SIL linguistic training", "EMDC"],
+    "bible_background": ["Translator's Workplace", "free online courses"]
+  },
+
+  "partner_orgs": {
+    "_why": [
+      "The site's no-partner-org-in-sensitive-context rule. At least six of the seventeen Bali",
+      "participants are India-based, which is the context the rule exists for: a public page",
+      "that pairs a named sending organization with named local work is a disclosure about",
+      "people who did not choose it.",
+      "A resource's PUBLISHER is not a partner org, which is why this list names sending and",
+      "field organizations rather than presses."
+    ],
+    "phrases": [
+      "Wycliffe Philippines",
+      "The Word for the World",
+      "twftw",
+      "NIEA Mission",
+      "Bridge Connectivity",
+      "JOCUM",
+      "DLPI",
+      "TSCO"
+    ]
+  },
+
+  "pathway_contrast": {
+    "_why": [
+      "The track states its own pathway positively and never by contrast with another one.",
+      "A comparison reads as a claim about the other pathway's quality, which is not this",
+      "page's to make and is not what a reading list is for."
+    ],
+    "phrases": [
+      "unlike other programs",
+      "unlike other programmes",
+      "better than the traditional",
+      "instead of a degree",
+      "cheaper than",
+      "as opposed to the usual",
+      "rather than the conventional route"
+    ]
+  }
+}

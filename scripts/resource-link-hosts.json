@@ -1,0 +1,15 @@
+{
+  "_readme": "Written by build_resources_page.py. cdt00-origin-scan.mjs unions these into KNOWN_LINK_HOSTS so a new outbound LINK host on the resources page does not print as NEW. A link is navigation, not contact, and only a contacted origin fails that scan.",
+  "generated_from": "Suggested-Resources.md",
+  "source_digest": "c4a65c82d46410c3",
+  "hosts": [
+    "indieskriflig.org.za",
+    "journals.sagepub.com",
+    "missionbooks.org",
+    "thebibletranslator.org",
+    "translation.bible",
+    "verbumetecclesia.org.za",
+    "www.sil.org",
+    "www.worldofworship.org"
+  ]
+}

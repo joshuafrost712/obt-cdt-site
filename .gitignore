@@ -63,3 +63,9 @@ scripts/.site04-link-report.json
 # REAL participant accounts. Program finding 11: an image is a disclosure channel
 # that no text gate can read, and these ones photograph a live cohort's page.
 feedback/verify-shots/
+
+# Spec SITE-06's shots. The public page's own screenshots are harmless, but the
+# nav ones are taken SIGNED IN with a real participant account and show the
+# member entries. Program finding 11: an image is a disclosure channel no text
+# gate can read.
+feedback/site06-shots/

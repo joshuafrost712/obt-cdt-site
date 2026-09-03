@@ -58,7 +58,16 @@ function SiteHeader() {
             className="truncate font-display text-base font-semibold tracking-tight text-ink sm:text-lg"
           />
         </Link>
-        <nav aria-label="Site" className="ml-auto hidden items-center gap-1 md:flex">
+        {/* The horizontal bar switches on at `lg` (1024px) and not `md` (768px).
+            Measured 2026-09-03 with a signed-in account: the bar needs 881px for
+            its ten entries, so between 768 and 899px it ran off the right edge
+            and `Materials` and `Member portal` were unreachable. Nothing reported
+            it because the links were still inside the NAV's own box; only a
+            comparison against the VIEWPORT catches it. Program finding 25 saw the
+            same thing at nine entries and this is its fix, not a workaround.
+            Below `lg` the Menu button opens the mobile nav, which lists every
+            entry including the portal. */}
+        <nav aria-label="Site" className="ml-auto hidden items-center gap-1 lg:flex">
           {items.map((item) => (
             <NavLink
               key={item.route}
@@ -92,7 +101,7 @@ function SiteHeader() {
         </nav>
         <button
           type="button"
-          className="ml-auto shrink-0 rounded-md border border-ink/15 px-3 py-1.5 text-sm font-medium text-ink md:hidden"
+          className="ml-auto shrink-0 rounded-md border border-ink/15 px-3 py-1.5 text-sm font-medium text-ink lg:hidden"
           aria-expanded={open}
           aria-label="Toggle menu"
           onClick={() => setOpen((v) => !v)}
@@ -101,7 +110,7 @@ function SiteHeader() {
         </button>
       </div>
       {open && (
-        <nav aria-label="Site" className="border-t border-ink/10 px-5 pb-4 pt-2 md:hidden">
+        <nav aria-label="Site" className="border-t border-ink/10 px-5 pb-4 pt-2 lg:hidden">
           {items.map((item) => (
             <NavLink
               key={item.route}

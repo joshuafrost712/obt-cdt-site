@@ -2605,6 +2605,214 @@
       "layout": "handbook"
     },
     {
+      "id": "resources",
+      "route": "/suggested-resources",
+      "navLabel": "Reading",
+      "title": "What to read next",
+      "metaDescription": "Suggested reading for oral Bible translation consultants, in the six areas the OBT Consultant Development Track's Psalms workshop is built on.",
+      "kicker": "Suggested resources",
+      "blocks": [
+        {
+          "id": "resources.00.intro",
+          "type": "prose",
+          "body": "What to read next, in the six areas the Psalms workshop itself is built on. Every item says where to get it and what it costs, because a recommendation you cannot find or cannot afford is not one.\n\nThese six are what one workshop taught. The Five Threads are what a consultant is formed in across the whole track, so a thread runs through several of these areas rather than matching one.\n\nLast gathered 2026-09-03. The list grows as the people who teach these areas add to it."
+        },
+        {
+          "id": "resources.the-clat-process-and-translation-of-aesthetic-language",
+          "type": "linkGrid",
+          "title": "The CLAT Process and Translation of Aesthetic Language",
+          "items": [
+            {
+              "id": "resources.the-clat-process-and-translation-of-aesthetic-language.creating-local-arts-together-revised-and-updated",
+              "type": "cta",
+              "label": "Creating Local Arts Together, revised and updated",
+              "body": "The CLAT manual itself, and the source of the seven-step process the whole workshop is built around. Read it for the shape of the conversations rather than as a syllabus; the steps are the ones you were running in the afternoons.",
+              "note": "William Carey Publishing, and in Logos · About USD 40 in print, less as an ebook",
+              "href": "https://missionbooks.org/products/creating-local-arts-together-revised-and-updated"
+            },
+            {
+              "id": "resources.the-clat-process-and-translation-of-aesthetic-language.creating-local-arts-together-the-sample-chapters",
+              "type": "cta",
+              "label": "Creating Local Arts Together, the sample chapters",
+              "body": "A free look inside the manual, enough to decide whether you want the whole thing and enough to re-run a step from memory. The obvious first stop if the price is the problem.",
+              "note": "World of Worship, as a PDF · Free",
+              "href": "https://www.worldofworship.org/wp-content/uploads/2016/12/Schrag-CLAT-Manual-Look-In.pdf"
+            },
+            {
+              "id": "resources.the-clat-process-and-translation-of-aesthetic-language.worship-and-mission-for-the-global-church-an-ethnodoxology-h",
+              "type": "cta",
+              "label": "Worship and Mission for the Global Church, an Ethnodoxology Handbook",
+              "body": "The companion volume to the CLAT manual, and the one that argues the case rather than giving the procedure. Useful when you have to explain to a leader why local artistic forms belong in Scripture work at all.",
+              "note": "William Carey Publishing, and most theological libraries · About USD 45",
+              "href": "https://missionbooks.org/products/worship-and-mission-for-the-global-church"
+            }
+          ]
+        },
+        {
+          "id": "resources.aesthetic-language-ethnopoetics-and-the-biblical-function-of",
+          "type": "linkGrid",
+          "title": "Aesthetic Language, Ethnopoetics, and the biblical function of the Psalms",
+          "items": [
+            {
+              "id": "resources.aesthetic-language-ethnopoetics-and-the-biblical-function-of.hebrew-poetry-in-the-bible-a-guide-for-understanding-and-for",
+              "type": "cta",
+              "label": "Hebrew Poetry in the Bible, a Guide for Understanding and for Translating",
+              "body": "Zogbo and Wendland's revised 2020 edition, and the single most useful book on this list for a Psalms translator. It does not require Hebrew. The revision adds a fuller treatment of parallelism and a closing chapter on translating poetry with song adaptation in view, which is the chapter closest to what you were doing in Bali.",
+              "note": "The UBS Global Store, and in Translator's Workplace · About USD 30",
+              "href": "https://thebibletranslator.org/product/hebrew-poetry-in-the-bible-a-guide-for-understanding-and-for-translating/"
+            },
+            {
+              "id": "resources.aesthetic-language-ethnopoetics-and-the-biblical-function-of.journal-of-translation",
+              "type": "cta",
+              "label": "Journal of Translation",
+              "body": "SIL's own translation journal, open access and free, and the place where most of the ethnopoetics and oral-translation work in this list first appeared. Worth browsing an issue rather than searching it; the articles are short.",
+              "note": "SIL Global, the whole archive online · Free",
+              "href": "https://www.sil.org/resources/search/series/journal-translation"
+            },
+            {
+              "id": "resources.aesthetic-language-ethnopoetics-and-the-biblical-function-of.wendland-and-grosser-on-hebrew-parallelism-journal-of-transl",
+              "type": "cta",
+              "label": "Wendland and Grosser on Hebrew parallelism, Journal of Translation 20.2",
+              "body": "Two articles in dialogue. Wendland reads Grosser's Unparalleled Poetry against the older approaches to parallelism, and Grosser answers by widening her framework through cognitive poetics. Read them together; the disagreement is the point, and it is the current state of the question.",
+              "note": "Journal of Translation 20.2, online · Free",
+              "href": "https://www.sil.org/resources/publications/entry/100134"
+            },
+            {
+              "id": "resources.aesthetic-language-ethnopoetics-and-the-biblical-function-of.poetry-or-prose-readers-responses-to-poetic-translation-of-b",
+              "type": "cta",
+              "label": "Poetry or Prose? Readers' Responses to Poetic Translation of Biblical Hebrew Poetry",
+              "body": "Hemphill tests what readers actually do with a poetic rendering against a prose one. The reason to read it is that it treats \"does the poetry work\" as a question with evidence rather than as a matter of taste.",
+              "note": "SIL eBook 77, online · Free",
+              "href": "https://www.sil.org/resources/archives/91851"
+            }
+          ]
+        },
+        {
+          "id": "resources.genre-theory-discovery-and-matching",
+          "type": "linkGrid",
+          "title": "Genre Theory, Discovery, and Matching",
+          "items": [
+            {
+              "id": "resources.genre-theory-discovery-and-matching.translating-and-performing-psalm-133-using-oral-bible-transl",
+              "type": "cta",
+              "label": "Translating and Performing Psalm 133 Using Oral Bible Translation and Local Genres",
+              "body": "Cleaver and Randolph work one psalm end to end with the Altai in Siberia, into a sung poetic form, and say how quality was held through the process. This is the closest thing in print to what the afternoons were for, and it is the one to hand someone who asks what local-genre translation actually looks like.",
+              "note": "The Bible Translator 76, 2025, on SAGE · Paywalled; free via an SIL library account",
+              "href": "https://journals.sagepub.com/doi/10.1177/20516770251315441"
+            },
+            {
+              "id": "resources.genre-theory-discovery-and-matching.using-features-of-indigenous-poetry-and-music-in-the-oral-pe",
+              "type": "cta",
+              "label": "Using Features of Indigenous Poetry and Music in the Oral Performance of Some Praise Psalms in isiZulu",
+              "body": "Dickie on making praise psalms sound like Zulu praise poetry rather than like translated English. The value here is the feature-by-feature matching, which is the part of genre work that is hard to teach in a week.",
+              "note": "SIL Global, online · Free",
+              "href": "https://www.sil.org/resources/publications/entry/72281"
+            },
+            {
+              "id": "resources.genre-theory-discovery-and-matching.community-translation-and-oral-performance-of-some-praise-ps",
+              "type": "cta",
+              "label": "Community Translation and Oral Performance of Some Praise Psalms within the Zulu Community",
+              "body": "The fuller study behind the item above. Zulu youth trained briefly, then made their own translations and performed them as song, rap and spoken poetry before a community audience. Read it for what untrained community word-artists turned out to be able to do.",
+              "note": "The Bible Translator 68.3, 2017. A free PDF is posted by UBS Translations · Free",
+              "href": "https://translation.bible/wp-content/uploads/2024/07/dickie-2017-community-translation-and-oral-performance-of-some-praise-psalms-within-the-zulu-community.pdf"
+            }
+          ]
+        },
+        {
+          "id": "resources.psalms-exegesis-and-internalization",
+          "type": "linkGrid",
+          "title": "Psalms Exegesis and Internalization",
+          "items": [
+            {
+              "id": "resources.psalms-exegesis-and-internalization.the-art-of-biblical-poetry",
+              "type": "cta",
+              "label": "The Art of Biblical Poetry",
+              "body": "Alter on how Hebrew poems are built, and the book most likely to change how you hear a psalm rather than how you analyse one. There is no legal free copy, so this is a library or a purchase, and it is worth either.",
+              "note": "Any theological library, or the usual booksellers · About USD 20 in paperback"
+            },
+            {
+              "id": "resources.psalms-exegesis-and-internalization.translating-psalms-for-africa-today-involving-the-community-",
+              "type": "cta",
+              "label": "Translating psalms for Africa today, involving the community and transmitting through performance",
+              "body": "Dickie on running exegesis and drafting with a community rather than for one, with the performance as the thing being aimed at from the start. Open access, and the clearest statement of why internalization and performance belong in the same step.",
+              "note": "In die Skriflig, open access · Free",
+              "href": "https://indieskriflig.org.za/index.php/skriflig/article/view/2726/7028"
+            },
+            {
+              "id": "resources.psalms-exegesis-and-internalization.hebrew-poetry-in-the-bible-a-guide-for-understanding-and-for",
+              "type": "cta",
+              "label": "Hebrew Poetry in the Bible, a Guide for Understanding and for Translating",
+              "body": "Listed in area 2 and belongs here as well. Chapters on the poetic devices and on the psalm genres are the ones to reread before you exegete a psalm you have not worked before.",
+              "note": "The UBS Global Store, and in Translator's Workplace · About USD 30",
+              "href": "https://thebibletranslator.org/product/hebrew-poetry-in-the-bible-a-guide-for-understanding-and-for-translating/"
+            }
+          ]
+        },
+        {
+          "id": "resources.checking-artistic-translations",
+          "type": "linkGrid",
+          "title": "Checking Artistic Translations",
+          "items": [
+            {
+              "id": "resources.checking-artistic-translations.attaining-quality-in-oral-bible-translation-a-guide-to-effec",
+              "type": "cta",
+              "label": "Attaining Quality in Oral Bible Translation, a Guide to Effective Practice",
+              "body": "The standing guide to what quality means in an oral translation and how it is established rather than asserted. Read it before you run your first consultant check on an artistic draft.",
+              "note": "SIL Global, online · Free",
+              "href": "https://www.sil.org/resources/publications/entry/100604"
+            },
+            {
+              "id": "resources.checking-artistic-translations.how-do-we-evaluate-quality-in-oral-bible-translations-journa",
+              "type": "cta",
+              "label": "How do we evaluate quality in Oral Bible Translations? Journal of Translation 20.2",
+              "body": "Frost, Mustin and Beal on the evaluation problem this track exists inside: what you can actually check when the text is a performance and there is no written draft to point at. The article behind a good deal of what week 2 taught.",
+              "note": "Journal of Translation 20.2, online · Free",
+              "href": "https://www.sil.org/resources/publications/entry/100134"
+            },
+            {
+              "id": "resources.checking-artistic-translations.the-bible-translator",
+              "type": "cta",
+              "label": "The Bible Translator",
+              "body": "The main academic journal for translation theory and practice, and the place to keep reading across all six of these areas. Most issues are paywalled, so treat it as a place to find a title and then get the article another way.",
+              "note": "SAGE Journals · Paywalled; free via an SIL library account",
+              "href": "https://journals.sagepub.com/home/tbt"
+            }
+          ]
+        },
+        {
+          "id": "resources.advocacy-and-community-integration",
+          "type": "linkGrid",
+          "title": "Advocacy and Community Integration",
+          "items": [
+            {
+              "id": "resources.advocacy-and-community-integration.translating-psalms-for-performance-and-their-use-in-various-",
+              "type": "cta",
+              "label": "Translating Psalms for Performance and Their Use in Various Ministries within the Church",
+              "body": "Dickie follows translated psalms past the workshop and into the church's actual life, in South Africa. The useful part is the ordinary detail of how a performed psalm gets used, which is what integration planning has to be realistic about.",
+              "note": "The Bible Translator 73, 2022, on SAGE · Paywalled; free via an SIL library account",
+              "href": "https://journals.sagepub.com/doi/10.1177/20516770211066935"
+            },
+            {
+              "id": "resources.advocacy-and-community-integration.revisiting-the-practice-of-bible-translation-the-need-to-eng",
+              "type": "cta",
+              "label": "Revisiting the practice of Bible-translation, the need to engage ordinary believers when translating the Psalms",
+              "body": "Dickie's argument for why community members belong in the translation itself and not only in the checking. This is the piece to reach for when you have to make the case to a leader who thinks translation is specialist work.",
+              "note": "Verbum et Ecclesia, open access · Free",
+              "href": "https://verbumetecclesia.org.za/index.php/ve/article/view/1819"
+            },
+            {
+              "id": "resources.advocacy-and-community-integration.creating-local-arts-together-revised-and-updated",
+              "type": "cta",
+              "label": "Creating Local Arts Together, revised and updated",
+              "body": "Listed in area 1 and belongs here too. Step 7 is the integration step, and it is the part of the process most often skipped when a workshop ends and everyone goes home.",
+              "note": "William Carey Publishing, and in Logos · About USD 40 in print, less as an ebook",
+              "href": "https://missionbooks.org/products/creating-local-arts-together-revised-and-updated"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": "members",
       "route": "/members",
       "navLabel": "Members",
