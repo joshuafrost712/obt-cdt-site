@@ -141,7 +141,7 @@ two.
 | 01 Welcome to Workshop 3 | public | old 01 welcome, 06 learning outcomes, 07 facilitators |
 | 02 Dates and programme | public | 02 dates, 04 how the weeks build, 05 programme |
 | 03 Your preparation | public | 17 prework, 18 documents |
-| 04 Travel and life on the base | public, and it is the stub section | the fourteen moved anchors and one link to the member page |
+| 04 Travel and life on the base | public | the `s04-travel` anchor, the plain statement that a gated half exists, and one link to it. The other 13 moved anchors are `movedAnchors` stubs at the page FOOT, not blocks in this section |
 | 05 Cost and financial support | public | new on 2026-07-31; nothing folded in |
 | 04 Travel, visas and packing | **gated**, `/members/psalms-bali-2026` | 08 travel, 09 transfers, 10 before you fly, 11 entry, 12 packing, 20 departure |
 | 05 Life on the base | **gated**, same page | 03 location, 13 venue, 14 meals, 15 Wi-Fi, 16 laundry, 21 free time, 19 health |

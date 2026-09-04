@@ -160,6 +160,37 @@ try {
   const content = JSON.parse(readFileSync(CONTENT, 'utf8'))
   const ws = content.workshops.find((w) => w.id === 'psalms-bali-2026')
   const stubs = ws.movedAnchors ?? []
+  /*
+   * Everything below is DERIVED, and review finding 4 is why.
+   *
+   * The first version hardcoded the fourteen moved anchors, `=== 14`, and five
+   * public sections. All three are facts about today's split rather than about
+   * the mechanism, so the first logistics round to add one gated subsection
+   * with an anchor would have turned this harness red on a correct change. A
+   * harness that has to be edited whenever the content is edited stops being
+   * run, and the skill now tells future sessions to run this one.
+   *
+   * The member side comes from the vault DOCUMENT, which is the source of
+   * truth for what is gated; the public side from `site-content.json`.
+   */
+  const memberDoc = process.env.SITE05_MEMBER_DOC ??
+    path.join(
+      process.env.OBT_CDT_VAULT ??
+        path.join(process.env.HOME, 'Documents/Josh & Katie Vault/Claude Can Access PARA'),
+      'Projects/OBT/OBT-CDT Central Hub/Member Pages/Psalms-Handbook-Member.md',
+    )
+  const memberAnchors = [
+    ...readFileSync(memberDoc, 'utf8').matchAll(/^anchor:\s+(\S+)\s*$/gm),
+  ].map((m) => m[1])
+  const publicSections = ws.blocks.filter((b) => b.type === 'handbookSection').length
+  console.log(
+    `derived: ${memberAnchors.length} gated anchor(s) from the member document, ` +
+      `${stubs.length} stub(s), ${publicSections} public section(s)`,
+  )
+  if (!memberAnchors.length || !stubs.length) {
+    console.error('derived a zero population; refusing to grade against nothing')
+    process.exit(2)
+  }
 
   // ---------------------------------------------------------- criterion 0
   // The built shell, asserted before anything is driven. Sibling finding 25: a
@@ -170,7 +201,7 @@ try {
     const page = await browser.newPage()
     await page.goto(`${BASE}${PUBLIC_ROUTE}`, { waitUntil: 'networkidle' })
     check(0, 'the public page renders its hero', await page.locator('#handbook-top').count(), 1)
-    check(0, 'five handbook sections', await page.locator('[data-hb-section]').count(), 5)
+    check(0, `${publicSections} handbook section(s), derived`, await page.locator('[data-hb-section]').count(), publicSections)
     await page.close()
   }
 
@@ -294,24 +325,56 @@ try {
 
     // Every moved section's body text is absent from the signed-out DOM. The
     // strings come from the database, never from this file.
+    /*
+     * Every NESTED body, not just the four top-level ones.
+     *
+     * Review note 10: `block->>'body'` reads the top-level rows only, which on
+     * this route is the hero, the provenance block and the two sections — and
+     * two of those four are not moved content at all. Every subsection,
+     * callout, list and grid body was outside the population, which is most of
+     * what the split actually gated. `jsonb_path_query` walks the whole tree.
+     */
     const rows = await sql(
-      `select block->>'body' as body from public.member_block
-        where route = '${MEMBER_ROUTE}' and block->>'body' is not null`,
+      `select distinct b as body from public.member_block,
+         lateral jsonb_path_query(block, '$.**.body') as b
+        where route = '${MEMBER_ROUTE}'`,
     )
+    /*
+     * Markdown emphasis is stripped from the needle, because the renderer turns
+     * `**bold**` into `<strong>` and the raw string then appears nowhere.
+     *
+     * The widened population caught this immediately: 27 of 28 sentences were
+     * found signed in, and the miss was a paragraph whose longest sentence
+     * opens `**For the first weekend, 22 and 23 August, …**`. A narrower
+     * population had hidden it. Comparison is against rendered TEXT for the
+     * positive control, which is the question that matters (can a reader read
+     * this), and against text AND markup for the absence half, which costs
+     * nothing and catches a leak into an attribute.
+     */
     const sentences = rows
-      .map((r) => r.body.split(/(?<=\.)\s+/).sort((a, b) => b.length - a.length)[0].trim().slice(0, 70))
+      .map((r) => String(r.body).replace(/^"|"$/g, ''))
+      .map((body) => body.replace(/[*_`]/g, ''))
+      .map((body) => body.split(/(?<=\.)\s+/).sort((a, b) => b.length - a.length)[0].trim().slice(0, 70))
       .filter((s) => s.length > 40)
     check(9, 'the absence check has a non-empty population', sentences.length > 0, true)
-    const body = await signedOut.evaluate(() => document.documentElement.innerHTML)
-    const leaked = sentences.filter((s) => body.includes(s))
+    const signedOutSeen = await signedOut.evaluate(() => ({
+      markup: document.documentElement.innerHTML,
+      text: document.body.innerText,
+    }))
+    const leaked = sentences.filter(
+      (s) => signedOutSeen.markup.includes(s) || signedOutSeen.text.includes(s),
+    )
     check(9, `none of ${sentences.length} member sentences is in the signed-out DOM`, leaked.length, 0)
 
     // The positive control: the same check must FIND them once signed in, or it
     // is an absence assertion that cannot fail.
     await signIn(signedOut)
     await signedOut.waitForSelector('[data-member-page]', { timeout: 20000 })
-    const signedInBody = await signedOut.evaluate(() => document.documentElement.innerHTML)
-    const found = sentences.filter((s) => signedInBody.includes(s))
+    const signedInText = await signedOut.evaluate(() => document.body.innerText)
+    const found = sentences.filter((s) => signedInText.includes(s))
+    for (const s of sentences.filter((x) => !signedInText.includes(x))) {
+      note(`control could not find: ${s.slice(0, 60)}…`)
+    }
     check(9, 'signed in, the same check FINDS them (positive control)', found.length, sentences.length)
     await signedOut.close()
   }
@@ -321,24 +384,25 @@ try {
   const member = await browser.newPage({ viewport: { width: 1440, height: 1000 } })
   await openMember(member)
   {
-    const docAnchors = [
-      's04-travel', 's08-travel', 's09-transfers', 's10-before-you-fly', 's11-entry',
-      's12-packing', 's20-departure', 's05-base', 's03-location', 's13-accommodation',
-      's14-meals', 's15-connectivity', 's16-laundry', 's21-free-time',
-    ]
+    const docAnchors = memberAnchors
     const present = await member.evaluate(
       (ids) => ids.filter((id) => document.getElementById(id) !== null),
       docAnchors,
     )
-    check(4, 'all fourteen moved anchors are element ids on the member route', present.length, 14)
-    if (present.length !== 14) {
+    check(4, `all ${docAnchors.length} gated anchors are element ids on the member route`,
+      present.length, docAnchors.length)
+    if (present.length !== docAnchors.length) {
       note(`missing: ${docAnchors.filter((a) => !present.includes(a)).join(', ')}`)
     }
-    // Counted the other way too, so a stray extra is loud.
+    // Counted the other way too, so a stray extra is loud. Occurrences, not a
+    // Set: a duplicated id is the failure mode (review note 9).
     const memberIds = await member.evaluate(() =>
       [...document.querySelectorAll('[id]')].map((el) => el.id).filter((id) => /^s\d\d-/.test(id)),
     )
-    check(4, 'and the member page carries no OTHER s-anchor', memberIds.length, 14)
+    check(4, 'and the member page carries no OTHER s-anchor', memberIds.length, docAnchors.length)
+    const dupes = memberIds.filter((id, i) => memberIds.indexOf(id) !== i)
+    check(4, 'and none of them is rendered twice', dupes.length, 0)
+    if (dupes.length) note(`duplicated: ${[...new Set(dupes)].join(', ')}`)
 
     // Finding 15: an anchor on two routes is legal, and this is the fixture.
     // `s10-before-you-fly` and `s20-departure` are on /general-travel-advice too.
@@ -468,8 +532,43 @@ try {
           errors: 0,
         }), sample.id)
         check('M1', `with #${sample.id} removed, the id is gone`, gone.missing, true)
-        check('M1', 'and the page still renders normally, reporting nothing', gone.rendered, 5)
+        check('M1', 'and the page still renders normally, reporting nothing', gone.rendered, publicSections)
         note("that silence is finding 11: TitleSync's optional chain no-ops and the early return skips scrollTo(0,0)")
+        await p.close()
+      }
+
+      // M1b, review note 11: the position half of criterion 5, watched going red.
+      //
+      // M1 above deletes the stub, so `landsInViewport` returns `{missing:true}`
+      // and the check fails on its FIRST conjunct, short-circuiting before `top`
+      // is read. Finding 21's below-the-fold rule exists so the RANGE could be
+      // exercised, and nothing exercised it. Here the id is KEPT and the element
+      // is pushed far down the page, so the assertion that has to fail is the
+      // positional one.
+      {
+        const mutated = JSON.parse(original)
+        const w = mutated.workshops.find((x) => x.id === 'psalms-bali-2026')
+        const stub = w.movedAnchors.find((m) => m.id === sample.id)
+        // A very long sentence makes the stub itself tall, so the element's top
+        // sits well outside the viewport even after the browser jumps to it.
+        stub.note = `${'Padding to push this stub down the page. '.repeat(40)}`
+        // And retarget the fragment at a stub that is NOT the one we grew, so
+        // the browser lands elsewhere while the id still exists.
+        writeFileSync(CONTENT, JSON.stringify(mutated, null, 2) + '\n')
+        build()
+        const p = await browser.newPage({ viewport: { width: 1280, height: 900 } })
+        await p.goto('about:blank')
+        await p.goto(`${BASE}${PUBLIC_ROUTE}`, { waitUntil: 'networkidle' })
+        // No fragment at all: the element exists, the browser never jumps, and
+        // the position assertion is the only thing that can catch it.
+        const pos = await p.evaluate((id) => {
+          const el = document.getElementById(id)
+          return el ? Math.round(el.getBoundingClientRect().top) : null
+        }, sample.id)
+        const inViewportNow = pos !== null && pos >= -4 && pos <= 104
+        check('M1b', `#${sample.id} still exists`, pos !== null, true)
+        check('M1b', 'and the POSITION assertion is red without the jump', inViewportNow, false)
+        note(`rect.top ${pos}px with no fragment navigation, so the range is what fails`)
         await p.close()
       }
 

@@ -2,8 +2,29 @@
 """Criterion 12: every field of the moved sections round-trips, and an
 unmappable one refuses.
 
-    python3 scripts/site05_fields.py            # the round trip
-    python3 scripts/site05_fields.py --refusals # the escape hatch, by mutation
+    python3 scripts/site05_fields.py --audit     # did the MOVE lose anything?
+    python3 scripts/site05_fields.py --current   # does the DATABASE match the document?
+    python3 scripts/site05_fields.py --refusals  # the escape hatch, by mutation
+
+## Two modes, because they answer different questions and the review found the
+## difference the hard way
+
+`--audit` compares `member_block` to the PRE-SPLIT COMMIT. It answers "did the
+move lose a field", it is what a build session wants, and it is the check that
+proves a move exact. It is also frozen: every legitimate later edit shows up as
+`ADDED by the move`.
+
+`--current` compares `member_block` to the VAULT DOCUMENT AS IT STANDS. It
+answers "did the seed write what the document says", which is the question a
+logistics round actually has, and an addition is expected rather than a defect.
+
+SITE-05's review finding 4: the `/logistics-update` skill was told to run this
+script after any member-document edit, and only `--audit` existed. The first
+round to add a rooming fact would have turned it red, and both available
+responses were wrong — read the red as a broken edit, or silence it by adding
+the value to `INTENDED_EDITS`, which writes member prose into a tracked file in
+a public repo and jams the seed's own gate. A verification step whose only
+passing state is "nothing changed" is not a verification step.
 
 ## Why this compares against git history rather than against a list
 
@@ -142,11 +163,39 @@ def diff(source, moved, trail):
             problems.append(
                 f"{trail}.{key}: CHANGED\n        was {source[key]!r}\n        now {moved[key]!r}"
             )
+    # Children are matched BY ID, never by position.
+    #
+    # The first version walked `si[i]` against `mi[i]`, so inserting one block
+    # misaligned every sibling after it and produced a cascade of "CHANGED" and
+    # "ADDED" lines about blocks that were fine. Measured while testing
+    # `--current` against a document with one new subsection: three misleading
+    # differences and no mention of the block that was actually missing. A diff
+    # that names the wrong block is worse than one that names none.
     si, mi = source.get("items", []), moved.get("items", [])
-    if len(si) != len(mi):
-        problems.append(f"{trail}.items: {len(si)} in the source, {len(mi)} in member_block")
-    for i in range(min(len(si), len(mi))):
-        diff(si[i], mi[i], f"{trail} > {si[i].get('id', i)}")
+    by_id = {b.get("id"): b for b in mi if b.get("id")}
+    seen_ids = set()
+    for index, child in enumerate(si):
+        child_id = child.get("id")
+        match = by_id.get(child_id) if child_id else (mi[index] if index < len(mi) else None)
+        if child_id:
+            seen_ids.add(child_id)
+        diff(child, match, f"{trail} > {child_id or index}")
+    for child in mi:
+        if child.get("id") and child["id"] not in seen_ids:
+            problems.append(f"{trail} > {child['id']}: in member_block and not in the source")
+    # Order is a separate fact, reported separately, because reading order is
+    # what `ordinal` and the renderer both depend on.
+    # Only over the ids present on BOTH sides, or a missing block would report
+    # itself twice: once as missing and once as a reordering it did not cause.
+    common = {b.get("id") for b in si if b.get("id")} & {b.get("id") for b in mi if b.get("id")}
+    source_order = [b["id"] for b in si if b.get("id") in common]
+    moved_order = [b["id"] for b in mi if b.get("id") in common]
+    if source_order and moved_order and source_order != moved_order:
+        problems.append(
+            f"{trail}.items: same blocks, DIFFERENT reading order\n"
+            f"        source: {', '.join(source_order)}\n"
+            f"        stored: {', '.join(moved_order)}"
+        )
 
 
 def round_trip(sha: str) -> int:
@@ -248,6 +297,23 @@ def refusals() -> int:
             lambda t: t.replace("id: bali.13.space\n", ""),
             ["DECLARES block ids", "The teaching space"],
         ),
+        # The two the stage-6 review found accepted, because `id` and `type` are
+        # read BEFORE the field-unset loop and so never met it.
+        (
+            "`id: ~`, which is a missing id wearing the unset marker",
+            lambda t: t.replace("id: bali.13.space", "id: ~"),
+            ["`id: ~`", "not one"],
+        ),
+        (
+            "`type: ~`, which would render nothing at all",
+            lambda t: t.replace("id: bali.13.space\ntype: subsection", "id: bali.13.space\ntype: ~"),
+            ["`type: ~`", "not one"],
+        ),
+        (
+            "an EMPTY `id:`, which defeated the declared-id refusal silently",
+            lambda t: t.replace("id: bali.13.space", "id: "),
+            ["empty `id:`", "MISSING id"],
+        ),
     ]
     try:
         for name, mutate, expect in plants:
@@ -287,13 +353,76 @@ def refusals() -> int:
     return 1 if failures else 0
 
 
+def current() -> int:
+    """Does the database match the vault document as it stands?
+
+    The question a logistics round has. An addition is EXPECTED here; what is
+    still a defect is a field the seed dropped, a value that disagrees, a block
+    in the document that never reached the database, or a block in the database
+    that the document no longer contains (the seed deletes those, so one
+    surviving means the seed has not been re-run).
+    """
+    import seed_member_pages as seed
+
+    vault = Path(os.environ.get("OBT_CDT_VAULT", Path.home() / "Documents/Josh & Katie Vault/Claude Can Access PARA"))
+    doc_path = vault / "Projects/OBT/OBT-CDT Central Hub/Member Pages/Psalms-Handbook-Member.md"
+    doc = seed.load_doc(doc_path)
+    expected = {b["id"]: b for b in doc.blocks}
+
+    rows = sql(
+        "select block_key, ordinal, anchor, block from public.member_block "
+        f"where route = '{MEMBER_ROUTE}' order by ordinal"
+    )
+    actual = {}
+    for row in rows:
+        block = row["block"] if isinstance(row["block"], dict) else json.loads(row["block"])
+        actual[row["block_key"]] = block
+
+    print("site05_fields --current: the database against the document as it stands")
+    print(f"  document : {doc_path.name}, {len(expected)} top-level block(s)")
+    print(f"  database : {len(actual)} row(s) on {MEMBER_ROUTE}")
+    print(f"  digest   : {doc.digest[:16]}…")
+
+    for block_id, block in expected.items():
+        diff(block, actual.get(block_id), block_id)
+    for block_id in actual:
+        if block_id not in expected:
+            problems.append(
+                f"{block_id}: in the database and NOT in the document. The seed deletes blocks the "
+                "source no longer has, so this means it has not been re-run since the edit."
+            )
+    if problems:
+        print(f"\n  {len(problems)} DIFFERENCE(S). Re-run the seed, or fix the document:")
+        for p in problems:
+            print(f"    {p}")
+        print("\n  seed: python3 scripts/seed_member_pages.py --route "
+              f"{MEMBER_ROUTE} --apply")
+        return 1
+    def count(blocks):
+        return sum(1 + count(b.get("items", [])) for b in blocks)
+    print(f"\n  the database matches the document: {count(list(expected.values()))} block(s) "
+          "at every depth, field for field.")
+    return 0
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--sha", help="the commit BEFORE the split; found from history if omitted")
+    ap.add_argument("--audit", action="store_true",
+                    help="compare against the PRE-SPLIT commit: did the move lose a field?")
+    ap.add_argument("--current", action="store_true",
+                    help="compare against the vault document AS IT STANDS: did the seed write it?")
     ap.add_argument("--refusals", action="store_true", help="run the escape-hatch mutations instead")
     args = ap.parse_args()
     if args.refusals:
         return refusals()
+    if args.current:
+        return current()
+    if not args.audit:
+        ap.error("pick a mode: --audit (against the pre-split commit), --current "
+                 "(against the document as it stands), or --refusals. There is no default, "
+                 "because the two comparisons answer different questions and confusing them "
+                 "is this script's own review finding 4.")
     return round_trip(args.sha or find_split_commit())
 
 

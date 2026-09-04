@@ -359,9 +359,30 @@ def parse_blocks(doc_body: str, route: str, path: Path) -> tuple[list[dict], boo
             continue  # no preamble
 
         counter += 1
+        # `~` unsets a field, and there are exactly two fields it may NOT unset.
+        # Spec SITE-05's review finding 6: both keys are read below, BEFORE the
+        # unset loop runs, so `id: ~` was accepted as the literal string "~" and
+        # became a `block_key`, and `type: ~` was accepted and renders nothing.
+        for reserved in ("id", "type"):
+            if fields.get(reserved) == FIELD_UNSET:
+                raise SeedError(
+                    f"{path}: `{reserved}: {FIELD_UNSET}` under {heading or '(preamble)'!r}. "
+                    f"`{FIELD_UNSET}` removes an OPTIONAL field; `{reserved}` is not one. "
+                    "Every block needs a type, and a block needs either a declared id or "
+                    "none at all so its id can be generated."
+                )
         if "id" in fields:
             declared = True
-            block_id = fields.pop("id")
+            block_id = fields.pop("id").strip()
+            if not block_id:
+                # `id:` with only whitespace after it parsed as an empty string
+                # with `declared=True` and nothing in `generated`, so the D4
+                # refusal below could never fire and `block_key` became ''.
+                raise SeedError(
+                    f"{path}: an empty `id:` under {heading or '(preamble)'!r}. That is a "
+                    "MISSING id, not a declared one: it would become an empty block_key. "
+                    "Give the block its id, or delete the line and let it be generated."
+                )
         else:
             base = _slug(heading) if heading else "intro"
             block_id = f"{prefix}.{counter:02d}.{base}"
@@ -565,21 +586,65 @@ def check_sentinels(files: dict[str, Path]) -> dict[str, str]:
 # ---------------------------------------------------------------------------
 
 def substantial_lines(doc: MemberDoc) -> list[str]:
-    """Lines distinctive enough that finding one in the repo means a leak."""
+    """Strings distinctive enough that finding one in the repo means a leak.
+
+    ## Table cells are lines, and this is spec SITE-05's review finding 2
+
+    The first version skipped any line starting with `|`. Measured on the Psalms
+    member document, that skipped **49 table rows and 4,700 characters**, and
+    those rows are where the street address, the rooming rows, the meal times
+    and the laundry prices live: precisely the facts a member document exists to
+    gate. The gate was checking 36 of 207 body lines and reporting a pass.
+
+    The consequence was not theoretical. Had SITE-05's removal commit left the
+    `bali.03.venue` grid behind, this gate would NOT have refused, and the build
+    would have reported the ordering rule working while the address stayed
+    public. So a table row is split on `|` and every substantial cell is checked
+    on its own.
+
+    ## Both forms of every line, because markdown survives a paste into JSON
+
+    The first version stripped `*_`[]` and matched only the stripped form, while
+    `site-content.json` keeps the markdown. So a moved paragraph whose only
+    offence was `**Bring your own blanket.**` was invisible to the gate. Both
+    forms are returned now: the raw line, which is what a paste into JSON looks
+    like, and the stripped one, which is what a paste into a `.tsx` string or a
+    prose document looks like. A leak in either shape is a leak.
+    """
     out: list[str] = []
+    seen: set[str] = set()
+
+    def consider(text: str) -> None:
+        text = text.strip()
+        if not text or doc.sentinel in text:
+            return
+        if len(text) < SUBSTANTIAL_MIN_CHARS or len(text.split()) < SUBSTANTIAL_MIN_WORDS:
+            return
+        if text not in seen:
+            seen.add(text)
+            out.append(text)
+
     for raw in doc.body.split("\n"):
         line = raw.strip()
-        if not line or line.startswith(("#", ">", "---", "|")):
+        if not line or line.startswith(("#", ">", "---")):
             continue
-        # Strip the markdown that a paste into JSON would not carry anyway.
-        plain = re.sub(r"[*_`\[\]]", "", line)
-        plain = re.sub(r"^\s*[-+*]\s+", "", plain)
-        plain = re.sub(r"^[A-Za-z][A-Za-z0-9_]*:\s+", "", plain)  # a key line
-        plain = plain.strip()
-        if doc.sentinel in plain:
+        if line.startswith("|"):
+            # A separator row carries no content; every other cell is a string
+            # somebody could have pasted into the repo.
+            cells = [c.strip() for c in line.strip("|").split("|")]
+            if all(set(c) <= set("-: ") for c in cells if c):
+                continue
+            for cell in cells:
+                consider(cell)
+                consider(re.sub(r"[*_`\[\]]", "", cell))
             continue
-        if len(plain) >= SUBSTANTIAL_MIN_CHARS and len(plain.split()) >= SUBSTANTIAL_MIN_WORDS:
-            out.append(plain)
+        stripped = re.sub(r"[*_`\[\]]", "", line)
+        stripped = re.sub(r"^\s*[-+*]\s+", "", stripped)
+        stripped = re.sub(r"^[A-Za-z][A-Za-z0-9_]*:\s+", "", stripped)
+        bare = re.sub(r"^\s*[-+*]\s+", "", line)
+        bare = re.sub(r"^[A-Za-z][A-Za-z0-9_]*:\s+", "", bare)
+        consider(bare)
+        consider(stripped)
     return out
 
 

@@ -70,10 +70,21 @@ feedback/verify-shots/
 # gate can read.
 feedback/site06-shots/
 
-# Spec SITE-05's fixture ids, which carry the fixture account's password. Every
-# sibling spec ignores its own equivalent; this one was staged by `git add -A`
-# and caught by criterion 18's pre-commit diff scan rather than by the pattern
-# above, because the pattern is per-spec and a new spec adds a new name.
+# Spec SITE-05's fixture ids. Every sibling spec ignores its own equivalent;
+# this one was staged by `git add -A` and caught by criterion 18's pre-commit
+# diff scan, because the pattern is per-spec and a new spec adds a new name.
+#
+# The stated reason was "it carries the password", and that is already false:
+# the password is a literal in the tracked `scripts/site05-fixtures.mjs`, as in
+# all five sibling fixture scripts (SITE-05 review note 13). What this file adds
+# is the account IDs and the confirmation that the fixture EXISTS right now.
+#
+# The residual is larger here than for the siblings and is worth naming. This
+# fixture sits on `member_allowlist`, and what a member account can now read is
+# a live cohort's street address and rooming. So a `--setup` left standing is a
+# publicly documented credential against gated participant logistics. Tear the
+# fixture down at the end of every run; `--teardown` counts every table and
+# refuses to claim success while a row survives.
 scripts/.site05-fixture-ids.json
 
 # Spec SITE-05's shots. Criterion 10 photographs the member handbook SIGNED IN

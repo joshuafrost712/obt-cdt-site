@@ -3065,7 +3065,7 @@
             {
               "id": "bali.contents.s06-cost",
               "type": "cta",
-              "number": "06",
+              "number": "05",
               "anchor": "s06-cost",
               "label": "Cost and financial support"
             }
@@ -3628,7 +3628,7 @@
         {
           "id": "s11-entry",
           "to": "/members/psalms-bali-2026",
-          "note": "Indonesian entry requirements — passport, visa, arrival declaration, onward travel and the Bali levy — are now on the members' page."
+          "note": "Indonesian entry requirements are now on the members' page: passport, visa, arrival declaration, onward travel and the Bali levy."
         },
         {
           "id": "s12-packing",
@@ -3643,7 +3643,7 @@
         {
           "id": "s05-base",
           "to": "/members/psalms-bali-2026",
-          "note": "Life on the base — the base itself, rooming, meals, laundry, getting online and free time — is now on the members' page."
+          "note": "Life on the base is now on the members' page: the base itself, rooming, meals, laundry, getting online and free time."
         },
         {
           "id": "s03-location",
@@ -3653,7 +3653,7 @@
         {
           "id": "s13-accommodation",
           "to": "/members/psalms-bali-2026",
-          "note": "Rooming, including the blanket you need to bring, is now on the members' page."
+          "note": "Rooming, and what to bring for your room, is now on the members' page."
         },
         {
           "id": "s14-meals",
