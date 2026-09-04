@@ -117,19 +117,29 @@ function creds() {
 
 const { ref, token, secret, url: authUrl } = creds()
 
-async function sql(query) {
-  const res = await fetch(`https://api.supabase.com/v1/projects/${ref}/database/query`, {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ query }),
-  })
+async function sql(query, attempt = 0) {
+  // Retries a TRANSPORT failure, never a refusal. This lane makes roughly a
+  // hundred management-API calls across ten minutes, and one `ECONNRESET`
+  // killed a whole run mid-criterion — which is also how criterion 5's
+  // membership mutation came to be left unrestored twice. A non-2xx response is
+  // still thrown immediately: a 4xx is an answer and must never be retried into
+  // looking like a different one.
+  let res
+  try {
+    res = await fetch(`https://api.supabase.com/v1/projects/${ref}/database/query`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query }),
+    })
+  } catch (e) {
+    if (attempt >= 2) throw e
+    console.log(`  note  transport error on the management API (${e.cause?.code ?? e.message}); retry ${attempt + 1} of 2`)
+    await new Promise((r) => setTimeout(r, 1500 * (attempt + 1)))
+    return sql(query, attempt + 1)
+  }
   const text = await res.text()
   if (!res.ok) throw new Error(`SQL ${res.status}: ${text}`)
-  try {
-    return JSON.parse(text)
-  } catch {
-    return []
-  }
+  try { return JSON.parse(text) } catch { return [] }
 }
 
 async function authApi(method, pathname, body) {
@@ -341,7 +351,8 @@ async function seedWeekOne(ids) {
                       or (i.item_key = ${q(first)} and ${idx} = 7)
                       or (i.item_key = ${q(shownAbsent)} and ${idx} = 0)
                     then null else ((${idx} % 5) + 1) end,
-               case when i.ordinal = 1 then ${q(`Fixture comment ${idx}: something specific about this one.`)} else null end
+               case when i.ordinal = 1
+                    then ${q(`Fixture comment ${idx} on `)} || i.item_key || ${q('.')} end
           from public.evaluation_item i, r
          where i.round_key = ${q(W1)} and i.active
         returning 1
@@ -349,7 +360,13 @@ async function seedWeekOne(ids) {
       insert into public.evaluation_answer
         (response_id, round_key, question_key, answer_shape, absence_allowed, body, attended, rating)
       select r.id, ${q(W1)}, qq.question_key, qq.answer_shape, qq.absence_allowed,
-             case when qq.answer_shape = 'text' then ${q(`Fixture answer ${idx}: what I would take away from it.`)} end,
+             -- DISTINCT PER QUESTION, not per response. With one string reused
+             -- across every question, criterion 4's "their own words, exactly"
+             -- still passes when the read-back is mis-keyed and shows question
+             -- A's answer beside question B, which is the one screen where
+             -- guessing wrong is worst.
+             case when qq.answer_shape = 'text'
+                  then ${q(`Fixture answer ${idx} for `)} || qq.question_key || ${q('.')} end,
              case when qq.answer_shape = 'scale' then true end,
              case when qq.answer_shape = 'scale' then ((${idx} % 5) + 1) end
         from public.evaluation_question qq, r
@@ -543,8 +560,28 @@ async function scanTree() {
   const rows = await sql(`select email, coalesce(full_name, '') as name from public.profiles`)
   const exempt = new Set(SCAN_EXEMPT.map((e) => e.value))
   const all = [...new Set(rows.flatMap((r) => [r.email, r.name]))].filter((v) => v && v.trim().length > 3)
-  const needles = all.filter((v) => !exempt.has(v))
-  console.log(`  ${all.length} live name(s) and address(es); ${needles.length} searched, ${all.length - needles.length} exempt`)
+  // THIS LANE'S OWN FIXTURES ARE NOT PARTICIPANTS, and excluding them is what
+  // makes the check runnable where it is documented. `ROLES` above puts "SITE-02
+  // participant A" into `profiles.full_name`, so with fixtures up the scan found
+  // its own source file and exited 1 — which means the first run of it happened
+  // after teardown rather than in the sequence the build record printed. Caught
+  // by the stage-6 review from the arithmetic: 22 emails + 21 names − 2 exempt =
+  // 41, a total only reachable with zero fixture profiles.
+  const fixtures = new Set(
+    rows.filter((r) => r.email.startsWith(PREFIX)).flatMap((r) => [r.email, r.name]).filter(Boolean),
+  )
+  const needles = all.filter((v) => !exempt.has(v) && !fixtures.has(v))
+  console.log(
+    `  ${all.length} live name(s) and address(es); ${needles.length} searched, ` +
+      `${all.length - needles.length - fixtures.size} exempt, ${fixtures.size} from this lane's own fixtures`,
+  )
+  if (needles.length < 10) {
+    console.error(
+      `REFUSED: only ${needles.length} needle(s) left to search for. An absence check over a ` +
+        'population this small cannot be told apart from one that had nothing to look at.',
+    )
+    process.exit(1)
+  }
   for (const e of SCAN_EXEMPT) {
     console.log(`  exempt  ${e.value}`)
     console.log(`          ${e.why}`)

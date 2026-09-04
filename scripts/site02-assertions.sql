@@ -184,7 +184,7 @@ end $$;
 -- ============================================ 2. the feed does not correlate
 
 do $$
-declare _perms text[]; _def text; _keys text[];
+declare _perms text[]; _def text; _keys text[]; _unmarked bigint;
 begin
   perform set_config('role', 'authenticated', true);
   perform set_config('request.jwt.claims',
@@ -193,8 +193,22 @@ begin
   -- back in. A subquery preserves the function's own row order.
   select array_agg(distinct item_key) into _keys from public.evaluation_comments('@W1@');
   select array_agg(p) into _perms from (
-    select (select string_agg(c.comment, '|') from (
-              select comment from public.evaluation_comments('@W1@') where item_key = k
+    -- The RESPONSE ORDER, not the comment text.
+    --
+    -- Two properties are load-bearing and each was got wrong once. `string_agg`
+    -- over a bare subquery does not guarantee the subquery's row order survives
+    -- the aggregate, so the rank comes from an explicit `row_number()` and the
+    -- aggregate orders by it. And what is compared is the sequence of RESPONSE
+    -- MARKERS: comparing the joined comment text worked only while every item
+    -- carried the same strings, and the moment the fixture made each comment name
+    -- its own item — which criterion 4 needs, so a mis-keyed read-back cannot
+    -- pass — every item's text became distinct and the check could no longer
+    -- collide under ANY ordering. It was passing for a reason that had stopped
+    -- being about ordering at all.
+    select (select string_agg(c.marker, '|' order by c.n) from (
+              select substring(comment from '^Fixture comment ([0-9]+)') as marker,
+                     row_number() over () as n
+                from public.evaluation_comments('@W1@') where item_key = k
             ) c) as p
       from unnest(_keys) as k
   ) z;
@@ -204,6 +218,19 @@ begin
   perform s2('comments-do-not-correlate/population',
              coalesce(array_length(_keys, 1), 0) >= 3,
              coalesce(array_length(_keys, 1), 0)::text || ' commented item(s)');
+  -- Every comment must yield a marker. Without this, a change to the fixture's
+  -- comment format would make every marker NULL, every per-item string identical,
+  -- and the ordering check would go red for a reason that has nothing to do with
+  -- ordering — or, with the comparison the other way round, green.
+  perform set_config('role', 'authenticated', true);
+  perform set_config('request.jwt.claims',
+    json_build_object('role','authenticated','sub','@READER@','aal','aal1')::text, true);
+  select count(*) into _unmarked from public.evaluation_comments('@W1@')
+   where substring(comment from '^Fixture comment ([0-9]+)') is null;
+  perform set_config('role', 'postgres', true);
+  perform set_config('request.jwt.claims', null, true);
+  perform s2('comments-do-not-correlate/every-comment-carries-a-marker', _unmarked = 0,
+             _unmarked::text || ' comment(s) the harness could not read a response marker from');
   perform s2('comments-do-not-correlate',
              (select count(distinct x) from unnest(_perms) as x) = array_length(_perms, 1),
              (select count(distinct x) from unnest(_perms) as x)::text || ' distinct ordering(s) over '
@@ -232,8 +259,10 @@ begin
   perform set_config('role', 'postgres', true);
   select array_agg(distinct item_key) into _keys from public.evaluation_comments('@W1@');
   select array_agg(p) into _perms from (
-    select (select string_agg(c.comment, '|') from (
-              select comment from public.evaluation_comments('@W1@') where item_key = k
+    select (select string_agg(c.marker, '|' order by c.n) from (
+              select substring(comment from '^Fixture comment ([0-9]+)') as marker,
+                     row_number() over () as n
+                from public.evaluation_comments('@W1@') where item_key = k
             ) c) as p
       from unnest(_keys) as k
   ) z;
@@ -253,7 +282,13 @@ do $$
 declare r record;
 begin
   r := s2run('@READER@', 'aal1', 'select * from public.evaluation_summary(''@W1@'')');
-  perform s2('facilitator-reads-refuse-while-open/summary', r.state is not null,
+  -- The BARE vocabulary name goes on the refusal, which is what the disclosure
+  -- sentence claims. The stage-6 review found it bound to the positive control
+  -- two blocks below, where the harness's own name-matching regex folded the
+  -- sub-labels back onto it, so the sentence's named assertion pointed at the
+  -- opposite verdict and MUTATION 3 flipped a sub-assertion rather than the one
+  -- it was labelled for.
+  perform s2('facilitator-reads-refuse-while-open', r.state is not null,
              coalesce('refused ' || r.state, 'returned ' || r.n::text || ' row(s)'));
   r := s2run('@READER@', 'aal1', 'select * from public.evaluation_comments(''@W1@'')');
   perform s2('facilitator-reads-refuse-while-open/comments', r.state is not null,
@@ -270,7 +305,7 @@ begin
   -- Closed, which is the fixture's own state: the same read must work, or the
   -- refusal above proved only that something was broken.
   r := s2run('@READER@', 'aal1', 'select * from public.evaluation_summary(''@W1@'')');
-  perform s2('facilitator-reads-refuse-while-open', r.state is null and r.n > 0,
+  perform s2('facilitator-reads-refuse-while-open/positive-control', r.state is null and r.n > 0,
              'closed: ' || coalesce('refused ' || r.state, r.n::text || ' row(s)'));
 end $$;
 

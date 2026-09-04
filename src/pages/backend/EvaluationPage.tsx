@@ -8,6 +8,7 @@ import { siteLabel } from '../../lib/content/loader'
 import { getMedia } from '../../lib/media'
 import { makeDraftStore } from '../../lib/backend/localDraft'
 import {
+  amInRound,
   getEarlierAnswers,
   getInstrument,
   getMyAnswers,
@@ -243,17 +244,41 @@ function Evaluation({ roundKey, session }: { roundKey: string; session: Session 
    * remounting is also correct rather than merely working: the form has to be
    * seeded from what actually landed, not from the state that was submitted.
    */
-  const [reload, setReload] = useState(0)
+  const [reload] = useState(0)
 
   useEffect(() => {
     let alive = true
+    // Cleared FIRST, so the form unmounts while the re-read is in flight. Without
+    // it, bumping `reload` changed the key and remounted `Form` in the same render
+    // pass, against the data already in hand: a participant who filed for the
+    // first time and clicked "Read what I wrote" got a BLANK form, because the
+    // `mine` captured when the page opened was empty. The criterion missed it
+    // because its fixture had filed earlier in the same run, so its stale seed
+    // happened to be non-empty, and because the check asserted the page existed
+    // rather than what was on it.
+    setData(undefined)
     ;(async () => {
       const inst = await getInstrument(roundKey)
       if (!inst) {
         if (alive) setData(null)
         return
       }
-      const [mine, earlier] = await Promise.all([getMyAnswers(roundKey), getEarlierAnswers(inst.round)])
+      const uid = session.user.id
+      // A member who is not on this round's list is refused HERE and not at the
+      // File button. Every instrument table is readable by any signed-in member,
+      // so without this a Crash Course alumnus is shown the whole Psalms session
+      // map with its facilitators, fills 33 controls, and is refused by the RPC
+      // at the end — which is the "44-input form refused after it is filled"
+      // failure that finding 5 and D7 exist to prevent, arriving through the one
+      // door the completeness gate cannot cover.
+      if (!(await amInRound(roundKey, uid))) {
+        if (alive) setData(null)
+        return
+      }
+      const [mine, earlier] = await Promise.all([
+        getMyAnswers(roundKey, uid),
+        getEarlierAnswers(inst.round, uid),
+      ])
       if (!alive) return
       setData({ inst, mine, earlier })
     })().catch((e: unknown) => alive && setError(e instanceof Error ? e.message : String(e)))
@@ -284,7 +309,22 @@ function Evaluation({ roundKey, session }: { roundKey: string; session: Session 
       </div>
     )
   }
-  return <Form key={reload} loaded={data} onRead={() => setReload((r) => r + 1)} />
+  // A full reload rather than a state bump. Two attempts at doing it in React
+  // both lost to a render race — the second is what the stage-6 review found, and
+  // the check written to prove the fix said, correctly, that it was not fixed. A
+  // reload is exactly what a participant opening this page from an email gets,
+  // it re-reads everything from the database by construction, and it has no way
+  // to render against data captured before the filing. `reload` stays because it
+  // is what the effect keys on when a future caller wants the cheap path.
+  return (
+    <Form
+      key={reload}
+      loaded={data}
+      onRead={() => {
+        window.location.reload()
+      }}
+    />
+  )
 }
 
 function Form({ loaded, onRead }: { loaded: Loaded; onRead: () => void }) {
@@ -314,10 +354,16 @@ function Form({ loaded, onRead }: { loaded: Loaded; onRead: () => void }) {
       return
     }
     if (!open) return
+    // NOT while the restore banner is still on screen. `step` lives in the draft
+    // body, so merely pressing Next changed `draft`, and the autosave then wrote
+    // the empty seed over the blob the banner was offering to restore — leaving
+    // "Pick up where I left off" pointing at something it had just destroyed. The
+    // banner is a decision, and nothing is written until it is made.
+    if (restorePrompt) return
     const ok = draftStore.save(roundKey, draft)
     setSaveFailed(!ok)
     if (ok) setSavedAt(new Date().toISOString())
-  }, [roundKey, draft, open])
+  }, [roundKey, draft, open, restorePrompt])
 
   const gate = evalComplete(inst, draft)
   const step = Math.min(draft.step, lastStep)
@@ -1003,6 +1049,17 @@ function CompletionPanel({ onRead }: { onRead: () => void }) {
         >
           <L id="portal.eval.done.own" fallback="Read what I wrote" />
         </button>
+        {/* Rendered beside it, and it is the one that always works: a plain
+            route change to the list, from which their round is one click away.
+            The control above re-reads in place, which is nicer and is the one
+            that had to be fixed twice; this is the floor under it. */}
+        <Link
+          to="/portal/evaluations"
+          className="rounded-full border border-ink/20 px-5 py-2.5 text-sm font-medium text-ink-soft hover:bg-paper-deep"
+          data-eval-done-list
+        >
+          <L id="portal.eval.done.list" fallback="All my evaluations" />
+        </Link>
         <Link
           to="/portal"
           className="rounded-full border border-ink/20 px-5 py-2.5 text-sm font-medium text-ink-soft hover:bg-paper-deep"

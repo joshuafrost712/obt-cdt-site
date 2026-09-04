@@ -1225,6 +1225,11 @@
         "id": "portal.list.evaluations.cta",
         "type": "labelToken",
         "label": "Your workshop evaluations"
+      },
+      {
+        "id": "portal.eval.done.list",
+        "type": "labelToken",
+        "label": "All my evaluations"
       }
     ]
   },

@@ -21,8 +21,11 @@ import { myRounds, type RoundListEntry } from '../../lib/backend/evalApi'
  * built from it would show a Crash Course alumnus the Psalms round and let them
  * file into its aggregate. SITE-02's review found that hole and SITE-01 built
  * `evaluation_participant` to close it, with a matching refusal inside
- * `submit_evaluation()`. There is still no client-side filter here: the table's
- * RLS returns own rows, which is why "the rounds I am in" is a plain select.
+ * `submit_evaluation()`. The read names its subject rather than trusting RLS to
+ * return exactly the caller's rows: `participant_read_own` is `profile_id =
+ * auth.uid() OR is_head_mentor() OR is_portal_admin()`, so for the two oversight
+ * roles it returns a superset and this list would show them everybody's
+ * memberships. See the note at the top of `evalApi.ts`.
  */
 export default function EvaluationsPage() {
   return (
@@ -39,7 +42,7 @@ function RoundList({ session }: { session: Session }) {
   useEffect(() => {
     let alive = true
     ;(async () => {
-      const data = await myRounds()
+      const data = await myRounds(session.user.id)
       if (!alive) return
       setRows(data)
     })().catch((e: unknown) => alive && setError(e instanceof Error ? e.message : String(e)))

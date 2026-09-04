@@ -5,14 +5,22 @@
  * Three rules from `portalApi.ts` and `assessApi.ts` carry over unchanged, and
  * they are what make a module this thin safe:
  *
- * **No client-side audience filter, anywhere.** There is no
- * `.eq('profile_id', …)` below. RLS is the filter: `evaluation_participant`,
- * `evaluation_response`, `evaluation_item_rating` and `evaluation_answer` all
- * carry `profile_id = auth.uid()` policies, so "the rounds I am in" and "my
- * answers" are what a plain select already returns. The client does not know its
- * own profile id and must not need to. A second rule in the browser would be
- * redundant at best and, at worst, a rule that disagrees with the server's and
- * hides the disagreement.
+ * **The reads name their subject, and that is NOT the client-side filter the
+ * doctrine forbids.** `portalApi.ts` and `assessApi.ts` say RLS is the filter and
+ * a second rule in the browser can only disagree with it. That is right where the
+ * policy returns exactly the caller's rows, and it is FALSE here for two roles:
+ * `response_read_own` is `profile_id = auth.uid() OR is_head_mentor() OR
+ * is_portal_admin()`, so for the head mentor and the portal administrator — and
+ * Joshua is the administrator — RLS returns a SUPERSET. Measured, not assumed:
+ * `is_portal_admin()` carries no `aal2` clause on this project.
+ *
+ * Without naming the subject, `getMyAnswers`'s `.maybeSingle()` matches every
+ * participant's response for those two and errors, `myRounds` lists other
+ * people's memberships, and on a round with exactly one response `ClosedView`
+ * would render somebody else's answers under "What you wrote". So these reads
+ * pass `profileId` and say `.eq('profile_id', profileId)`. That is not a second
+ * access rule — RLS still decides what may be returned — it is the query saying
+ * whose answers it wants, which a page titled "your evaluation" has to do.
  *
  * **A denied read and a missing row are indistinguishable.** Postgres returns
  * 200 with an empty result for a row RLS filtered, not an error. Every read here
@@ -167,11 +175,12 @@ export function roundIsOpen(r: RoundRow): boolean {
  * so listing from them would show a crash-course alumnus the Psalms round and let
  * them file into its aggregate.
  */
-export async function myRounds(): Promise<RoundListEntry[]> {
+export async function myRounds(profileId: string): Promise<RoundListEntry[]> {
   return retryIfTooNew(async () => {
     const mine = await supabase()
       .from('evaluation_participant')
       .select('round_key, workshop_evaluation_round(round_key, workshop_key, display_name, opens_at, closes_at, state)')
+      .eq('profile_id', profileId)
     if (mine.error) throw new Error(mine.error.message)
 
     const rounds = (mine.data ?? [])
@@ -182,6 +191,7 @@ export async function myRounds(): Promise<RoundListEntry[]> {
     const responses = await supabase()
       .from('evaluation_response')
       .select('id, round_key, respondent_group, state, source, submitted_at')
+      .eq('profile_id', profileId)
     if (responses.error) throw new Error(responses.error.message)
     const byRound = new Map((responses.data ?? []).map((r) => [r.round_key as string, r as ResponseRow]))
 
@@ -207,11 +217,12 @@ export async function getRound(roundKey: string): Promise<RoundRow | null> {
 }
 
 /** True when this participant is on the named round's list. */
-export async function amInRound(roundKey: string): Promise<boolean> {
+export async function amInRound(roundKey: string, profileId: string): Promise<boolean> {
   const res = await supabase()
     .from('evaluation_participant')
     .select('round_key')
     .eq('round_key', roundKey)
+    .eq('profile_id', profileId)
   if (res.error) throw new Error(res.error.message)
   return (res.data ?? []).length > 0
 }
@@ -266,12 +277,13 @@ export async function getInstrument(roundKey: string): Promise<Instrument | null
  * Readable after the round closes, always: that is rubric row 5 and it is the one
  * policy SITE-01 did not scope by the round's state.
  */
-export async function getMyAnswers(roundKey: string): Promise<MyAnswers> {
+export async function getMyAnswers(roundKey: string, profileId: string): Promise<MyAnswers> {
   return retryIfTooNew(async () => {
     const res = await supabase()
       .from('evaluation_response')
       .select('id, round_key, respondent_group, state, source, submitted_at')
       .eq('round_key', roundKey)
+      .eq('profile_id', profileId)
       .maybeSingle()
     if (res.error) throw new Error(res.error.message)
     const response = (res.data as ResponseRow | null) ?? null
@@ -324,7 +336,7 @@ export async function getMyAnswers(roundKey: string): Promise<MyAnswers> {
  *                                        what is true, and it never tells
  *                                        somebody they joined late.
  */
-export async function getEarlierAnswers(round: RoundRow): Promise<EarlierState> {
+export async function getEarlierAnswers(round: RoundRow, profileId: string): Promise<EarlierState> {
   return retryIfTooNew(async () => {
     const earlier = await supabase()
       .from('workshop_evaluation_round')
@@ -338,12 +350,12 @@ export async function getEarlierAnswers(round: RoundRow): Promise<EarlierState> 
     const prev = (earlier.data as RoundRow | null) ?? null
     if (!prev) return { kind: 'no-earlier-round' }
 
-    const inRound = await amInRound(prev.round_key)
+    const inRound = await amInRound(prev.round_key, profileId)
     if (!inRound) {
       return { kind: 'not-in-round', roundKey: prev.round_key, displayName: prev.display_name }
     }
 
-    const mine = await getMyAnswers(prev.round_key)
+    const mine = await getMyAnswers(prev.round_key, profileId)
     if (!mine.response || mine.answers.length === 0) {
       return { kind: 'nothing-readable', roundKey: prev.round_key, displayName: prev.display_name }
     }

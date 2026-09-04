@@ -80,12 +80,26 @@ function creds() {
 }
 const { ref, token } = creds()
 
-async function sql(query) {
-  const res = await fetch(`https://api.supabase.com/v1/projects/${ref}/database/query`, {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ query }),
-  })
+async function sql(query, attempt = 0) {
+  // Retries a TRANSPORT failure, never a refusal. This lane makes roughly a
+  // hundred management-API calls across ten minutes, and one `ECONNRESET`
+  // killed a whole run mid-criterion — which is also how criterion 5's
+  // membership mutation came to be left unrestored twice. A non-2xx response is
+  // still thrown immediately: a 4xx is an answer and must never be retried into
+  // looking like a different one.
+  let res
+  try {
+    res = await fetch(`https://api.supabase.com/v1/projects/${ref}/database/query`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query }),
+    })
+  } catch (e) {
+    if (attempt >= 2) throw e
+    console.log(`  note  transport error on the management API (${e.cause?.code ?? e.message}); retry ${attempt + 1} of 2`)
+    await new Promise((r) => setTimeout(r, 1500 * (attempt + 1)))
+    return sql(query, attempt + 1)
+  }
   const text = await res.text()
   if (!res.ok) throw new Error(`SQL ${res.status}: ${text}`)
   try { return JSON.parse(text) } catch { return [] }
@@ -208,7 +222,61 @@ async function openRound(page, roundKey) {
   await page.waitForTimeout(300)
 }
 
+/**
+ * The fixture invariants, verified and REPAIRED before anything is asserted.
+ *
+ * Criterion 5 deletes a fixture's round membership on purpose, to force the RPC's
+ * own refusal rather than a fabricated one. A run that dies between the delete
+ * and the restore leaves the next run opening a form for a fixture that is in no
+ * round, which surfaces as a thirty-second timeout inside `openRound` and a stack
+ * trace — a broken fixture set wearing the costume of a broken page. It happened
+ * three times in this build.
+ *
+ * A `finally` in criterion 5 is necessary and is not sufficient: a hard kill, a
+ * crash in Playwright's own teardown, or an interrupt all skip it. So the lane
+ * does not assume the previous run exited cleanly. It states what the fixture set
+ * must look like, repairs any drift as `postgres`, and PRINTS what it repaired,
+ * because a self-healing harness that heals silently is a harness that stops
+ * reporting that its fixtures keep breaking.
+ */
+async function repairFixtures() {
+  console.log('\n=== fixtures: the invariants this lane depends on')
+  const want = [
+    [fx.w1, 'participant'], [fx.w1, 'second'], [fx.w1, 'unattached'],
+    [fx.w2, 'participant'], [fx.w2, 'second'], [fx.w2, 'unattached'], [fx.w2, 'latecomer'],
+  ]
+  const before = await sql(
+    `select round_key, profile_id from public.evaluation_participant
+      where round_key in ('${fx.w1}', '${fx.w2}')`)
+  const have = new Set(before.map((r) => `${r.round_key}|${r.profile_id}`))
+  const missing = want.filter(([r, role]) => !have.has(`${r}|${fx.ids[role]}`))
+  if (missing.length) {
+    await sql(
+      `insert into public.evaluation_participant (round_key, profile_id) values ` +
+        missing.map(([r, role]) => `('${r}', '${fx.ids[role]}')`).join(', ') +
+        ` on conflict do nothing`)
+  }
+  // The latecomer is on w2 and MUST NOT be on w1: that absence is the whole of
+  // criterion 4's not-in-round case, and an over-eager repair would erase it.
+  const wrong = before.filter((r) => r.round_key === fx.w1 && r.profile_id === fx.ids.latecomer)
+  if (wrong.length) {
+    await sql(`delete from public.evaluation_participant
+                where round_key = '${fx.w1}' and profile_id = '${fx.ids.latecomer}'`)
+  }
+  const after = await sql(
+    `select count(*)::int as n from public.evaluation_participant
+      where round_key in ('${fx.w1}', '${fx.w2}')`)
+  console.log(`  repaired ${missing.length} missing membership(s) and ${wrong.length} wrong one(s)`)
+  if (missing.length) for (const [r, role] of missing) console.log(`    restored ${role} in ${r}`)
+  check('fx', 'the fixture set holds exactly the memberships this lane needs', after[0].n, want.length)
+  check('fx', 'and the latecomer is NOT in week one, which criterion 4 depends on',
+    (await sql(`select count(*)::int as n from public.evaluation_participant
+                 where round_key = '${fx.w1}' and profile_id = '${fx.ids.latecomer}'`))[0].n, 0)
+}
+
 try {
+  await repairFixtures()
+
   // ============================================================ criterion 0
   console.log('\n=== criterion 0: the six preconditions, re-measured in this run')
   {
@@ -320,7 +388,8 @@ try {
     await phone.waitForSelector('fieldset[data-field="group"]', { timeout: 15000 })
     const groups = await phone.evaluate(() =>
       [...document.querySelectorAll('fieldset[data-field="group"] label[data-choice]')].map((l) => l.dataset.choice))
-    check(1, 'the audience groups come from the database', groups.length, 4)
+    const dbGroups = await sql(`select count(*)::int as n from public.evaluation_respondent_group`)
+    check(1, 'the audience groups come from the database, counted there', groups.length, dbGroups[0].n)
     await phone.click(`fieldset[data-field="group"] label[data-choice="${groups[0]}"]`)
 
     let absentUsed = false
@@ -652,10 +721,36 @@ try {
       await p.isEnabled('#site02-file'), true)
     await p.click('#site02-file')
     await p.waitForSelector('[data-eval-complete]', { timeout: 30000 })
+    // "Lands on their answers" is asserted as CONTENT, not as presence. The
+    // stage-6 review found that a presence check passed over the bug it was
+    // written for: the panel's control remounted the form against the data
+    // already in hand, so a first-time filer got a blank form and a
+    // `count() > 0` check could not tell. So this waits for the re-read to
+    // finish and then asserts a value that can only be there if the form was
+    // seeded from the database.
+    const filed = await sql(
+      `select r.item_key, r.attended, r.rating from public.evaluation_item_rating r
+         join public.evaluation_response p on p.id = r.response_id
+        where p.round_key = '${fx.w2}' and p.profile_id = '${fx.ids.second}' and r.attended limit 1`)
+    check('4a', 'there is a filed rating to look for', filed.length, 1)
     await p.click('[data-eval-done-own]')
-    await p.waitForSelector('#site02-eval, [data-eval-closed]', { timeout: 15000 })
-    check('4a', 'the completion panel\'s own link lands on their answers',
-      await p.locator('#site02-eval, [data-eval-closed]').count() > 0, true)
+    await p.waitForSelector('#site02-eval, [data-eval-closed]', { timeout: 30000 })
+    await p.waitForTimeout(500)
+    check('4a', 'the completion panel\'s own control lands back on the form', 
+      await p.locator('#site02-eval').count(), 1)
+    // The RATED COUNT, not one control's value. The form reopens at the intro
+    // step and that item's fieldset is not in the DOM there, so the first version
+    // of this check read null and failed for a reason that had nothing to do with
+    // the seed. The count is rendered on every step, is computed from the seeded
+    // draft, and is exactly the number a stale-empty seed would get wrong: 0.
+    const rated = await sql(
+      `select count(*)::int as n from public.evaluation_item_rating r
+         join public.evaluation_response x on x.id = r.response_id
+        where x.round_key = '${fx.w2}' and x.profile_id = '${fx.ids.second}'`)
+    const shownCount = await p.getAttribute('[data-eval-rated]', 'data-eval-rated')
+    check('4a', 'and the form is re-seeded from the database, not from stale state',
+      shownCount, `${rated[0].n}/${rated[0].n}`)
+    check('4a', 'the seeded count is not zero, so the check is not vacuous', rated[0].n > 0, true)
     await p.context().close()
   }
 
@@ -664,11 +759,25 @@ try {
   {
     const context = await browser.newContext({ viewport: { width: 1440, height: 2400 } })
     const p = await context.newPage()
+    await p.addInitScript(() => {
+      window.__cspViolations = []
+      document.addEventListener('securitypolicyviolation', (e) => {
+        window.__cspViolations.push(e.effectiveDirective || e.violatedDirective)
+      })
+    })
+    // Waits for ANY of the three outcomes and then asserts which one, rather than
+    // waiting only for the list. A bare `waitForSelector('[data-eval-list]')`
+    // turns "this fixture is in no round" into a 30-second hang and a stack
+    // trace, which is what happened when an earlier crashed run left criterion
+    // 5's own membership mutation unrestored: the next run died here with a
+    // timeout instead of saying the fixture set was broken.
     await p.goto(`${BASE}/portal/evaluations`, { waitUntil: 'networkidle' })
     await p.fill('#portal-email', LATECOMER)
     await p.fill('#portal-password', fx.password)
     await p.click('button[type="submit"]')
-    await p.waitForSelector('[data-eval-list]', { timeout: 30000 })
+    await p.waitForSelector('[data-eval-list], [data-eval-empty], [data-eval-error]', { timeout: 30000 })
+    check(5, 'the fixture is in a round, so the draft can be exercised at all',
+      await p.locator('[data-eval-list]').count(), 1)
     await openRound(p, fx.w2)
     const groups = await p.evaluate(() =>
       [...document.querySelectorAll('fieldset[data-field="group"] label[data-choice]')].map((l) => l.dataset.choice))
@@ -707,9 +816,17 @@ try {
     check(5, 'the draft key exists before filing',
       await p2.evaluate((k) => localStorage.getItem(k) !== null, key), true)
 
-    // A refusal must KEEP the draft. Forced by removing the round membership
-    // under the caller, which is the RPC's own refusal and not a fabricated one.
-    await sql(`delete from public.evaluation_participant where round_key = '${fx.w2}' and profile_id = '${fx.ids.latecomer}'`)
+    // A refusal must KEEP the draft, and forcing one is now harder than it was,
+    // for a good reason. Removing the caller's round membership used to do it;
+    // the page now refuses a non-participant BEFORE rendering the form (the
+    // stage-6 review's note 16), so there is no form left to file from and the
+    // wait times out on a page that is behaving correctly.
+    //
+    // So the refusal is raised by changing the instrument UNDER a form that has
+    // already loaded: an item goes inactive after the client has rendered it, and
+    // `submit_evaluation()` refuses a rating for an item that is not active in
+    // the round. The client cannot know, which is exactly the situation the
+    // clear-only-on-success rule exists for.
     const days = (await sql(
       `select distinct day from public.evaluation_item where round_key = '${fx.w2}' and active order by 1`)).length
     const items = await sql(
@@ -717,40 +834,63 @@ try {
     const questions = await sql(
       `select question_key, answer_shape, required, absence_allowed from public.evaluation_question
         where round_key = '${fx.w2}' and active order by ordinal`)
-    await p2.goto(`${BASE}/portal/e/${encodeURIComponent(fx.w2)}`, { waitUntil: 'networkidle' })
-    await p2.waitForSelector('#site02-restore', { timeout: 30000 })
-    await p2.click('#site02-restore-yes')
-    await p2.waitForTimeout(300)
-    await p2.click('#site02-back')
-    await p2.waitForSelector('fieldset[data-field="group"], [data-eval-day]', { timeout: 15000 })
-    let step = Number(await p2.getAttribute('#site02-eval', 'data-eval-step'))
-    while (step > 0) { await p2.click('#site02-back'); await p2.waitForTimeout(120); step-- }
-    const dayList = [...new Set(items.map((i) => i.day))]
-    for (let d = 0; d < dayList.length; d++) {
-      await p2.click('#site02-next')
-      await p2.waitForSelector('[data-eval-day]', { timeout: 15000 })
-      for (const it of items.filter((i) => i.day === dayList[d])) {
-        await p2.click(`fieldset[data-field="rate-${it.item_key}"] label[data-choice="3"]`)
-      }
-    }
-    await p2.click('#site02-next')
-    await p2.waitForSelector('[data-eval-question]', { timeout: 15000 })
-    for (const q of questions) {
-      if (q.answer_shape === 'scale') await p2.click(`fieldset[data-field="q-${q.question_key}"] label[data-choice="4"]`)
-      else if (q.required) await p2.fill(`#site02-q-${q.question_key}`, `Refused filing for ${q.question_key}.`)
-    }
-    await p2.click('#site02-file')
-    await p2.waitForSelector('#site02-file-error', { timeout: 30000 })
-    check(5, 'a refused filing is reported, not swallowed', await p2.locator('#site02-file-error').count(), 1)
-    check(5, 'and the draft is STILL there', await p2.evaluate((k) => localStorage.getItem(k) !== null, key), true)
+    const victim = items[items.length - 1].item_key
 
-    // Now let it succeed, and the key must go.
-    await sql(`insert into public.evaluation_participant (round_key, profile_id)
-               values ('${fx.w2}', '${fx.ids.latecomer}') on conflict do nothing`)
-    await p2.click('#site02-file')
-    await p2.waitForSelector('[data-eval-complete]', { timeout: 30000 })
-    check(5, 'the draft key is gone after a successful filing',
-      await p2.evaluate((k) => localStorage.getItem(k) === null, key), true)
+    let reactivated = false
+    const reactivate = async () => {
+      if (reactivated) return
+      await sql(`update public.evaluation_item set active = true
+                  where round_key = '${fx.w2}' and item_key = '${victim}'`)
+      reactivated = true
+    }
+
+    try {
+      // Fill the form completely, from the step the restore left it on.
+      let step = Number(await p2.getAttribute('#site02-eval', 'data-eval-step'))
+      while (step > 0) { await p2.click('#site02-back'); await p2.waitForTimeout(120); step-- }
+      const dayList = [...new Set(items.map((i) => i.day))]
+      const groups2 = await p2.evaluate(() =>
+        [...document.querySelectorAll('fieldset[data-field="group"] label[data-choice]')].map((l) => l.dataset.choice))
+      await p2.click(`fieldset[data-field="group"] label[data-choice="${groups2[0]}"]`)
+      for (let d = 0; d < dayList.length; d++) {
+        await p2.click('#site02-next')
+        await p2.waitForSelector('[data-eval-day]', { timeout: 15000 })
+        for (const it of items.filter((i) => i.day === dayList[d])) {
+          await p2.click(`fieldset[data-field="rate-${it.item_key}"] label[data-choice="3"]`)
+        }
+      }
+      await p2.click('#site02-next')
+      await p2.waitForSelector('[data-eval-question]', { timeout: 15000 })
+      for (const q of questions) {
+        if (q.answer_shape === 'scale') await p2.click(`fieldset[data-field="q-${q.question_key}"] label[data-choice="4"]`)
+        else if (q.required) await p2.fill(`#site02-q-${q.question_key}`, `Refused filing for ${q.question_key}.`)
+      }
+
+      // Now, and only now, the server changes under it.
+      await sql(`update public.evaluation_item set active = false
+                  where round_key = '${fx.w2}' and item_key = '${victim}'`)
+      await p2.click('#site02-file')
+      await p2.waitForSelector('#site02-file-error', { timeout: 30000 })
+      check(5, 'a refused filing is reported, not swallowed', await p2.locator('#site02-file-error').count(), 1)
+      check(5, 'and the draft is STILL there', await p2.evaluate((k) => localStorage.getItem(k) !== null, key), true)
+      const none = await sql(
+        `select count(*)::int as n from public.evaluation_response
+          where round_key = '${fx.w2}' and profile_id = '${fx.ids.latecomer}' and state = 'submitted'`)
+      check(5, 'and nothing was filed', none[0].n, 0)
+
+      // Let it succeed, and the key must go.
+      await reactivate()
+      await p2.click('#site02-file')
+      await p2.waitForSelector('[data-eval-complete]', { timeout: 30000 })
+      check(5, 'the draft key is gone after a successful filing',
+        await p2.evaluate((k) => localStorage.getItem(k) === null, key), true)
+    } finally {
+      await reactivate()
+      const back2 = await sql(
+        `select count(*)::int as n from public.evaluation_item
+          where round_key = '${fx.w2}' and item_key = '${victim}' and active`)
+      check(5, 'the item this criterion deactivated is active again, whatever happened', back2[0].n, 1)
+    }
     check(5, `${days} day step(s) walked`, days > 0, true)
     await back.close()
   }
@@ -863,8 +1003,14 @@ try {
     await ctrl.waitForTimeout(800)
     const before = pageErrors.length
     const controlErrors = pageErrors.filter((e) => e.url.endsWith('/portal'))
-    check(10, 'the control route fires the same pre-existing class',
-      controlErrors.every((e) => PREEXISTING_ERROR.test(e.text)), true)
+    // The population is asserted NON-EMPTY first. `[].every(...)` is `true`, so
+    // without this the exclusion below is justified by a control that saw
+    // nothing, and a real error on a SITE-02 route would be filtered out on the
+    // strength of it. That is the campaign's signature class, in the one check
+    // whose entire job is to be the evidence for an exclusion.
+    check(10, 'the control route produced page errors to classify', controlErrors.length > 0, true)
+    check(10, 'and every one of them is the pre-existing class',
+      controlErrors.length > 0 && controlErrors.every((e) => PREEXISTING_ERROR.test(e.text)), true)
     const ours = pageErrors.filter((e) => /\/portal\/(e|evaluations)/.test(e.url) && !PREEXISTING_ERROR.test(e.text))
     check(10, 'no page error on a SITE-02 route outside that class', ours.length, 0)
     console.log(`        ${pageErrors.length} page error(s) seen, ${pageErrors.filter((e) => PREEXISTING_ERROR.test(e.text)).length} of the excluded class; ${before} before the control`)
@@ -930,26 +1076,52 @@ try {
       await p.screenshot({ path: path.join(SHOTS, `list-${name}.png`), fullPage: false })
 
       await openRound(p, fx.w2)
+      // Scrolled to a known position, and asserted as a RANGE. Program finding 34
+      // is binding and this is the third time in three specs: a one-sided `top <
+      // 200` is satisfied by an element eight hundred pixels above the viewport,
+      // and `openRound` clicks a link inside a list card, which is exactly the
+      // kind of navigation that leaves a scroll behind.
+      await p.evaluate(() => window.scrollTo(0, 0))
+      await p.waitForTimeout(200)
       const roundTop = await topOf(p, '[data-eval-round-name]')
       const closeTop = await topOf(p, '[data-eval-progress]')
       if (name === '390') {
-        check(13, 'the round name is inside the first 200px with AuthGate compact',
-          roundTop !== null && roundTop < 200, true)
-        check(13, 'and the progress figure with it', closeTop !== null && closeTop < 260, true)
+        check(13, `the round name is on screen and inside the first 200px (${roundTop})`,
+          roundTop !== null && roundTop >= 0 && roundTop < 200, true)
+        check(13, `and the progress figure with it (${closeTop})`,
+          closeTop !== null && closeTop >= 0 && closeTop < 260, true)
       }
       const days = (await sql(
         `select distinct day from public.evaluation_item where round_key = '${fx.w2}' and active order by 1`)).length
+      // `lastStep` is days + 1: intro, one per day, then the QUESTION step, which
+      // is where the read-back panel and the long textareas live. The first
+      // version looped `i <= days` and stopped one short of it, so the two
+      // surfaces this criterion names by name were never rendered at 390px at
+      // all. Caught by the stage-6 review, not by the criterion.
+      const lastStep = days + 1
       let missingProgress = 0
       let overflowed = 0
-      for (let i = 0; i <= days; i++) {
+      let sawQuestions = 0
+      for (let i = 0; i <= lastStep; i++) {
         if (await p.locator('[data-eval-progress]').count() !== 1) missingProgress++
         if (await p.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)) overflowed++
+        if (await p.locator('[data-eval-question]').count() > 0) sawQuestions++
         await p.screenshot({ path: path.join(SHOTS, `step-${i}-${name}.png`), fullPage: false })
-        if (i < days) await p.click('#site02-next')
+        if (i < lastStep) await p.click('#site02-next')
         await p.waitForTimeout(150)
       }
       check(13, `${name}px: the progress figure is visible at every step`, missingProgress, 0)
-      check(13, `${name}px: no step scrolls sideways`, overflowed, 0)
+      check(13, `${name}px: no step scrolls sideways, across all ${lastStep + 1} step(s)`, overflowed, 0)
+      check(13, `${name}px: the question step WAS reached and rendered`, sawQuestions > 0, true)
+      check(13, `${name}px: the read-back panel was on screen there`,
+        await p.locator('[data-earlier]').count() > 0, true)
+      // And the completion moment, at this width. It was only ever rendered at
+      // 1440 by criterion 9.
+      await p.click('#site02-file')
+      await p.waitForSelector('[data-eval-complete]', { timeout: 30000 })
+      check(13, `${name}px: the completion moment does not scroll sideways`,
+        await p.evaluate(() => document.documentElement.scrollWidth > window.innerWidth), false)
+      await p.screenshot({ path: path.join(SHOTS, `completion-${name}.png`), fullPage: false })
       await p.context().close()
     }
     console.log(`        screenshots in ${path.relative(REPO, SHOTS)} — criterion 13 is not discharged until a person opens them beside the real Google Form`)
