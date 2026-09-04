@@ -28,7 +28,17 @@
  * It is cleared ONLY after the write returns successfully — the
  * Web-App-Build-Protocol's first reliability invariant: never report a state
  * change that did not persist. A refused submit keeps the draft.
+ *
+ * ## Spec SITE-02 moved the mechanism out and left the shape alone
+ *
+ * The `localStorage` access, the version guard and the clear-only-on-success
+ * rule now live in `localDraft.ts`, because the evaluation form needs the same
+ * discipline over a different shape and a second copy of a version guard is a
+ * version guard that will drift. Nothing here changes: the key prefix, the
+ * version and the STORED BYTES are identical, so a draft already sitting in a
+ * consultant's browser still loads.
  */
+import { makeDraftStore } from './localDraft'
 
 const PREFIX = 'cdt04.draft.'
 
@@ -50,23 +60,11 @@ export interface WriteupDraft {
   units: Record<string, DraftUnit>
 }
 
-function key(assignmentId: string): string {
-  return `${PREFIX}${assignmentId}`
-}
+const store = makeDraftStore<Omit<WriteupDraft, 'v' | 'savedAt'>>(PREFIX, 1)
 
 export function loadDraft(assignmentId: string): WriteupDraft | null {
-  try {
-    const raw = localStorage.getItem(key(assignmentId))
-    if (!raw) return null
-    const parsed = JSON.parse(raw) as WriteupDraft
-    // A draft from a future or unknown shape is discarded rather than half read.
-    // Restoring three of seven fields per unit is worse than restoring none,
-    // because the consultant cannot tell which ones came back.
-    if (parsed?.v !== 1) return null
-    return parsed
-  } catch {
-    return null
-  }
+  const d = store.load(assignmentId)
+  return d ? { v: 1, savedAt: d.savedAt, header: d.header, units: d.units } : null
 }
 
 /**
@@ -79,23 +77,13 @@ export function saveDraft(
   assignmentId: string,
   draft: Omit<WriteupDraft, 'v' | 'savedAt'>,
 ): boolean {
-  try {
-    const payload: WriteupDraft = { v: 1, savedAt: new Date().toISOString(), ...draft }
-    localStorage.setItem(key(assignmentId), JSON.stringify(payload))
-    return true
-  } catch {
-    return false
-  }
+  return store.save(assignmentId, draft)
 }
 
 export function clearDraft(assignmentId: string): void {
-  try {
-    localStorage.removeItem(key(assignmentId))
-  } catch {
-    /* nothing to do: the draft is a convenience and its removal is too */
-  }
+  store.clear(assignmentId)
 }
 
 export function hasDraft(assignmentId: string): boolean {
-  return loadDraft(assignmentId) !== null
+  return store.has(assignmentId)
 }

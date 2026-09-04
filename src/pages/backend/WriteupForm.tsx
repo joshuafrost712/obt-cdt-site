@@ -1,5 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { ErrorNote, L } from './shared'
+// Spec SITE-02 decision 1: these two were module-private here, so the evaluation
+// form could not import them. They moved out unchanged; every call site below
+// renders exactly as it did.
+import { Area, Choice } from './formFields'
 import { siteLabel } from '../../lib/content/loader'
 import { clearDraft, loadDraft, saveDraft, type DraftUnit } from '../../lib/backend/writeupDraft'
 import {
@@ -484,91 +488,6 @@ function LevelRow({
         ))}
       </div>
     </fieldset>
-  )
-}
-
-function Choice({
-  name,
-  labelId,
-  fallback,
-  helpId,
-  helpFallback,
-  value,
-  onChange,
-  options,
-}: {
-  name: string
-  labelId: string
-  fallback: string
-  helpId?: string
-  helpFallback?: string
-  value: string
-  onChange: (v: string) => void
-  options: { value: string; node: string; fallback: string }[]
-}) {
-  return (
-    <fieldset>
-      <legend className="text-xs font-semibold uppercase tracking-wide text-ink-faint">
-        <L id={labelId} fallback={fallback} />
-      </legend>
-      {helpId && <L as="p" className="mt-0.5 text-xs text-ink-faint" id={helpId} fallback={helpFallback ?? ''} />}
-      <div className="mt-1 flex flex-wrap gap-2">
-        {options.map((o) => (
-          <label
-            key={o.value}
-            className={`cursor-pointer rounded-lg border px-3 py-1.5 text-sm ${
-              value === o.value ? 'border-brand bg-brand-soft font-semibold text-brand' : 'border-ink/20 text-ink-soft'
-            }`}
-          >
-            <input
-              type="radio"
-              name={name}
-              value={o.value}
-              checked={value === o.value}
-              onChange={() => onChange(o.value)}
-              className="sr-only"
-            />
-            <L id={o.node} fallback={o.fallback} />
-          </label>
-        ))}
-      </div>
-    </fieldset>
-  )
-}
-
-function Area({
-  id,
-  labelId,
-  fallback,
-  helpId,
-  helpFallback,
-  value,
-  onChange,
-  rows = 3,
-}: {
-  id: string
-  labelId: string
-  fallback: string
-  helpId?: string
-  helpFallback?: string
-  value: string
-  onChange: (v: string) => void
-  rows?: number
-}) {
-  return (
-    <div>
-      <label className="text-xs font-semibold uppercase tracking-wide text-ink-faint" htmlFor={id}>
-        <L id={labelId} fallback={fallback} />
-      </label>
-      {helpId && <L as="p" className="mt-0.5 text-xs text-ink-faint" id={helpId} fallback={helpFallback ?? ''} />}
-      <textarea
-        id={id}
-        rows={rows}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="mt-1 w-full rounded-lg border border-ink/20 bg-white px-3 py-2.5 text-ink outline-none focus:border-accent"
-      />
-    </div>
   )
 }
 

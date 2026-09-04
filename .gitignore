@@ -69,3 +69,25 @@ feedback/verify-shots/
 # member entries. Program finding 11: an image is a disclosure channel no text
 # gate can read.
 feedback/site06-shots/
+
+# Spec SITE-02's shots. Every one is taken SIGNED IN as a participant fixture and
+# shows an evaluation form carrying session titles, the disclosure panel and a
+# member's own typed answers. Program finding 11: an image is a disclosure channel
+# no text gate can read, and six tracked PNGs of portal pages are already on
+# origin/main because that hazard was recognised for one spec and not generalised.
+feedback/site02-shots/
+
+# The fixture id map. It carries six auth uuids and the lane's password; it is
+# written by --setup and consumed by site02-ui.mjs, and it must never be tracked.
+scripts/.site02-fixture-ids.json
+
+# The scan probe, written and deleted inside one run of --scan.
+scripts/.site02-scan-probe.txt
+
+# Spec SITE-05's shots, added on `main` by SITE-02's build session on 2026-09-04.
+# The entry itself is SITE-05's and exists on branch `site05-psalms-split`, but the
+# DIRECTORY is on disk on main right now, holding signed-in member-page
+# screenshots, and until that branch merges any `git add -A` here would commit
+# them to a public repository. The merge on or after 2026-09-05 will carry the
+# same line; a duplicate is harmless and a conflict is one line to resolve.
+feedback/site05-shots/

@@ -16,8 +16,45 @@ import { siteLabel } from '../../lib/content/loader'
 export default function PortalPage() {
   return (
     <AuthGate title={siteLabel('portal.title', 'Member portal')}>
-      {() => <ReportList />}
+      {() => (
+        <>
+          <EvaluationsLink />
+          <ReportList />
+        </>
+      )}
     </AuthGate>
+  )
+}
+
+/**
+ * The way in to `/portal/evaluations`. Spec SITE-02.
+ *
+ * It is here rather than in the site nav because program finding 25 measured the
+ * signed-in bar at nine entries already clipping at 768px, and this is a portal
+ * surface rather than a member page. Without it the evaluation is reachable only
+ * from a link in the covering email, and a participant who signs in first — most
+ * of them — lands on an empty report list with no way to their own round.
+ *
+ * It is unconditional on purpose. Asking whether this member is in any round
+ * would be a second query on every portal load to hide a link whose own page
+ * already says, in a sentence, that there is nothing yet.
+ */
+function EvaluationsLink() {
+  return (
+    <div className="mt-8 rounded-2xl border border-brand/25 bg-brand-soft/30 p-5" data-portal-evaluations>
+      <p className="text-sm leading-relaxed text-ink">
+        {siteLabel(
+          'portal.list.evaluations.body',
+          'If you have been to a workshop, this is where you say how it went, and where you can read back what you said.',
+        )}
+      </p>
+      <Link
+        to="/portal/evaluations"
+        className="mt-3 inline-block rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-white hover:bg-accent"
+      >
+        {siteLabel('portal.list.evaluations.cta', 'Your workshop evaluations')}
+      </Link>
+    </div>
   )
 }
 

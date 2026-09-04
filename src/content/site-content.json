@@ -830,6 +830,401 @@
         "id": "portal.materials.wrong",
         "type": "labelToken",
         "label": "If a link does not open for you, or opens something other than what it says, write to Joshua."
+      },
+      {
+        "id": "portal.eval.scale.1",
+        "type": "labelToken",
+        "label": "Well below average"
+      },
+      {
+        "id": "portal.eval.scale.2",
+        "type": "labelToken",
+        "label": "Somewhat below average"
+      },
+      {
+        "id": "portal.eval.scale.3",
+        "type": "labelToken",
+        "label": "About average"
+      },
+      {
+        "id": "portal.eval.scale.4",
+        "type": "labelToken",
+        "label": "Somewhat above average"
+      },
+      {
+        "id": "portal.eval.scale.5",
+        "type": "labelToken",
+        "label": "Well above average"
+      },
+      {
+        "id": "portal.eval.scale.absent",
+        "type": "labelToken",
+        "label": "I wasn't there"
+      },
+      {
+        "id": "portal.eval.scale.note",
+        "type": "labelToken",
+        "label": "Average means about what you would expect from a good session in this series, not the middle of a scale of quality. A 3 is not a complaint."
+      },
+      {
+        "id": "portal.eval.prompt.ceremony",
+        "type": "labelToken",
+        "label": "Anything you want to say about it?"
+      },
+      {
+        "id": "portal.eval.prompt.devotional",
+        "type": "labelToken",
+        "label": "Anything you want to say about this one? What you took from it, whether it prepared you for the day's work, anything you didn't like or would want different."
+      },
+      {
+        "id": "portal.eval.prompt.practicum",
+        "type": "labelToken",
+        "label": "Anything you want to say about this afternoon? What you learned by doing it, what worked with your team, anything you didn't like or would want different."
+      },
+      {
+        "id": "portal.eval.prompt.session",
+        "type": "labelToken",
+        "label": "Anything you want to say about this one? What you took from it, what worked, anything you didn't like or would want different."
+      },
+      {
+        "id": "portal.eval.prompt.workblock",
+        "type": "labelToken",
+        "label": "Was this enough time, and did you have what you needed? Anything you would change about how it was set up."
+      },
+      {
+        "id": "portal.eval.group.prompt",
+        "type": "labelToken",
+        "label": "Which of these describes your part in the workshop? Your answer decides which group your ratings are read with, so the numbers stay comparable."
+      },
+      {
+        "id": "portal.eval.form.title",
+        "type": "labelToken",
+        "label": "Your evaluation"
+      },
+      {
+        "id": "portal.eval.form.loading",
+        "type": "labelToken",
+        "label": "Loading the evaluation…"
+      },
+      {
+        "id": "portal.eval.form.missing",
+        "type": "labelToken",
+        "label": "This evaluation is not in your record. If you were expecting it, ask the track administrator to check that you are on the list for this round."
+      },
+      {
+        "id": "portal.eval.form.back",
+        "type": "labelToken",
+        "label": "Back to your evaluations"
+      },
+      {
+        "id": "portal.eval.draft.failed",
+        "type": "labelToken",
+        "label": "This browser refused to save your draft. Finish in one sitting if you can, or keep your notes somewhere else as well."
+      },
+      {
+        "id": "portal.eval.draft.restore.heading",
+        "type": "labelToken",
+        "label": "There is an unfinished evaluation for this round on this device."
+      },
+      {
+        "id": "portal.eval.draft.restore.cta",
+        "type": "labelToken",
+        "label": "Pick up where I left off"
+      },
+      {
+        "id": "portal.eval.draft.restore.discard",
+        "type": "labelToken",
+        "label": "Start again"
+      },
+      {
+        "id": "portal.eval.nav.back",
+        "type": "labelToken",
+        "label": "Back"
+      },
+      {
+        "id": "portal.eval.nav.next",
+        "type": "labelToken",
+        "label": "Next"
+      },
+      {
+        "id": "portal.eval.nav.incomplete",
+        "type": "labelToken",
+        "label": "A few things are still blank. The marked questions have to be answered before this can be filed."
+      },
+      {
+        "id": "portal.eval.file.error",
+        "type": "labelToken",
+        "label": "That was not filed, and nothing is lost: your answers are still on this device."
+      },
+      {
+        "id": "portal.eval.progress.label",
+        "type": "labelToken",
+        "label": "Rated"
+      },
+      {
+        "id": "portal.eval.progress.step",
+        "type": "labelToken",
+        "label": "Step"
+      },
+      {
+        "id": "portal.eval.draft.saved",
+        "type": "labelToken",
+        "label": "Saved on this device"
+      },
+      {
+        "id": "portal.eval.draft.never",
+        "type": "labelToken",
+        "label": "Not saved yet"
+      },
+      {
+        "id": "portal.eval.disclosure.heading",
+        "type": "labelToken",
+        "label": "Who sees what you write"
+      },
+      {
+        "id": "portal.eval.disclosure.word",
+        "type": "labelToken",
+        "label": "The word for this is unattributed, not anonymous. The difference is the last point above, and it is real."
+      },
+      {
+        "id": "portal.eval.intro.body",
+        "type": "labelToken",
+        "label": "This is your account of the workshop, and it is yours to keep. Write as much or as little as you like; the parts people find most useful afterwards are the sentences, not the numbers."
+      },
+      {
+        "id": "portal.eval.intro.size",
+        "type": "labelToken",
+        "label": "What is ahead:"
+      },
+      {
+        "id": "portal.eval.intro.size.items",
+        "type": "labelToken",
+        "label": "sessions to rate"
+      },
+      {
+        "id": "portal.eval.intro.size.questions",
+        "type": "labelToken",
+        "label": "questions that need an answer"
+      },
+      {
+        "id": "portal.eval.intro.pace",
+        "type": "labelToken",
+        "label": "It is split into steps, one per day, and it saves as you go. You can stop and come back."
+      },
+      {
+        "id": "portal.eval.group.help",
+        "type": "labelToken",
+        "label": "Your ratings are read alongside the others in your group, so the numbers stay comparable."
+      },
+      {
+        "id": "portal.eval.draft.device-note",
+        "type": "labelToken",
+        "label": "Your answers are held in this browser on this device until you file them. They are not on the server, they do not follow you to another device, and clearing your browser data removes them."
+      },
+      {
+        "id": "portal.eval.day",
+        "type": "labelToken",
+        "label": "Day"
+      },
+      {
+        "id": "portal.eval.item.rate",
+        "type": "labelToken",
+        "label": "How was it?"
+      },
+      {
+        "id": "portal.eval.questions.heading",
+        "type": "labelToken",
+        "label": "And then the whole of it"
+      },
+      {
+        "id": "portal.eval.earlier.have",
+        "type": "labelToken",
+        "label": "Where you answered the same question last time, what you wrote then is shown beside it. It is there to think against, not to repeat."
+      },
+      {
+        "id": "portal.eval.earlier.late",
+        "type": "labelToken",
+        "label": "You were not on the list for the earlier round, so there is nothing from it to show you here. This one stands on its own."
+      },
+      {
+        "id": "portal.eval.earlier.unattached",
+        "type": "labelToken",
+        "label": "Nothing from the earlier round is filed under your account. That round ran on a Google Form which did not collect email addresses, so if you answered it, those answers could not be attached to you and cannot be shown here. They still count in the totals."
+      },
+      {
+        "id": "portal.eval.readback.label",
+        "type": "labelToken",
+        "label": "What you wrote in"
+      },
+      {
+        "id": "portal.eval.readback.rating",
+        "type": "labelToken",
+        "label": "You rated it"
+      },
+      {
+        "id": "portal.eval.question.rate",
+        "type": "labelToken",
+        "label": "Your rating"
+      },
+      {
+        "id": "portal.eval.question.write",
+        "type": "labelToken",
+        "label": "Your answer"
+      },
+      {
+        "id": "portal.eval.closed.empty",
+        "type": "labelToken",
+        "label": "This round has closed and nothing is filed under your account for it."
+      },
+      {
+        "id": "portal.eval.closed.intro",
+        "type": "labelToken",
+        "label": "This round has closed, so it can no longer be changed. What you wrote stays here for you to read whenever you like."
+      },
+      {
+        "id": "portal.eval.done.heading",
+        "type": "labelToken",
+        "label": "That is filed. Thank you."
+      },
+      {
+        "id": "portal.eval.done.body",
+        "type": "labelToken",
+        "label": "Your facilitators read these before they plan the next workshop, and the written answers are the part they argue about. What you said about the afternoons decides how much time the next cohort gets with their translation teams."
+      },
+      {
+        "id": "portal.eval.done.when",
+        "type": "labelToken",
+        "label": "You will hear what changed in the note that goes out before the next workshop opens."
+      },
+      {
+        "id": "portal.eval.done.own",
+        "type": "labelToken",
+        "label": "Read what I wrote"
+      },
+      {
+        "id": "portal.eval.done.portal",
+        "type": "labelToken",
+        "label": "Back to the portal"
+      },
+      {
+        "id": "portal.eval.list.title",
+        "type": "labelToken",
+        "label": "Your workshop evaluations"
+      },
+      {
+        "id": "portal.eval.list.loading",
+        "type": "labelToken",
+        "label": "Loading your evaluations…"
+      },
+      {
+        "id": "portal.eval.list.empty",
+        "type": "labelToken",
+        "label": "You are not in an evaluation round yet. When a workshop you attended opens one, it appears here, and it stays here afterwards so you can read back what you wrote."
+      },
+      {
+        "id": "portal.eval.list.intro",
+        "type": "labelToken",
+        "label": "What you write here is yours to keep. You can come back and read it whenever you like, including after the round has closed."
+      },
+      {
+        "id": "portal.eval.list.state.unfiled",
+        "type": "labelToken",
+        "label": "Not yet filed"
+      },
+      {
+        "id": "portal.eval.list.state.filed",
+        "type": "labelToken",
+        "label": "Filed — you can still change it"
+      },
+      {
+        "id": "portal.eval.list.state.closed",
+        "type": "labelToken",
+        "label": "Closed"
+      },
+      {
+        "id": "portal.eval.list.closes",
+        "type": "labelToken",
+        "label": "Open until"
+      },
+      {
+        "id": "portal.eval.list.closed-on",
+        "type": "labelToken",
+        "label": "Closed on"
+      },
+      {
+        "id": "portal.eval.disclosure.aggregates",
+        "type": "labelToken",
+        "label": "Your facilitators see the ratings added up, and they see them only after the round has closed."
+      },
+      {
+        "id": "portal.eval.disclosure.unattributed",
+        "type": "labelToken",
+        "label": "They see what you write with no name on it, and no way to line your comments up with each other across sessions."
+      },
+      {
+        "id": "portal.eval.disclosure.yours",
+        "type": "labelToken",
+        "label": "Apart from the two people named below, nobody but you can read your own answers, and you can still read them here after the round closes."
+      },
+      {
+        "id": "portal.eval.disclosure.oversight",
+        "type": "labelToken",
+        "label": "The head mentor and the site administrator can see who wrote what. That exists so that something serious written in a comment box reaches someone who can act on it."
+      },
+      {
+        "id": "portal.eval.disclosure.small-n",
+        "type": "labelToken",
+        "label": "Where only a few people rated something, the numbers are withheld rather than published. Even so, on a session only a few people attended, the item itself narrows who could have written a comment, and so does a comment that describes your own situation."
+      },
+      {
+        "id": "portal.eval.disclosure.absence",
+        "type": "labelToken",
+        "label": "\"I wasn't there\" is a real answer and is counted as its own thing. Your facilitators can see how many people gave it, which is why it never becomes a low rating."
+      },
+      {
+        "id": "portal.eval.disclosure.imported",
+        "type": "labelToken",
+        "label": "The earlier round was run on a Google Form. Those answers went to a spreadsheet in Joshua's Drive and he read them there, and he is one of the people being rated. Nothing on this page changes that."
+      },
+      {
+        "id": "portal.field.required",
+        "type": "labelToken",
+        "label": "(required)"
+      },
+      {
+        "id": "portal.eval.nav.file",
+        "type": "labelToken",
+        "label": "File my evaluation"
+      },
+      {
+        "id": "portal.eval.nav.filing",
+        "type": "labelToken",
+        "label": "Filing…"
+      },
+      {
+        "id": "portal.eval.list.cta.fill",
+        "type": "labelToken",
+        "label": "Fill this in"
+      },
+      {
+        "id": "portal.eval.list.cta.revise",
+        "type": "labelToken",
+        "label": "Read or change your answers"
+      },
+      {
+        "id": "portal.eval.list.cta.read",
+        "type": "labelToken",
+        "label": "Read what you wrote"
+      },
+      {
+        "id": "portal.list.evaluations.body",
+        "type": "labelToken",
+        "label": "If you have been to a workshop, this is where you say how it went, and where you can read back what you said."
+      },
+      {
+        "id": "portal.list.evaluations.cta",
+        "type": "labelToken",
+        "label": "Your workshop evaluations"
       }
     ]
   },

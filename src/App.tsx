@@ -34,6 +34,13 @@ const AssignmentPage = lazy(() => import('./pages/backend/AssignmentPage'))
 // `member_page` / `member_block` behind RLS, not from site-content.json, so the
 // route is all that distinguishes one from another.
 const MemberPage = lazy(() => import('./pages/backend/MemberPage'))
+// Spec SITE-02. `/portal/e/:roundKey` carries the STABLE round key
+// (`psalms-bali-2026:w1`) rather than an opaque id: unlike an assignment anchor
+// it names no person, and a participant who bookmarks it or is sent it in a
+// covering email can still open it a year later. The list lives at
+// /portal/evaluations rather than at /portal, which is the member's report list.
+const EvaluationsPage = lazy(() => import('./pages/backend/EvaluationsPage'))
+const EvaluationPage = lazy(() => import('./pages/backend/EvaluationPage'))
 
 function Deferred({ children }: { children: ReactNode }) {
   return <Suspense fallback={<p className="mx-auto max-w-3xl px-5 py-16 text-ink-faint">Loading…</p>}>{children}</Suspense>
@@ -111,6 +118,8 @@ export default function App() {
             <Route path="/portal/r/:reportId" element={<Deferred><PortalReportPage /></Deferred>} />
             <Route path="/portal/assignments" element={<Deferred><AssignmentsPage /></Deferred>} />
             <Route path="/portal/a/:assignmentId" element={<Deferred><AssignmentPage /></Deferred>} />
+            <Route path="/portal/evaluations" element={<Deferred><EvaluationsPage /></Deferred>} />
+            <Route path="/portal/e/:roundKey" element={<Deferred><EvaluationPage /></Deferred>} />
           </>
         )}
         <Route path="*" element={<NotFoundPage />} />
