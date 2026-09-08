@@ -84,10 +84,28 @@ scripts/.site02-fixture-ids.json
 # The scan probe, written and deleted inside one run of --scan.
 scripts/.site02-scan-probe.txt
 
-# Spec SITE-05's shots, added on `main` by SITE-02's build session on 2026-09-04.
-# The entry itself is SITE-05's and exists on branch `site05-psalms-split`, but the
-# DIRECTORY is on disk on main right now, holding signed-in member-page
-# screenshots, and until that branch merges any `git add -A` here would commit
-# them to a public repository. The merge on or after 2026-09-05 will carry the
-# same line; a duplicate is harmless and a conflict is one line to resolve.
+# Spec SITE-05's fixture ids. Every sibling spec ignores its own equivalent;
+# this one was staged by `git add -A` and caught by criterion 18's pre-commit
+# diff scan, because the pattern is per-spec and a new spec adds a new name.
+#
+# The stated reason was "it carries the password", and that is already false:
+# the password is a literal in the tracked `scripts/site05-fixtures.mjs`, as in
+# all five sibling fixture scripts (SITE-05 review note 13). What this file adds
+# is the account IDs and the confirmation that the fixture EXISTS right now.
+#
+# The residual is larger here than for the siblings and is worth naming. This
+# fixture sits on `member_allowlist`, and what a member account can now read is
+# a live cohort's street address and rooming. So a `--setup` left standing is a
+# publicly documented credential against gated participant logistics. Tear the
+# fixture down at the end of every run; `--teardown` counts every table and
+# refuses to claim success while a row survives.
+scripts/.site05-fixture-ids.json
+
+# Spec SITE-05's shots. Criterion 10 photographs the member handbook SIGNED IN
+# at three widths, so every one of these frames a cohort's rooming, meals and
+# base details. Program finding 11: an image is a disclosure channel no text
+# gate can read, and it is the one this spec is most exposed to, because the
+# whole point of the picture is that the gated half rendered. SITE-02's session
+# pre-added this same line on `main` on 2026-09-04, which is the conflict this
+# merge resolved by keeping both blocks.
 feedback/site05-shots/

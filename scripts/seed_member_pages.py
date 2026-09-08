@@ -85,7 +85,20 @@ lets its ids be generated from the heading, so an anchor cannot drift from the
 section it names. A document being MOVED declares every id, because the Psalms
 page's 140 `bali.*` ids are React keys, `data-dfb-node` targets and the DOM-id
 fallback for a section with no anchor, and generating new ones would discard all
-three silently. `block_key` IS the block's own id, never a second string.
+three silently. `block_key` IS the block's own id, never a second string. **The
+modes do not mix**: a document that declares any id and omits one is refused,
+naming the blocks that have none (spec SITE-05 D4).
+
+Three levels, and the third is a table. `##` is a block, `###` is a child, and a
+markdown table under a `###` becomes that child's own `items`, read by header
+name. That is what carries `listItem` under a `list` and `glanceCard` under a
+`glanceGrid`; a `type` column says which, and the column defaults to `cta`.
+
+A key line whose value is exactly `~` **removes** the field. Five of the blocks
+SITE-05 moves carry no `title`, and a heading is what opens a block here, so
+without `~` each would arrive wearing a title its public original never had.
+A field the format cannot express is always a REFUSAL naming the block, the
+field and the value, never a silent drop and never a guess.
 
 ## Writing
 
@@ -232,6 +245,16 @@ def _key_lines(chunk: list[str]) -> tuple[dict, list[str]]:
     return fields, chunk[i:]
 
 
+# A key line whose value is exactly this REMOVES the field rather than setting
+# it. Spec SITE-05 D4: five of the moving blocks carry no `title` at all
+# (`bali.09.general`, `bali.11.official`, `bali.03.map`, `bali.14.signup`,
+# `bali.16.laundry.links`), and a heading is what opens a block here, so without
+# this every one of them would arrive on the member page wearing a title the
+# public page never showed. That is a field-level change to a MOVED document,
+# which is the one thing a move may not do.
+FIELD_UNSET = "~"
+
+
 def _body_of(lines: list[str]) -> str:
     """Paragraphs, blank-line separated, with trailing whitespace dropped."""
     text = "\n".join(lines).strip()
@@ -277,7 +300,11 @@ def _split_table(lines: list[str], path: Path) -> tuple[list[str], list[dict] | 
                     f"{path}: a table row has {len(cells)} cells and its header has "
                     f"{len(header)}"
                 )
-            row = {k: v.replace("\\|", "|") for k, v in zip(header, cells) if v}
+            row = {
+                k: v.replace("\\|", "|")
+                for k, v in zip(header, cells)
+                if v and v != FIELD_UNSET
+            }
             if not row.get("id"):
                 raise SeedError(
                     f"{path}: a table row has no `id`. The renderer keys its cards on "
@@ -321,6 +348,7 @@ def parse_blocks(doc_body: str, route: str, path: Path) -> tuple[list[dict], boo
     prefix = _slug(route.strip("/")) or "member"
     blocks: list[dict] = []
     declared = False
+    generated: list[str] = []
     counter = 0
 
     for level, heading, chunk in sections:
@@ -331,17 +359,42 @@ def parse_blocks(doc_body: str, route: str, path: Path) -> tuple[list[dict], boo
             continue  # no preamble
 
         counter += 1
+        # `~` unsets a field, and there are exactly two fields it may NOT unset.
+        # Spec SITE-05's review finding 6: both keys are read below, BEFORE the
+        # unset loop runs, so `id: ~` was accepted as the literal string "~" and
+        # became a `block_key`, and `type: ~` was accepted and renders nothing.
+        for reserved in ("id", "type"):
+            if fields.get(reserved) == FIELD_UNSET:
+                raise SeedError(
+                    f"{path}: `{reserved}: {FIELD_UNSET}` under {heading or '(preamble)'!r}. "
+                    f"`{FIELD_UNSET}` removes an OPTIONAL field; `{reserved}` is not one. "
+                    "Every block needs a type, and a block needs either a declared id or "
+                    "none at all so its id can be generated."
+                )
         if "id" in fields:
             declared = True
-            block_id = fields.pop("id")
+            block_id = fields.pop("id").strip()
+            if not block_id:
+                # `id:` with only whitespace after it parsed as an empty string
+                # with `declared=True` and nothing in `generated`, so the D4
+                # refusal below could never fire and `block_key` became ''.
+                raise SeedError(
+                    f"{path}: an empty `id:` under {heading or '(preamble)'!r}. That is a "
+                    "MISSING id, not a declared one: it would become an empty block_key. "
+                    "Give the block its id, or delete the line and let it be generated."
+                )
         else:
             base = _slug(heading) if heading else "intro"
             block_id = f"{prefix}.{counter:02d}.{base}"
+            generated.append(f"{heading or '(preamble)'} -> {block_id}")
 
         block: dict = {"id": block_id, "type": fields.pop("type", "prose")}
         if heading:
             block["title"] = heading
         for key, value in fields.items():
+            if value == FIELD_UNSET:
+                block.pop(key, None)
+                continue
             block[key] = int(value) if key in INT_FIELDS else value
         if body:
             block["body"] = body
@@ -358,7 +411,20 @@ def parse_blocks(doc_body: str, route: str, path: Path) -> tuple[list[dict], boo
             blocks.append(block)
 
     # Mixed modes would give one document two id namespaces, which is how an
-    # anchor and the section it names come apart.
+    # anchor and the section it names come apart. Spec SITE-05 D4 makes this a
+    # REFUSAL rather than a comment: a document being moved declares every id,
+    # because the ids it is moving are React keys, `data-dfb-node` targets and
+    # the DOM-id fallback for a section with no anchor (finding 3). One block
+    # left undeclared in such a document gets a generated `psalms-bali-2026.07.x`
+    # id, renders fine, and quietly breaks all three.
+    if declared and generated:
+        listing = "\n".join(f"      {g}" for g in generated[:10])
+        raise SeedError(
+            f"{path}: this document DECLARES block ids, and {len(generated)} block(s) "
+            f"do not:\n{listing}\n"
+            "    A moved document declares every id or none. Add `id:` to each, or "
+            "remove the declared ones and let all of them be generated from headings."
+        )
     ids_seen: set[str] = set()
 
     def walk(bs: list[dict]) -> None:
@@ -520,21 +586,65 @@ def check_sentinels(files: dict[str, Path]) -> dict[str, str]:
 # ---------------------------------------------------------------------------
 
 def substantial_lines(doc: MemberDoc) -> list[str]:
-    """Lines distinctive enough that finding one in the repo means a leak."""
+    """Strings distinctive enough that finding one in the repo means a leak.
+
+    ## Table cells are lines, and this is spec SITE-05's review finding 2
+
+    The first version skipped any line starting with `|`. Measured on the Psalms
+    member document, that skipped **49 table rows and 4,700 characters**, and
+    those rows are where the street address, the rooming rows, the meal times
+    and the laundry prices live: precisely the facts a member document exists to
+    gate. The gate was checking 36 of 207 body lines and reporting a pass.
+
+    The consequence was not theoretical. Had SITE-05's removal commit left the
+    `bali.03.venue` grid behind, this gate would NOT have refused, and the build
+    would have reported the ordering rule working while the address stayed
+    public. So a table row is split on `|` and every substantial cell is checked
+    on its own.
+
+    ## Both forms of every line, because markdown survives a paste into JSON
+
+    The first version stripped `*_`[]` and matched only the stripped form, while
+    `site-content.json` keeps the markdown. So a moved paragraph whose only
+    offence was `**Bring your own blanket.**` was invisible to the gate. Both
+    forms are returned now: the raw line, which is what a paste into JSON looks
+    like, and the stripped one, which is what a paste into a `.tsx` string or a
+    prose document looks like. A leak in either shape is a leak.
+    """
     out: list[str] = []
+    seen: set[str] = set()
+
+    def consider(text: str) -> None:
+        text = text.strip()
+        if not text or doc.sentinel in text:
+            return
+        if len(text) < SUBSTANTIAL_MIN_CHARS or len(text.split()) < SUBSTANTIAL_MIN_WORDS:
+            return
+        if text not in seen:
+            seen.add(text)
+            out.append(text)
+
     for raw in doc.body.split("\n"):
         line = raw.strip()
-        if not line or line.startswith(("#", ">", "---", "|")):
+        if not line or line.startswith(("#", ">", "---")):
             continue
-        # Strip the markdown that a paste into JSON would not carry anyway.
-        plain = re.sub(r"[*_`\[\]]", "", line)
-        plain = re.sub(r"^\s*[-+*]\s+", "", plain)
-        plain = re.sub(r"^[A-Za-z][A-Za-z0-9_]*:\s+", "", plain)  # a key line
-        plain = plain.strip()
-        if doc.sentinel in plain:
+        if line.startswith("|"):
+            # A separator row carries no content; every other cell is a string
+            # somebody could have pasted into the repo.
+            cells = [c.strip() for c in line.strip("|").split("|")]
+            if all(set(c) <= set("-: ") for c in cells if c):
+                continue
+            for cell in cells:
+                consider(cell)
+                consider(re.sub(r"[*_`\[\]]", "", cell))
             continue
-        if len(plain) >= SUBSTANTIAL_MIN_CHARS and len(plain.split()) >= SUBSTANTIAL_MIN_WORDS:
-            out.append(plain)
+        stripped = re.sub(r"[*_`\[\]]", "", line)
+        stripped = re.sub(r"^\s*[-+*]\s+", "", stripped)
+        stripped = re.sub(r"^[A-Za-z][A-Za-z0-9_]*:\s+", "", stripped)
+        bare = re.sub(r"^\s*[-+*]\s+", "", line)
+        bare = re.sub(r"^[A-Za-z][A-Za-z0-9_]*:\s+", "", bare)
+        consider(bare)
+        consider(stripped)
     return out
 
 
