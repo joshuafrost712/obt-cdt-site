@@ -1,0 +1,72 @@
+{
+  "_": "Written by scripts/build_eval_nodes.py --apply. Do not hand-edit: it is what `--check` compares against wherever the vault contract is not on the machine, which is every CI run.",
+  "contract": "/Users/joshfrost/Documents/Josh & Katie Vault/Claude Can Access PARA/Projects/OBT/OBT Consultant Track/Psalms (Bali 2026)/Evaluation/Question-Set.md",
+  "contract_sha256": "93aea577a1bbabe9b0d3b374c26782af5b45475d40da2f887a667f0b42e5dd2e",
+  "nodes": [
+    {
+      "id": "portal.eval.scale.1",
+      "type": "labelToken",
+      "label": "Well below average"
+    },
+    {
+      "id": "portal.eval.scale.2",
+      "type": "labelToken",
+      "label": "Somewhat below average"
+    },
+    {
+      "id": "portal.eval.scale.3",
+      "type": "labelToken",
+      "label": "About average"
+    },
+    {
+      "id": "portal.eval.scale.4",
+      "type": "labelToken",
+      "label": "Somewhat above average"
+    },
+    {
+      "id": "portal.eval.scale.5",
+      "type": "labelToken",
+      "label": "Well above average"
+    },
+    {
+      "id": "portal.eval.scale.absent",
+      "type": "labelToken",
+      "label": "I wasn't there"
+    },
+    {
+      "id": "portal.eval.scale.note",
+      "type": "labelToken",
+      "label": "Average means about what you would expect from a good session in this series, not the middle of a scale of quality. A 3 is not a complaint."
+    },
+    {
+      "id": "portal.eval.prompt.ceremony",
+      "type": "labelToken",
+      "label": "Anything you want to say about it?"
+    },
+    {
+      "id": "portal.eval.prompt.devotional",
+      "type": "labelToken",
+      "label": "Anything you want to say about this one? What you took from it, whether it prepared you for the day's work, anything you didn't like or would want different."
+    },
+    {
+      "id": "portal.eval.prompt.practicum",
+      "type": "labelToken",
+      "label": "Anything you want to say about this afternoon? What you learned by doing it, what worked with your team, anything you didn't like or would want different."
+    },
+    {
+      "id": "portal.eval.prompt.session",
+      "type": "labelToken",
+      "label": "Anything you want to say about this one? What you took from it, what worked, anything you didn't like or would want different."
+    },
+    {
+      "id": "portal.eval.prompt.workblock",
+      "type": "labelToken",
+      "label": "Was this enough time, and did you have what you needed? Anything you would change about how it was set up."
+    },
+    {
+      "id": "portal.eval.group.prompt",
+      "type": "labelToken",
+      "label": "Which of these describes your part in the workshop? Your answer decides which group your ratings are read with, so the numbers stay comparable."
+    }
+  ]
+}

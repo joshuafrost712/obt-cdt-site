@@ -38,16 +38,43 @@ that reformats it makes the next one refuse. `json.dumps(..., indent=2,
 ensure_ascii=False)` plus a trailing newline reproduces the file byte for byte,
 and this asserts that BEFORE it edits anything rather than discovering it in a
 diff of 8,000 lines.
+
+## `--check` has two modes, and it always says which one it ran
+
+The contract is a document in Joshua's private vault. This script is in
+`npm run build`, and `npm run build` runs in GitHub Actions, where that document
+does not exist and never will. The first version read the path unconditionally
+and died on `FileNotFoundError`, which broke every deploy from 2026-09-07 until
+it was found on 09-08 — locally green, on the runner red, in the one gate whose
+whole purpose is to notice that two things disagree.
+
+Passing when the contract is absent is not the fix: a check that reports success
+over an input it could not read is this campaign's signature defect, and the
+absent input here is the entire population. So `--apply` also writes
+`scripts/eval-nodes.lock.json`, holding the nodes it generated and the sha256 of
+the contract they came from, and `--check` compares against whichever it has:
+
+  * contract present  — parse it, regenerate, compare `site-content.json`, AND
+    assert the lock still matches the contract, so the lock cannot go stale
+    unnoticed on the machine that owns it.
+  * contract absent   — compare `site-content.json` against the lock, name the
+    contract digest the lock was cut from, and say plainly that the contract
+    itself was not read.
+
+A real drift turns both modes red. A missing lock is a failure and not a skip,
+because that is the state in which there is nothing to check.
 """
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
 CONTENT = REPO / "src/content/site-content.json"
+LOCK = REPO / "scripts/eval-nodes.lock.json"
 
 sys.path.insert(0, str(REPO / "scripts"))
 from build_evaluation_form import (  # noqa: E402
@@ -81,6 +108,44 @@ def generated_nodes(qs: dict) -> list[dict]:
 
 def owned_ids(nodes: list[dict]) -> set[str]:
     return {n["id"] for n in nodes}
+
+
+def contract_digest(text: str) -> str:
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+
+def write_lock(nodes: list[dict], path: Path, digest: str) -> None:
+    """The record CI checks against, because CI cannot read the contract."""
+    payload = {
+        "_": "Written by scripts/build_eval_nodes.py --apply. Do not hand-edit: "
+             "it is what `--check` compares against wherever the vault contract "
+             "is not on the machine, which is every CI run.",
+        "contract": str(path),
+        "contract_sha256": digest,
+        "nodes": nodes,
+    }
+    LOCK.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+
+
+def read_lock() -> dict:
+    if not LOCK.exists():
+        raise SystemExit(
+            f"REFUSED: {LOCK.relative_to(REPO)} is missing, and without the vault "
+            "contract there is nothing to check the eval nodes against.\n"
+            "On a machine with the vault: python3 scripts/build_eval_nodes.py --apply"
+        )
+    return json.loads(LOCK.read_text(encoding="utf-8"))
+
+
+def report_drift(changed: list[str], added: list[str], against: str, fix: str) -> int:
+    print(
+        f"site-content.json has drifted from {against}:\n"
+        + "".join(f"  changed  {i}\n" for i in changed)
+        + "".join(f"  missing  {i}\n" for i in added)
+        + f"\n{fix}",
+        file=sys.stderr,
+    )
+    return 1
 
 
 def load_content() -> tuple[dict, str]:
@@ -140,11 +205,46 @@ def main() -> int:
 
     path = Path(args.question_set) if args.question_set else default_question_set()
     try:
-        qs = parse_question_set(path.read_text(encoding="utf-8"), str(path))
+        text = path.read_text(encoding="utf-8")
+    except FileNotFoundError:
+        # The contract lives in the vault and this script runs in CI. Only
+        # --check has an answer without it; --print and --apply need the source.
+        if not args.check:
+            print(
+                f"the contract is not on this machine: {path}\n"
+                "--print and --apply need it. Set OBT_CDT_VAULT or pass "
+                "--question-set. Only --check can run without it, against "
+                f"{LOCK.relative_to(REPO)}.",
+                file=sys.stderr,
+            )
+            return 1
+        lock = read_lock()
+        nodes = lock["nodes"]
+        data, raw = load_content()
+        assert_round_trip(data, raw)
+        _, changed, added = merge(data, nodes)
+        if changed or added:
+            return report_drift(
+                changed,
+                added,
+                f"{LOCK.name} (cut from {Path(lock['contract']).name} "
+                f"@ {lock['contract_sha256'][:16]})",
+                "On a machine with the vault: python3 scripts/build_eval_nodes.py --apply",
+            )
+        print(
+            f"build_eval_nodes: {len(nodes)} node(s) match {LOCK.name}, cut from "
+            f"{Path(lock['contract']).name} @ {lock['contract_sha256'][:16]}. "
+            "The contract itself was NOT read; it is not on this machine."
+        )
+        return 0
+
+    try:
+        qs = parse_question_set(text, str(path))
     except ContractError as e:
         print(f"the contract refused: {e}", file=sys.stderr)
         return 1
 
+    digest = contract_digest(text)
     nodes = generated_nodes(qs)
     data, raw = load_content()
     assert_round_trip(data, raw)
@@ -163,21 +263,31 @@ def main() -> int:
 
     if args.check:
         if changed or added:
+            return report_drift(
+                changed, added, path.name,
+                "Re-run: python3 scripts/build_eval_nodes.py --apply",
+            )
+        # The lock is what CI checks against, so a stale lock is a gate that
+        # has stopped watching. Only the machine holding the contract can see it.
+        lock = read_lock()
+        if lock["nodes"] != nodes or lock["contract_sha256"] != digest:
             print(
-                "site-content.json has drifted from Question-Set.md:\n"
-                + "".join(f"  changed  {i}\n" for i in changed)
-                + "".join(f"  missing  {i}\n" for i in added)
-                + "\nRe-run: python3 scripts/build_eval_nodes.py --apply",
+                f"{LOCK.relative_to(REPO)} is stale: it no longer matches "
+                f"{path.name}. site-content.json is correct, so CI is checking "
+                "against an out-of-date record.\n"
+                "Re-run: python3 scripts/build_eval_nodes.py --apply",
                 file=sys.stderr,
             )
             return 1
-        print(f"build_eval_nodes: {len(nodes)} node(s) match {path.name}")
+        print(f"build_eval_nodes: {len(nodes)} node(s) match {path.name}, and {LOCK.name} is current")
         return 0
 
     CONTENT.write_text(dump(data), encoding="utf-8")
+    write_lock(nodes, path, digest)
     print(f"wrote {len(nodes)} node(s): {len(changed)} changed, {len(added)} added")
     for i in changed + added:
         print(f"  {i}")
+    print(f"wrote {LOCK.relative_to(REPO)} @ contract {digest[:16]}")
     return 0
 
 
