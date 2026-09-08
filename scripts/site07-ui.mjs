@@ -112,8 +112,15 @@ function startServer() {
 }
 
 const content = JSON.parse(readFileSync(CONTENT, 'utf8'))
-const badgeLabel =
-  content.site.items.find((i) => i.id === 'site.badge.complete')?.label ?? 'Completed'
+// No `?? 'Completed'` fallback. A default would mask a deleted node and turn
+// criterion 10's label assertion into a comparison of a literal with itself —
+// the check would go on passing with the node gone. Stage-6 note 2.
+const badgeLabel = content.site.items.find((i) => i.id === 'site.badge.complete')?.label
+if (!badgeLabel) {
+  console.error('REFUSED: site.badge.complete is not a node in site-content.json.')
+  console.error('Criterion 10 asserts the badge renders THAT label; without it there is nothing to assert.')
+  process.exit(2)
+}
 
 /** One full pass of every criterion. Mutates nothing, so it is safe to repeat. */
 async function pass(browser, label) {
@@ -159,15 +166,96 @@ async function pass(browser, label) {
       )
     }
 
-    // no element on the page invites registration for THIS workshop
-    const invites = await page.evaluate(() => {
-      const bad = /fully booked|register now|places? (are )?(still )?available|sign up for this workshop|book your place/i
-      return [...document.querySelectorAll('body *')]
-        .filter((e) => e.children.length === 0 && bad.test(e.textContent))
-        .map((e) => e.textContent.trim().slice(0, 120))
+    // Criterion 11's absence half, and its first draft could only ever detect a
+    // regression of what this very build removed: the pattern was five literal
+    // phrases, four of which had just been deleted. That is tracker finding 38 —
+    // a discriminator that is a property of the fixture rather than of the
+    // system. The three checks below are properties of the system.
+    //
+    // (a) The status vocabulary, read from the site's OWN badge nodes rather
+    //     than typed here. Whatever the other statuses are called, none of them
+    //     may render AS A BADGE on a completed workshop's page.
+    //
+    //     Scoped to what StatusBadge renders, not to every leaf. The first
+    //     version scanned all text and went red on `psalms.cta`'s "being
+    //     planned for late 2026 or early 2027" — the words that make up the
+    //     `site.badge.planned` label, used as ordinary prose about a different
+    //     workshop. A status label is a badge; the same words in a sentence are
+    //     a sentence. Comparing a rendered BADGE against the site's own status
+    //     vocabulary stays a property of the system either way.
+    const statusLabels = Object.fromEntries(
+      content.site.items
+        .filter((i) => i.id?.startsWith('site.badge.'))
+        .map((i) => [i.id, i.label]),
+    )
+    const otherStatusLabels = Object.entries(statusLabels)
+      .filter(([id]) => id !== 'site.badge.complete')
+      .map(([, label]) => label)
+    const rendered = await page.evaluate(() =>
+      [...document.querySelectorAll('[class*="rounded-full"]')]
+        .filter(
+          (e) =>
+            e.children.length === 0 &&
+            /uppercase/.test(e.className) &&
+            /tracking-wide/.test(e.className),
+        )
+        .map((e) => e.textContent.trim()),
+    )
+    note(`status vocabulary, from site.badge.*: ${JSON.stringify(statusLabels)}`)
+    note(`badge-shaped elements rendered: ${JSON.stringify(rendered)}`)
+    // The population must be non-empty or this proves nothing.
+    check(11, `[${width}px] at least one badge-shaped element renders`, rendered.length > 0, true)
+    const staleBadges = rendered.filter((t) =>
+      otherStatusLabels.some((l) => t.toLowerCase() === l.toLowerCase()),
+    )
+    for (const t of staleBadges) note(`stale status badge: ${t}`)
+    check(11, `[${width}px] no other status label renders as a badge`, staleBadges.length, 0)
+
+    // (b) Every call to action on the page, enumerated. None may target THIS
+    //     workshop; the only ones allowed are psalms.cta's, which point at the
+    //     series and at expressing interest in a workshop still to come.
+    const ctas = await page.evaluate(() =>
+      [...document.querySelectorAll('a[href^="mailto:"], a[href*="/workshops/"]')].map((a) => ({
+        href: a.getAttribute('href'),
+        text: a.textContent.trim().slice(0, 60),
+      })),
+    )
+    for (const c of ctas) note(`cta: ${c.href}  "${c.text}"`)
+    const selfTargeting = ctas.filter((c) => /psalms-bali-2026/.test(c.href))
+    check(11, `[${width}px] no call to action targets the Psalms workshop itself`, selfTargeting.length, 0)
+
+    // (c) Second-person future tense, by TENSE and not by phrase, in the two
+    //     zones where the page speaks in its own voice about the workshop's
+    //     status: everything before the first handbook section and everything
+    //     after the last. The handbook sections themselves are the document the
+    //     participants worked from and are knowingly EXEMPT — but the exempt
+    //     population is counted and printed, because an exemption nobody can
+    //     see is indistinguishable from a gap. The past-tense pass over the
+    //     handbook body is the retrospective content round, tracker open item 12.
+    const tense = await page.evaluate(() => {
+      const future = /\byou will\b|\byou'll\b|\bwill be able to\b|\bbefore you arrive\b|\byou are going to\b/i
+      const sections = [...document.querySelectorAll('[data-hb-section]')]
+      const inSection = (el) => sections.some((s) => s.contains(el))
+      const leaves = [...document.querySelectorAll('body *')].filter((e) => e.children.length === 0)
+      const hits = leaves.filter((e) => future.test(e.textContent))
+      return {
+        statusZones: hits.filter((e) => !inSection(e)).map((e) => e.textContent.trim().slice(0, 110)),
+        exemptCount: hits.filter((e) => inSection(e)).length,
+        sectionCount: sections.length,
+      }
     })
-    for (const t of invites) note(`registration-shaped text: ${t}`)
-    check(11, `[${width}px] no element invites registration for the Psalms workshop`, invites.length, 0)
+    note(
+      `second-person future: ${tense.exemptCount} match(es) inside ${tense.sectionCount} handbook ` +
+        'section(s), knowingly exempt (tracker open item 12, the retrospective round)',
+    )
+    for (const t of tense.statusZones) note(`future tense in a status zone: ${t}`)
+    check(11, `[${width}px] no second-person future tense outside the handbook sections`, tense.statusZones.length, 0)
+    check(
+      11,
+      `[${width}px] the exempt population is non-empty, so the exemption is real and not vacuous`,
+      tense.sectionCount > 0,
+      true,
+    )
 
     await page.close()
   }

@@ -24,6 +24,7 @@
  */
 import fs from 'node:fs'
 import path from 'node:path'
+import { execFileSync } from 'node:child_process'
 
 const REPO = path.resolve(import.meta.dirname, '..')
 const DIST = path.join(REPO, 'dist')
@@ -33,6 +34,10 @@ const INDEX = path.join(DIST, 'workshops/index.html')
 
 const OLD_NAME = 'Legal Texts in the Torah'
 const NEW_NAME = 'Legal and Cultic Texts in the Torah'
+
+const CONTENT_PATH = path.join(REPO, 'src/content/site-content.json')
+const contentText = fs.readFileSync(CONTENT_PATH, 'utf8')
+const content = JSON.parse(contentText)
 
 let failures = 0
 let checks = 0
@@ -104,6 +109,14 @@ const badges = (indexHtml.match(/bg-brand-soft text-brand/g) ?? []).length
 const rawCompleted = countPhrase(indexHtml, 'completed')
 console.log(`        raw case-insensitive "completed" count, printed and NOT asserted: ${rawCompleted}`)
 console.log('        (it moves with prose wording; the badge pill class is the stable discriminator)')
+// Three, because three of the five workshops in the series are finished. When a
+// fourth finishes this goes red, and the fix is to change the 3 — not to widen
+// the check. Recurring class 1: a frozen number is only safe when the file says
+// what to do on the day it disagrees.
+const COMPLETED_WORKSHOPS = content.workshops.filter(
+  (w) => w.facts?.status === 'complete' && w.access !== 'member',
+).length
+assertEq('completed workshops in the content file', badges, COMPLETED_WORKSHOPS)
 assertEq('completed badge pills on dist/workshops/index.html', badges, 3)
 
 // the badge on the Psalms page's own hero
@@ -127,20 +140,40 @@ const IN_SCOPE_VAULT = [
   'Projects/OBT/OBT Consultant Track/OBT Consultant Track Dashboard.md',
   'Projects/OBT/OBT Consultant Track/OBTCDT - Overview of the Role of Workshops.md',
 ]
-const HELD_BACK_VAULT = [
-  'Projects/OBT/OBT Consultant Track/Curriculum planning summit/OBT-CDT Initiative Description.md',
-  'Projects/OBT/OBT Consultant Track/Curriculum planning summit/Workshop Philosophy and Competency Distribution FINAL.md',
-  'Projects/Grant Search/initiative-brief.md',
-]
+/**
+ * The held-back set is DISCOVERED, never listed. D0 baseline 3 required the
+ * population "from the grep and not from a hand list", and the first version of
+ * this file hard-coded three paths — so it could not have found the SIXTH file
+ * the stage-6 review turned up, a funder-facing grant case under
+ * `Projects/Claude Access/`, invisible to the shell's `grep` because that is a
+ * ugrep function honouring `.gitignore`, which covers that folder. Two greps,
+ * two different answers, and the criterion had been written against the smaller.
+ *
+ * So: /usr/bin/grep, explicitly, and anything it finds that this spec did not
+ * edit is reported for triage rather than assumed to be one of the three.
+ */
+function discoverVaultHits() {
+  if (!fs.existsSync(VAULT)) return null
+  try {
+    const out = execFileSync(
+      '/usr/bin/grep',
+      ['-rl', '--include=*.md', '--exclude-dir=.claude', OLD_NAME, '.'],
+      { cwd: VAULT, encoding: 'utf8', maxBuffer: 8 << 20 },
+    )
+    return out.split('\n').filter(Boolean).map((s) => s.replace(/^\.\//, ''))
+  } catch (e) {
+    if (e.status === 1) return [] // grep exits 1 on no match, which is the good case
+    throw e
+  }
+}
+
 let vaultReachable = true
 for (const rel of IN_SCOPE_VAULT) {
   const p = path.join(VAULT, rel)
   if (fs.existsSync(p)) owned.push(p)
   else vaultReachable = false
 }
-if (!vaultReachable) {
-  bad('the two in-scope vault files are reachable', `VAULT=${VAULT}`)
-}
+if (!vaultReachable) bad('the two in-scope vault files are reachable', `VAULT=${VAULT}`)
 
 if (owned.length === 0) bad('criterion 4 population is non-empty')
 else ok('criterion 4 population is non-empty', `${owned.length} file(s)`)
@@ -151,25 +184,45 @@ for (const f of owned) {
   const n = countPhrase(text, OLD_NAME)
   if (n > 0) hits.push([path.relative(REPO, f), n])
 }
-console.log(`        searched ${owned.length} file(s): ${walkCount(DIST)} under dist/, 3 in the repo, ${IN_SCOPE_VAULT.length} in the vault`)
-console.log('        knowingly EXCLUDED, per decision 7 and open item 2, and not searched:')
-for (const rel of HELD_BACK_VAULT) console.log(`          ${rel}`)
-console.log('        also excluded: .claude/worktrees/, two gitignored detached git worktrees')
-console.log('          at an older commit. They are harness scratch, not vault content, and')
-console.log('          only /usr/bin/grep sees them: the shell `grep` here is a ugrep function')
-console.log('          that respects ignore files, so the two tools report different populations.')
+const vaultSearched = vaultReachable ? IN_SCOPE_VAULT.length : 0
+console.log(
+  `        searched ${owned.length} file(s): ${walkCount(DIST)} under dist/, 3 in the repo, ` +
+    `${vaultSearched} in the vault${vaultReachable ? '' : ' (VAULT UNREACHABLE, so zero)'}`,
+)
 for (const [rel, n] of hits) console.log(`        HIT  ${rel}  ×${n}`)
 assertEq(`files still carrying "${OLD_NAME}"`, hits.length, 0)
+
+// The held-back population, discovered and printed, never assumed.
+console.log('\n        the vault files still carrying the old name, DISCOVERED with /usr/bin/grep:')
+const discovered = discoverVaultHits()
+if (discovered === null) {
+  bad('the vault is reachable for the held-back sweep', `VAULT=${VAULT}`)
+} else {
+  const spec = discovered.filter((f) => f.includes('Site and Feedback Specs'))
+  const real = discovered.filter((f) => !f.includes('Site and Feedback Specs'))
+  for (const f of real) console.log(`          HELD BACK  ${f}`)
+  for (const f of spec) console.log(`          (this spec's own documents, which quote the old name)  ${f}`)
+  console.log(
+    `        ${real.length} document(s) held back for Joshua's decision, per decision 7 and\n` +
+      '        tracker open item 11. Each is circulated or funder-facing; renaming inside one\n' +
+      '        is a different act from correcting a live tracker.',
+  )
+  if (real.length === 0) bad('the held-back population is non-empty', 'nothing to triage means the grep found nothing at all')
+  else ok('the held-back population is discovered and non-empty', `${real.length} file(s)`)
+}
 
 // --------------------------------------------------------------------------
 // criterion 5: the new name appears in exactly the expected population
 // --------------------------------------------------------------------------
 console.log('\ncriterion 5  the new name appears in exactly the expected population')
-const contentText = fs.readFileSync(path.join(REPO, 'src/content/site-content.json'), 'utf8')
 const newCount = countPhrase(contentText, NEW_NAME)
-const BASELINE = 4 // D0 baseline 2, re-measured in session
+// D0 baseline 2, re-measured in session on 2026-09-08. It is a frozen number:
+// four site strings named the workshop before this spec, and psalms.cta makes
+// five. If a later spec adds a sixth mention this goes red, and the fix is to
+// re-measure the baseline and say so in the build record — not to relax the
+// assertion to `>=`, which is what would make it stop checking.
+const BASELINE = 4
 console.log(`        D0 baseline 2 = ${BASELINE}; the +1 is psalms.cta, which D4 requires`)
-const content = JSON.parse(contentText)
 const psalmsWorkshop = content.workshops.find((w) => w.id === 'psalms-bali-2026')
 const ctaBlock = psalmsWorkshop.blocks.find((b) => b.id === 'psalms.cta')
 if (ctaBlock && ctaBlock.body.includes(NEW_NAME)) ok('psalms.cta carries the full new name')

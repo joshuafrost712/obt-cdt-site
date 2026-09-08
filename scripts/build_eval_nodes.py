@@ -44,9 +44,10 @@ diff of 8,000 lines.
 The contract is a document in Joshua's private vault. This script is in
 `npm run build`, and `npm run build` runs in GitHub Actions, where that document
 does not exist and never will. The first version read the path unconditionally
-and died on `FileNotFoundError`, which broke every deploy from 2026-09-07 until
-it was found on 09-08 — locally green, on the runner red, in the one gate whose
-whole purpose is to notice that two things disagree.
+and died on `FileNotFoundError`, which broke every deploy from 2026-09-04, the
+day the line entered `npm run build` in 4c72f5b, until it was found on 09-08 —
+locally green, on the runner red, in the one gate whose whole purpose is to
+notice that two things disagree.
 
 Passing when the contract is absent is not the fix: a check that reports success
 over an input it could not read is this campaign's signature defect, and the
@@ -63,6 +64,21 @@ the contract they came from, and `--check` compares against whichever it has:
 
 A real drift turns both modes red. A missing lock is a failure and not a skip,
 because that is the state in which there is nothing to check.
+
+## The lock's population is asserted in BOTH directions, and zero is a refusal
+
+The stage-6 review of 2026-09-08 found the vacuous pass this file's own docstring
+had ruled out one paragraph earlier. An EMPTY `nodes` array is the same state as
+a missing lock — nothing to check — and it passed, because `merge()` over no
+nodes reports no drift. `[].every()` is true; this campaign has now shipped that
+shape four times.
+
+Two rules close it, and the second is the one the first version missed entirely.
+The lock must be NON-EMPTY, checked before it is used. And the comparison runs
+BOTH WAYS: `merge()` only asks whether every locked node is in the file, so a
+lock that OMITS an id the file still carries is invisible to it. `--check` now
+also asserts the lock accounts for every `portal.eval.*` id under this script's
+own prefixes, so dropping an id from the lock cannot quietly narrow the gate.
 """
 from __future__ import annotations
 
@@ -134,7 +150,54 @@ def read_lock() -> dict:
             "contract there is nothing to check the eval nodes against.\n"
             "On a machine with the vault: python3 scripts/build_eval_nodes.py --apply"
         )
-    return json.loads(LOCK.read_text(encoding="utf-8"))
+    lock = json.loads(LOCK.read_text(encoding="utf-8"))
+    # An empty population is the same state as a missing lock, and it used to
+    # pass. Stage-6 review, 2026-09-08.
+    if not lock.get("nodes"):
+        raise SystemExit(
+            f"REFUSED: {LOCK.relative_to(REPO)} holds no nodes. An empty lock is "
+            "the state this check exists to refuse, not a check that found "
+            "nothing wrong.\n"
+            "On a machine with the vault: python3 scripts/build_eval_nodes.py --apply"
+        )
+    if not lock.get("contract_sha256"):
+        raise SystemExit(f"REFUSED: {LOCK.relative_to(REPO)} names no contract digest.")
+    return lock
+
+
+def is_owned_id(node_id: str) -> bool:
+    """The namespace this script generates, which is NOT the whole `portal.eval.`
+    prefix. Most `portal.eval.*` nodes are SITE-02's own hand-written copy, which
+    the docstring above says this script leaves alone: there are 77 nodes under
+    the prefix and 13 of them are generated. The first version of the coverage
+    check used the bare prefix and refused every build, which is the cheapest
+    possible way to learn that an ownership boundary has to be stated, not
+    guessed from a common ancestor."""
+    return (
+        node_id.startswith(f"{PREFIX}scale.")
+        or node_id.startswith(f"{PREFIX}prompt.")
+        or node_id == f"{PREFIX}group.prompt"
+    )
+
+
+def assert_lock_covers_file(nodes: list[dict], data: dict) -> None:
+    """Both directions. `merge()` asks whether every locked node is in the file;
+    this asks whether every owned id in the file is in the lock, so an id
+    dropped from the lock cannot silently narrow what is checked."""
+    locked = owned_ids(nodes)
+    in_file = {
+        item["id"]
+        for item in data["site"]["items"]
+        if isinstance(item.get("id"), str) and is_owned_id(item["id"])
+    }
+    missing = sorted(in_file - locked)
+    if missing:
+        raise SystemExit(
+            f"REFUSED: {len(missing)} node id(s) under {PREFIX!r} are in "
+            "site-content.json and absent from the lock, so nothing checks them:\n"
+            + "".join(f"  {i}\n" for i in missing)
+            + "On a machine with the vault: python3 scripts/build_eval_nodes.py --apply"
+        )
 
 
 def report_drift(changed: list[str], added: list[str], against: str, fix: str) -> int:
@@ -222,6 +285,7 @@ def main() -> int:
         nodes = lock["nodes"]
         data, raw = load_content()
         assert_round_trip(data, raw)
+        assert_lock_covers_file(nodes, data)
         _, changed, added = merge(data, nodes)
         if changed or added:
             return report_drift(
@@ -270,6 +334,7 @@ def main() -> int:
         # The lock is what CI checks against, so a stale lock is a gate that
         # has stopped watching. Only the machine holding the contract can see it.
         lock = read_lock()
+        assert_lock_covers_file(lock["nodes"], data)
         if lock["nodes"] != nodes or lock["contract_sha256"] != digest:
             print(
                 f"{LOCK.relative_to(REPO)} is stale: it no longer matches "
