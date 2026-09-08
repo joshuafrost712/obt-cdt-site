@@ -1377,7 +1377,7 @@
               "type": "statCallout",
               "value": "5",
               "label": "genre-based workshops anchor the series",
-              "note": "Narrative, Epistles, Psalms, Legal Texts in the Torah, Prophecy and Wisdom Literature"
+              "note": "Narrative, Epistles, Psalms, Legal and Cultic Texts in the Torah, Prophecy and Wisdom Literature"
             }
           ]
         },
@@ -1785,7 +1785,7 @@
                   "type": "threadCard",
                   "kicker": "Thread one",
                   "title": "Workshops",
-                  "body": "Five two-week intensives, each centered on a major biblical genre: Narrative, Epistles, Psalms, Legal Texts in the Torah, and Prophecy and Wisdom Literature. Participants practice most consulting competencies inside the genre at hand, with feedback at every step."
+                  "body": "Five two-week intensives, each centered on a major biblical genre: Narrative, Epistles, Psalms, Legal and Cultic Texts in the Torah, and Prophecy and Wisdom Literature. Participants practice most consulting competencies inside the genre at hand, with feedback at every step."
                 },
                 {
                   "id": "threads.grid.online",
@@ -1857,7 +1857,7 @@
       "navLabel": "Workshops",
       "title": "The workshop series",
       "kicker": "Five genres, five workshops",
-      "metaDescription": "Five two-week, genre-based workshops anchor the OBT Consultant Development Track: Narrative, Epistles, Psalms, Legal Texts in the Torah, and Prophecy and Wisdom Literature.",
+      "metaDescription": "Five two-week, genre-based workshops anchor the OBT Consultant Development Track: Narrative, Epistles, Psalms, Legal and Cultic Texts in the Torah, and Prophecy and Wisdom Literature.",
       "blocks": [
         {
           "id": "workshops-index.hero",
@@ -1897,15 +1897,15 @@
             {
               "id": "workshops-index.series.psalms",
               "type": "timelineItem",
-              "kicker": "August to September 2026 · Fully booked",
+              "kicker": "August to September 2026 · Completed",
               "title": "3 · Psalms · Bali, Indonesia",
               "body": "Hebrew poetry exegesis for OBT and the facilitation of Psalms translation into local artistic genres."
             },
             {
               "id": "workshops-index.series.legal",
               "type": "timelineItem",
-              "kicker": "Late 2026 or early 2027 · Being planned",
-              "title": "4 · Legal Texts in the Torah",
+              "kicker": "Next · Late 2026 or early 2027",
+              "title": "4 · Legal and Cultic Texts in the Torah",
               "body": "Legal and sacrificial codes in the Torah and the genre-specific consulting challenges they present."
             },
             {
@@ -3367,13 +3367,14 @@
       "navLabel": "Psalms · Bali 2026",
       "title": "Psalms",
       "kicker": "Workshop three",
-      "metaDescription": "The third OBT-CDT workshop, in Bali, Indonesia: Hebrew poetry exegesis for OBT and facilitating the translation of Psalms into local artistic genres. Fully booked. The dates, programme, preparation and cost are here; travel and base details are for signed-in participants.",
+      "metaDescription": "The third OBT-CDT workshop, in Bali, Indonesia: Hebrew poetry exegesis for OBT and facilitating the translation of Psalms into local artistic genres. Completed in September 2026. The dates, programme, preparation and cost are here; travel and base details are for signed-in participants.",
       "facts": {
         "genre": "Psalms and Hebrew poetry",
         "location": "Bali, Indonesia",
         "startDate": "2026-08-24",
         "endDate": "2026-09-04",
-        "status": "fully-booked"
+        "dateLabel": "August to September 2026",
+        "status": "complete"
       },
       "blocks": [
         {
@@ -3382,7 +3383,7 @@
           "kicker": "Workshop three · Psalms · Bali 2026",
           "title": "Psalms in Bali",
           "body": "The third workshop of the OBT Consultant Development Track, and the participant handbook for it: what the weeks hold, how to prepare, and what the fortnight costs.",
-          "note": "Last updated 3 September 2026 · travel, visas, packing and life on the base have moved to a members-only page, reachable from section four and from the notes at the foot of this page. Where an older email disagrees with this page, the page is right.",
+          "note": "Last updated 8 September 2026 · the workshop finished on 4 September. Travel, visas, packing and life on the base have moved to a members-only page, reachable from section four and from the notes at the foot of this page. Where an older email disagrees with this page, the page is right.",
           "mediaId": "bali-hero",
           "items": [
             {
@@ -3411,9 +3412,9 @@
         {
           "id": "psalms.booked",
           "type": "prose",
-          "kicker": "Registration status",
-          "title": "This workshop is fully booked",
-          "body": "Every place for the Psalms workshop has been filled. If you hoped to join, we would still love to hear from you: expressing interest now puts you in view for the remaining workshops in the series and for future rounds of the track."
+          "kicker": "The workshop",
+          "title": "This workshop has finished",
+          "body": "The Psalms workshop ran from 24 August to 4 September 2026 in Bali. What follows is the record of the fortnight: what the weeks held, how participants prepared, and what it cost. If you were hoping to join a workshop in this series, there is a way to say so at the foot of this page."
         },
         {
           "id": "psalms.what",
@@ -3990,7 +3991,7 @@
           "id": "psalms.cta",
           "type": "ctaGroup",
           "title": "If you missed this one",
-          "body": "Two workshops remain in the series, and expressions of interest now shape their planning.",
+          "body": "Two workshops remain in the series. The next is Legal and Cultic Texts in the Torah, being planned for late 2026 or early 2027, and expressions of interest now shape it.",
           "items": [
             {
               "id": "psalms.cta.contact",

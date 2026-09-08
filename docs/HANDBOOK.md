@@ -82,13 +82,15 @@ block list into three zones:
 
 | Zone | What it is | On the Psalms page |
 | --- | --- | --- |
-| intro | blocks before the first `handbookSection` | the fully-booked notice, the vision prose, one photo |
+| intro | blocks before the first `handbookSection` | the completion notice, the vision prose, one photo |
 | sections | the `handbookSection` blocks, with the rail and progress bar | the five public handbook sections |
 | outro | blocks after the last `handbookSection` | the "Missed this one?" call to action |
 
 The workshop's own header (kicker, title, facts panel) is not rendered in this
 mode; the handbook hero replaces it and shows the `StatusBadge` from
-`facts.status` instead, so the page still says "Fully booked" at the top.
+`facts.status` instead, so the badge at the top follows the enum. It read
+"Fully booked" until the workshop ended; since SITE-07 it reads "Completed".
+The quoted request above is dated 2026-07-28 and is left as Joshua wrote it.
 
 The old URL keeps working. `redirects()` in `src/lib/content/loader.ts` maps it to
 the merged page; the prerender writes a meta-refresh page and `App.tsx` handles

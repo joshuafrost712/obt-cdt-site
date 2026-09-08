@@ -18,7 +18,7 @@ import type { Block, PageDef, WorkshopDef } from '../schema/types'
  * whatever blocks it is given and sorts them into three zones:
  *
  *   intro     — blocks before the first handbookSection. On the merged workshop
- *               page that is the fully-booked notice and the public framing.
+ *               page that is the status notice and the public framing.
  *   sections  — the numbered handbookSections, with the rail and progress bar.
  *   outro     — blocks after the last one, e.g. the closing call to action.
  *
