@@ -449,6 +449,30 @@ def build_sql(responses, round_key, import_row) -> str:
             f"  values ({lit(rid)}, {lit(round_key)}, {lit(r.get('profile_id'))},",
             f"  {lit(r.get('group'))}, 'submitted', 'manual', {lit(import_row['id'])}, now());",
         ]
+        # SITE-08 D3. The typed name follows the response into its own revoked
+        # table, so an administrator has something to decide on. Three rules,
+        # each of them load-bearing.
+        #
+        # A blank name inserts NOTHING rather than an empty string: an absent
+        # row means "this person did not name themselves", which is a different
+        # fact from "this person typed nothing", and the schema should not force
+        # them to look alike. That is the absence-is-not-a-status rule.
+        #
+        # A response that arrives ALREADY ATTACHED gets no identity row. If a
+        # future round collects email addresses, the match happens on email and
+        # the identity row would be evidence for a decision nobody needs to
+        # make. So the row exists only where profile_id is null after matching.
+        #
+        # name_norm is computed by the DATABASE function, never in Python, so
+        # the importer, the candidate read and the allowlist side cannot drift.
+        typed = (r.get("name") or "").strip()
+        if typed and not r.get("profile_id"):
+            out.append(
+                "insert into public.evaluation_response_identity"
+                " (response_id, round_key, typed_name, name_norm, import_id) values ("
+                f"{lit(rid)}, {lit(round_key)}, {lit(typed)},"
+                f" public.evaluation_name_norm({lit(typed)}), {lit(import_row['id'])});"
+            )
         for x in r["ratings"]:
             out.append(
                 "insert into public.evaluation_item_rating"
@@ -604,6 +628,22 @@ def main() -> int:
                   f"{info['unmatched']} left unattached rather than guessed")
             for pair in info["pairs"]:
                 print("           near-duplicate address: " + "  ~  ".join(pair))
+
+        # SITE-08 D3. The typed name is the evidence an administrator decides
+        # on, so the count of it is a number an operator has to see. Program
+        # finding 47: zero is a result, not a line that silently does not
+        # print. This sits with the loud attach block above rather than in a
+        # mode branch below, so it prints in --dry-run, --emit-sql and --apply
+        # alike (criterion 3 runs the one that writes nothing).
+        named = sum(1 for r in responses if (r.get("name") or "").strip())
+        print(f"\nnames      {named} of {len(responses)} responses carry a name")
+        if named == 0:
+            print("           Nothing in this export can be attributed to anybody. No")
+            print("           surface can match on evidence nobody produced.")
+        else:
+            print("           Each becomes one evaluation_response_identity row, which")
+            print("           no client role can read and which is destroyed the moment")
+            print("           an administrator decides what it means.")
 
         if problems:
             print(f"\n{len(problems)} row problem(s), reported and not fatal:")
