@@ -433,11 +433,98 @@ async function teardown() {
   console.log('  clean: every table above is at zero, counted by name')
 }
 
+// ---------------------------------------------------------------- assertions
+
+/**
+ * One transaction per chunk, with the report select BEFORE the rollback, so a
+ * mutation's verdict comes back while the mutation itself never commits
+ * (program finding 33). Asserting from inside a SAVEPOINT discards the verdict
+ * along with the mutation and prints success over tests that left no trace.
+ *
+ * The count of verdicts is itself an assertion, and the expected number lives
+ * HERE rather than only in the spec's estimate prose (review-2 finding B12): a
+ * runner cannot read a number it does not hold, and a silently skipped gate
+ * mutation otherwise passes the very check built to stop it.
+ */
+const EXPECTED_CHUNKS = 22
+
+async function assertions() {
+  console.log('=== the attribution assertions')
+  if (!existsSync(STATE)) {
+    console.error(`no fixture state at ${STATE}; run --setup first`)
+    process.exit(2)
+  }
+  const st = JSON.parse(readFileSync(STATE, 'utf8'))
+  const harness = readFileSync(path.join(REPO, 'scripts/site08-rls-tests.sql'), 'utf8')
+    .replaceAll('@W1@', st.w1)
+    .replaceAll('@ADMIN@', st.ids.admin)
+    .replaceAll('@REAL@', st.ids.real)
+    .replaceAll('@TWIN_A@', st.ids.twin_a)
+    .replaceAll('@OTHER@', st.ids.other)
+    .replaceAll('@OFFLIST@', st.ids.offlist)
+    .replaceAll('@TWIN_A_EMAIL@', addr('twin_a'))
+    .replaceAll('@RESP_MATCHED@', st.responseIds.matched)
+    .replaceAll('@RESP_AMBIG@', st.responseIds.ambiguous)
+    .replaceAll('@RESP_UNMATCHED@', st.responseIds.unmatched)
+    .replaceAll('@RESP_BLANK2@', st.responseIds.blank)
+    .replaceAll('@RESP_BLANK@', st.responseIds.blank)
+
+  const parts = harness.split(/^-- @@CHUNK@@ (.+)$/m)
+  const scaffold = parts[0]
+  const chunks = []
+  let headers = 0
+  for (let i = 1; i < parts.length; i += 2) {
+    const body = parts[i + 1]
+    const bare = body.replace(/^\s*--.*$/gm, '').trim()
+    if (bare === '') { headers++; continue }
+    chunks.push({ name: parts[i].trim(), sql: body })
+  }
+  console.log(`  ${chunks.length} chunk(s) with SQL, ${headers} heading(s) with none`)
+  if (chunks.length < EXPECTED_CHUNKS) {
+    console.error(`REFUSED: ${chunks.length} chunk(s) parsed, expected at least ${EXPECTED_CHUNKS}.`)
+    console.error('  A chunk that silently vanished is a gate that silently stopped running.')
+    process.exit(1)
+  }
+
+  const results = []
+  for (const c of chunks) {
+    let rows
+    try {
+      rows = await sql(
+        `begin;\n${scaffold}\n${c.sql}\n` +
+        `select verdict, label, outcome from site08_results order by seq;\nrollback;`)
+    } catch (e) {
+      console.error(`\nchunk "${c.name}" threw:\n${e.message}`)
+      process.exit(1)
+    }
+    const got = (Array.isArray(rows) ? rows : []).filter((r) => r && r.verdict)
+    if (got.length === 0) {
+      console.error(`REFUSED: chunk "${c.name}" returned no rows. A chunk that asserts nothing reports success.`)
+      process.exit(1)
+    }
+    results.push(...got)
+  }
+
+  let failed = 0
+  for (const r of results) {
+    const tag = r.verdict === 'PASS' ? ' ok ' : r.verdict === 'note' ? 'note' : 'FAIL'
+    if (r.verdict === 'FAIL') failed++
+    console.log(`  ${tag}  ${r.label}${r.outcome ? `  — ${r.outcome}` : ''}`)
+  }
+  const pass = results.filter((r) => r.verdict === 'PASS').length
+  const notes = results.filter((r) => r.verdict === 'note').length
+  const mutations = results.filter((r) => r.label.includes('MUTATION')).length
+  console.log(`\n  ${chunks.length} chunk(s): ${pass} pass, ${failed} fail, ${notes} note`)
+  console.log(`  ${mutations} mutation verdict(s)`)
+  if (failed) process.exit(1)
+}
+
 const mode = process.argv[2]
 if (mode === '--setup') await setup()
 else if (mode === '--teardown') await teardown()
 else if (mode === '--verify') await verify()
+else if (mode === '--assert') await assertions()
 else {
-  console.error('usage: site08-fixtures.mjs --setup | --teardown | --verify')
+  console.error('usage: site08-fixtures.mjs --setup | --assert | --verify | --teardown')
   process.exit(2)
 }
