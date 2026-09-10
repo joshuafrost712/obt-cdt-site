@@ -11,11 +11,14 @@
 #      the Vite and TypeScript config) with no spec claim held in either OBT-CDT
 #      campaign, unless CDT_PUSH_UNCLAIMED="<reason>" is set, in which case the reason
 #      is printed so it is in the terminal record.
-#   3. A code push whose claimed spec has no build record, or whose build record has
-#      no proof heading, or whose build record is older than the newest pushed commit.
-#      "agent_verified permits the push" is this check.
-# Content, public/ and docs/ rounds pass the scan and skip 2 and 3, because copy and
-# logistics rounds ship without a spec by campaign rule.
+#   3. A code push where no held claim's build record carries
+#      `agent_verified: <sha> <date> <tier>` naming the pushed tip. The runner writes
+#      that line only after the build review re-ran the proof and returned PASS.
+#      "agent_verified permits the push" is this check, and it is by commit sha, not
+#      by file time.
+# Rounds touching only content (src/content/site-content.json, public/, docs/,
+# feedback/, top-level *.md) pass the scan and skip 2 and 3, because copy and
+# logistics rounds ship without a spec by campaign rule. Everything else is code.
 #
 # Off the owner's machine the vault is absent; the hook then runs the scan only and
 # says so. Never bypass with --no-verify; fix what the hook names.
@@ -44,9 +47,12 @@ while read -r local_ref local_sha remote_ref remote_sha; do
     refuse "participant-name scan failed or refused over $base..$local_sha"
   fi
 
-  # Which files does this range touch?
+  # Which files does this range touch? CONTENT is an allowlist; everything else is
+  # code, so a workflow, hook, lockfile or config edit can never ride through as a
+  # copy round. (The first version was a denylist and let .github/workflows/ and
+  # this hook itself through; review 2 of the protocol caught it.)
   files="$(git diff --name-only "$base" "$local_sha")"
-  code="$(printf '%s\n' "$files" | grep -E '^(src/|supabase/|scripts/|index\.html$|vite\.config|tsconfig)' | grep -v '^src/content/site-content\.json$' || true)"
+  code="$(printf '%s\n' "$files" | grep -Ev '^(src/content/site-content\.json$|public/|docs/|feedback/|[^/]+\.md$)' || true)"
   if [ -z "$code" ]; then
     echo "pre-push: content/docs round, scan passed, no claim required."
     continue
@@ -70,13 +76,16 @@ while read -r local_ref local_sha remote_ref remote_sha; do
     refuse "code changed ($(printf '%s\n' "$code" | head -3 | tr '\n' ' ')...) with no spec claim held in obt-cdt-site or obt-cdt-assess. Claim the row, or set CDT_PUSH_UNCLAIMED=\"<reason>\" for an emergency push."
   fi
 
-  # 3. Fresh proof in at least one claimed spec's build record. Several claims can
-  #    be held at once (a build row beside an audit row that builds nothing), so the
-  #    rule is: the code being pushed belongs to SOME claimed spec, and that spec has
-  #    a build record with a proof heading newer than the newest pushed commit. Claims
-  #    with no fresh record are reported, not refused, unless none qualifies.
-  newest_commit="$(git log -1 --format=%ct "$local_sha")"
-  fresh=0
+  # 3. A passed build review for the commit being pushed. Several claims can be held
+  #    at once (a build row beside an audit row that builds nothing), so the rule is:
+  #    SOME held claim's build record carries a line
+  #        agent_verified: <sha> <date> <tier>
+  #    whose <sha> is a prefix of the pushed tip. The runner writes that line only
+  #    when the build review re-ran the proof and returned PASS, so the line is the
+  #    review's signature on exactly these commits. A record's mtime proves nothing
+  #    (any edit or touch satisfies it), and a proof heading proves the build ran,
+  #    not that anyone else checked it. Claims without the line are reported.
+  verified=0
   for c in "${claims[@]}"; do
     spec="$(python3 -c 'import json,sys;print(json.load(open(sys.argv[1]))["spec"])' "$c")"
     record=""
@@ -87,19 +96,17 @@ while read -r local_ref local_sha remote_ref remote_sha; do
       echo "pre-push: $spec claim held, no build record (not the spec being pushed, or a row that builds nothing)." >&2
       continue
     fi
-    if ! grep -Eqi '^#{2,3} .*(proof|lane|confirm live)' "$record"; then
-      echo "pre-push: $spec build record has no proof heading (## ... proof / lane / Confirm live)." >&2
+    sig="$(grep -E '^agent_verified: *[0-9a-f]{7,40}' "$record" | tail -1 | awk '{print $2}')"
+    if [ -z "$sig" ]; then
+      echo "pre-push: $spec build record has no 'agent_verified: <sha>' line; its build review has not signed a commit." >&2
       continue
     fi
-    record_mtime="$(stat -f %m "$record" 2>/dev/null || stat -c %Y "$record")"
-    if [ "$record_mtime" -lt "$newest_commit" ]; then
-      echo "pre-push: $spec build record ($(date -r "$record_mtime" '+%F %T')) is older than the newest pushed commit ($(date -r "$newest_commit" '+%F %T'))." >&2
-      continue
-    fi
-    echo "pre-push: $spec claim held, build record has proof newer than the pushed commits."
-    fresh=1
+    case "$local_sha" in
+      "$sig"*) echo "pre-push: $spec build review signed $sig, which is the pushed tip."; verified=1 ;;
+      *) echo "pre-push: $spec build review signed $sig, but the pushed tip is ${local_sha:0:12}; commits since the review are unverified." >&2 ;;
+    esac
   done
-  [ "$fresh" -eq 1 ] || refuse "no held claim has a build record with a proof heading newer than the pushed commits; record the proof for this build before pushing"
+  [ "$verified" -eq 1 ] || refuse "no held claim's build record carries 'agent_verified: <tip sha>'; run the build review on these commits and record its PASS before pushing"
 done
 
 exit $status
