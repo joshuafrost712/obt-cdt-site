@@ -198,11 +198,35 @@ does not exist.
 
 - The pairing endpoints, the ingest function, and the outbox on the Honest Eval
   side. The tables they write are here; the functions are not.
-- The admin screens: the unmatched queue, aliases, allowlist, and the historical
+- The admin screens: aliases, allowlist, and the historical
   import used to backfill the Epistles reports, which predate Honest Eval and so
   cannot arrive over the signed path. Those rows carry `source = 'manual'` and an
   importer, because a report an administrator typed in must never be
   indistinguishable from one Honest Eval signed.
+
+  **The unmatched queue is built, for evaluations, at `/portal/admin/attributions`**
+  (spec SITE-08). It is the first admin-only route in the portal. An administrator
+  reads the name a participant typed on the round-1 evaluation form, decides whose
+  it was, and that decision is logged and reversible. Three properties are worth
+  knowing before extending it.
+
+  It buckets on `member_allowlist.full_name`, the **attested** name written by an
+  administrator, and never on `profiles.full_name`, which
+  `handle_new_portal_user()` fills from client-supplied metadata at sign-up. The
+  allowlist gates the address; nothing attests the name.
+
+  Both writing functions are **closed-round-only**. On an open round the person
+  just attributed a response could file normally and silently destroy it, because
+  `submit_evaluation()` uses the partial unique index as a conflict *target*
+  rather than being aborted by it, and the provenance constraint does not fire.
+  That is a property of `submit_evaluation()` rather than of this surface, so any
+  future path that writes a participation row on an open round re-opens it.
+
+  The typed name is destroyed the moment a decision is made. The audit log keeps
+  one copy, which is a deliberate exception: a log that omits the evidence cannot
+  answer the question it exists for. There are exactly **two** reads that return
+  that string, both administrator-only, and a third is adding to a set kept at two
+  on purpose.
 - The email-becomes-a-summary change, which must wait until this is live or the
   link goes nowhere.
 - The richer reading experience. Note that it needs structure the v1 envelope
