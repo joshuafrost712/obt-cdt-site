@@ -1230,6 +1230,121 @@
         "id": "portal.eval.done.list",
         "type": "labelToken",
         "label": "All my evaluations"
+      },
+      {
+        "id": "portal.attrib.title",
+        "type": "labelToken",
+        "label": "Attribute evaluation responses"
+      },
+      {
+        "id": "portal.attrib.checking",
+        "type": "labelToken",
+        "label": "Checking your access…"
+      },
+      {
+        "id": "portal.attrib.refused",
+        "type": "labelToken",
+        "label": "This page is for portal administrators. Your account is not one, so there is nothing here for you to do."
+      },
+      {
+        "id": "portal.attrib.intro",
+        "type": "labelToken",
+        "label": "Each response below was imported from a Google Form and is not yet attached to anybody's account. The name shown is exactly what that person typed. Attaching a response lets its author re-read it in the portal, forever."
+      },
+      {
+        "id": "portal.attrib.mfa",
+        "type": "labelToken",
+        "label": "This page is protected by your password alone. Two-factor protection for administrator screens is not yet switched on for this project."
+      },
+      {
+        "id": "portal.attrib.matched.title",
+        "type": "labelToken",
+        "label": "The typed name matches one person on the roster"
+      },
+      {
+        "id": "portal.attrib.matched.empty",
+        "type": "labelToken",
+        "label": "No response's typed name matches exactly one name on the roster."
+      },
+      {
+        "id": "portal.attrib.matched.note",
+        "type": "labelToken",
+        "label": "A match is a suggestion, not a decision. Nothing here has been attached to anybody, and nothing will be until you choose a name and attach it."
+      },
+      {
+        "id": "portal.attrib.ambiguous.title",
+        "type": "labelToken",
+        "label": "The typed name matches more than one person"
+      },
+      {
+        "id": "portal.attrib.ambiguous.empty",
+        "type": "labelToken",
+        "label": "No response's typed name matches more than one name on the roster."
+      },
+      {
+        "id": "portal.attrib.ambiguous.note",
+        "type": "labelToken",
+        "label": "Two roster entries normalise to this name. Pick the person you believe wrote it, or mark it as unidentifiable."
+      },
+      {
+        "id": "portal.attrib.unmatched.title",
+        "type": "labelToken",
+        "label": "No match, or no name given"
+      },
+      {
+        "id": "portal.attrib.unmatched.empty",
+        "type": "labelToken",
+        "label": "Every response with a name or a blank has been decided."
+      },
+      {
+        "id": "portal.attrib.unmatched.note",
+        "type": "labelToken",
+        "label": "These typed a name that matches nobody on the roster, or left the name blank. A blank one can never be traced by any means; if you cannot identify it, mark it so and say why."
+      },
+      {
+        "id": "portal.attrib.noname",
+        "type": "labelToken",
+        "label": "No name given"
+      },
+      {
+        "id": "portal.attrib.picker",
+        "type": "labelToken",
+        "label": "Choose the person who wrote this"
+      },
+      {
+        "id": "portal.attrib.attach",
+        "type": "labelToken",
+        "label": "Attach to this person"
+      },
+      {
+        "id": "portal.attrib.noaccount",
+        "type": "labelToken",
+        "label": "Some people on the roster have never signed in, so they cannot be chosen here yet. They will appear once they register."
+      },
+      {
+        "id": "portal.attrib.reason",
+        "type": "labelToken",
+        "label": "Why (required to mark this unidentifiable)"
+      },
+      {
+        "id": "portal.attrib.unattributable",
+        "type": "labelToken",
+        "label": "Cannot be identified"
+      },
+      {
+        "id": "portal.attrib.history",
+        "type": "labelToken",
+        "label": "History"
+      },
+      {
+        "id": "portal.attrib.history.empty",
+        "type": "labelToken",
+        "label": "Nothing has been decided about this response yet."
+      },
+      {
+        "id": "portal.attrib.detach",
+        "type": "labelToken",
+        "label": "Detach this response (needs a reason above)"
       }
     ]
   },

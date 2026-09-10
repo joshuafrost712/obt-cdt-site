@@ -418,3 +418,152 @@ export async function submitEvaluation(args: {
   )
   return res.data as string
 }
+
+// --------------------------------------------------------------------------
+// SITE-08: the attribution surface
+// --------------------------------------------------------------------------
+
+/**
+ * One unattached response awaiting an administrator's decision.
+ *
+ * `bucket` is computed in the database against `member_allowlist.full_name`,
+ * the ATTESTED name, and never against `profiles.full_name`, which is
+ * client-supplied at sign-up. Spec SITE-08 D1 and finding 13.
+ *
+ * `candidates` carries the attested name too, for the same reason: a picker
+ * showing a self-declared name beside an address is the one place a
+ * self-chosen string could still steer a human decision.
+ *
+ * A candidate with a null `profileId` is on the roster and has never
+ * registered — twenty such addresses exist. It is RENDERED rather than
+ * filtered, because an administrator looking for a name needs to know the
+ * difference between "not on the roster" and "on the roster and never
+ * registered", and it cannot be attached to.
+ */
+export type AttributionCandidate = {
+  profileId: string | null
+  email: string
+  fullName: string
+}
+
+export type AttributionRow = {
+  responseId: string
+  roundKey: string
+  roundDisplayName: string
+  typedName: string
+  submittedAt: string
+  bucket: 'matched' | 'ambiguous' | 'unmatched'
+  candidates: AttributionCandidate[]
+}
+
+/**
+ * The queue, read through a definer function rather than a client-side query.
+ *
+ * That is not a style choice. The identity table is revoked from every client
+ * role by design and `member_allowlist` grants nothing to `authenticated`
+ * (measured), so there is no client query that could assemble this. It is also
+ * the rule in this module's header: for an administrator RLS returns a
+ * superset, so a candidate list has to be computed server-side.
+ */
+export async function attributionQueue(): Promise<AttributionRow[]> {
+  const res = await supabase().rpc('evaluation_attribution_queue')
+  if (res.error) throw new Error(res.error.message)
+  return ((res.data ?? []) as Record<string, unknown>[]).map((r) => ({
+    responseId: r.response_id as string,
+    roundKey: r.round_key as string,
+    roundDisplayName: r.round_display_name as string,
+    typedName: (r.typed_name as string) ?? '',
+    submittedAt: r.submitted_at as string,
+    bucket: r.bucket as AttributionRow['bucket'],
+    candidates: ((r.candidates ?? []) as Record<string, unknown>[]).map((c) => ({
+      profileId: (c.profile_id as string | null) ?? null,
+      email: c.email as string,
+      fullName: (c.full_name as string) ?? '',
+    })),
+  }))
+}
+
+export type AttributionHistoryRow = {
+  id: string
+  action: 'resolve' | 'unattributable' | 'detach'
+  actorEmail: string
+  subjectEmail: string | null
+  typedName: string | null
+  reason: string
+  at: string
+}
+
+/**
+ * The audit for one response. It exists because a log no role can read cannot
+ * answer the question it was built to answer: D1 claimed the audit as a
+ * mitigation for the open MFA hole while specifying no reader for it.
+ *
+ * It returns the typed name after the identity row has been destroyed, which
+ * is D6's deliberate exception to D2's destruction rule and is the narrowest
+ * retention available: one string, on the row recording the decision,
+ * unreachable by every client role.
+ */
+export async function attributionHistory(responseId: string): Promise<AttributionHistoryRow[]> {
+  const res = await supabase().rpc('evaluation_attribution_history', { _response_id: responseId })
+  if (res.error) throw new Error(res.error.message)
+  return ((res.data ?? []) as Record<string, unknown>[]).map((r) => ({
+    id: r.id as string,
+    action: r.action as AttributionHistoryRow['action'],
+    actorEmail: r.actor_email as string,
+    subjectEmail: (r.subject_email as string | null) ?? null,
+    typedName: (r.typed_name as string | null) ?? null,
+    reason: (r.reason as string) ?? '',
+    at: r.at as string,
+  }))
+}
+
+/**
+ * Attribute a response to a person, or mark it permanently unattributable by
+ * passing a null `profileId` with a reason.
+ *
+ * Both writing functions are CLOSED-ROUND-ONLY (decisions 9 and 10). The
+ * refusal is not defensive tidiness: on an open round the attributed person
+ * could file normally and silently destroy the reflection just attributed to
+ * them, because `submit_evaluation()` uses the partial unique index as a
+ * conflict target rather than being aborted by it.
+ *
+ * The named subject is always an address already on the allowlist, never an
+ * arbitrary account, which is the first of D1's three mitigations.
+ */
+export async function resolveResponse(args: {
+  responseId: string
+  profileId: string | null
+  reason: string
+}): Promise<void> {
+  const res = await supabase().rpc('resolve_evaluation_response', {
+    _response_id: args.responseId,
+    _profile_id: args.profileId,
+    _reason: args.reason,
+  })
+  if (res.error) throw new Error(res.error.message)
+}
+
+/**
+ * Undo an attribution. It exists because the worst state this surface can
+ * produce is a participant reading somebody else's reflection under a heading
+ * that says "What you wrote", and a surface that can create that state and
+ * cannot leave it is not finished.
+ *
+ * It refuses a portal filing (decision 8), because detaching one clears its
+ * author's read of their own response irreversibly, and an open round
+ * (decision 9).
+ */
+export async function detachResponse(args: { responseId: string; reason: string }): Promise<void> {
+  const res = await supabase().rpc('detach_evaluation_response', {
+    _response_id: args.responseId,
+    _reason: args.reason,
+  })
+  if (res.error) throw new Error(res.error.message)
+}
+
+/** Whether the signed-in caller is a portal administrator. */
+export async function amPortalAdmin(): Promise<boolean> {
+  const res = await supabase().rpc('is_portal_admin')
+  if (res.error) throw new Error(res.error.message)
+  return res.data === true
+}

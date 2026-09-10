@@ -41,6 +41,10 @@ const MemberPage = lazy(() => import('./pages/backend/MemberPage'))
 // /portal/evaluations rather than at /portal, which is the member's report list.
 const EvaluationsPage = lazy(() => import('./pages/backend/EvaluationsPage'))
 const EvaluationPage = lazy(() => import('./pages/backend/EvaluationPage'))
+// Spec SITE-08. The FIRST admin-only route in the portal. Its gate is
+// `is_portal_admin()` with a refusal sentence rather than a redirect, and it
+// adopts CDT-10's TwoFactorGate when that lands.
+const AttributionsPage = lazy(() => import('./pages/backend/AttributionsPage'))
 
 function Deferred({ children }: { children: ReactNode }) {
   return <Suspense fallback={<p className="mx-auto max-w-3xl px-5 py-16 text-ink-faint">Loading…</p>}>{children}</Suspense>
@@ -120,6 +124,7 @@ export default function App() {
             <Route path="/portal/a/:assignmentId" element={<Deferred><AssignmentPage /></Deferred>} />
             <Route path="/portal/evaluations" element={<Deferred><EvaluationsPage /></Deferred>} />
             <Route path="/portal/e/:roundKey" element={<Deferred><EvaluationPage /></Deferred>} />
+            <Route path="/portal/admin/attributions" element={<Deferred><AttributionsPage /></Deferred>} />
           </>
         )}
         <Route path="*" element={<NotFoundPage />} />
