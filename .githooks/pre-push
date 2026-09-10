@@ -1,0 +1,105 @@
+#!/usr/bin/env bash
+# Pre-push gate for obt-cdt-site. Installed once per clone by `npm run hooks:install`
+# (which sets core.hooksPath to .githooks). See AGENTS.md and, in the owner's vault,
+# _Meta/Delivery-Contract-Protocol.md, section "Verification".
+#
+# What it refuses, and why:
+#   1. Any pushed range that fails the participant-name scan. The scan discovers its
+#      terms from a roster export outside the repo and refuses when that file is
+#      absent; a scan with no population is not a green scan.
+#   2. A push that touches CODE (src/ other than the content JSON, supabase/, scripts/,
+#      the Vite and TypeScript config) with no spec claim held in either OBT-CDT
+#      campaign, unless CDT_PUSH_UNCLAIMED="<reason>" is set, in which case the reason
+#      is printed so it is in the terminal record.
+#   3. A code push whose claimed spec has no build record, or whose build record has
+#      no proof heading, or whose build record is older than the newest pushed commit.
+#      "agent_verified permits the push" is this check.
+# Content, public/ and docs/ rounds pass the scan and skip 2 and 3, because copy and
+# logistics rounds ship without a spec by campaign rule.
+#
+# Off the owner's machine the vault is absent; the hook then runs the scan only and
+# says so. Never bypass with --no-verify; fix what the hook names.
+
+set -u
+
+REPO="$(git rev-parse --show-toplevel)"
+VAULT="${CDT_VAULT:-$HOME/Documents/Josh & Katie Vault/Claude Can Access PARA}"
+CLAIMS_DIRS=("$VAULT/_Meta/runtime/spec-claims/obt-cdt-site" "$VAULT/_Meta/runtime/spec-claims/obt-cdt-assess")
+SPEC_DIRS=("$VAULT/Projects/OBT/OBT Consultant Track/Site and Feedback Specs" "$VAULT/Projects/OBT/OBT Consultant Track/Intake Assessment/Specs")
+ZERO="0000000000000000000000000000000000000000"
+
+refuse() { echo "pre-push REFUSED: $*" >&2; exit 1; }
+
+status=0
+while read -r local_ref local_sha remote_ref remote_sha; do
+  [ "$local_sha" = "$ZERO" ] && continue   # a branch deletion pushes nothing
+  if [ "$remote_sha" = "$ZERO" ]; then
+    base="$(git rev-list --max-parents=0 "$local_sha" | tail -1)"
+  else
+    base="$remote_sha"
+  fi
+
+  # 1. The roster name scan over the pushed range.
+  if ! node "$REPO/scripts/site08-name-scan.mjs" --since "$base"; then
+    refuse "participant-name scan failed or refused over $base..$local_sha"
+  fi
+
+  # Which files does this range touch?
+  files="$(git diff --name-only "$base" "$local_sha")"
+  code="$(printf '%s\n' "$files" | grep -E '^(src/|supabase/|scripts/|index\.html$|vite\.config|tsconfig)' | grep -v '^src/content/site-content\.json$' || true)"
+  if [ -z "$code" ]; then
+    echo "pre-push: content/docs round, scan passed, no claim required."
+    continue
+  fi
+
+  if [ ! -d "$VAULT/_Meta" ]; then
+    echo "pre-push: vault not found at $VAULT; scan passed, claim and proof checks skipped (not the owner's machine)." >&2
+    continue
+  fi
+
+  # 2. A held claim in either campaign.
+  claims=()
+  for d in "${CLAIMS_DIRS[@]}"; do
+    for f in "$d"/*.json; do [ -f "$f" ] && claims+=("$f"); done
+  done
+  if [ "${#claims[@]}" -eq 0 ]; then
+    if [ -n "${CDT_PUSH_UNCLAIMED:-}" ]; then
+      echo "pre-push: UNCLAIMED CODE PUSH allowed by override. Reason: $CDT_PUSH_UNCLAIMED" >&2
+      continue
+    fi
+    refuse "code changed ($(printf '%s\n' "$code" | head -3 | tr '\n' ' ')...) with no spec claim held in obt-cdt-site or obt-cdt-assess. Claim the row, or set CDT_PUSH_UNCLAIMED=\"<reason>\" for an emergency push."
+  fi
+
+  # 3. Fresh proof in at least one claimed spec's build record. Several claims can
+  #    be held at once (a build row beside an audit row that builds nothing), so the
+  #    rule is: the code being pushed belongs to SOME claimed spec, and that spec has
+  #    a build record with a proof heading newer than the newest pushed commit. Claims
+  #    with no fresh record are reported, not refused, unless none qualifies.
+  newest_commit="$(git log -1 --format=%ct "$local_sha")"
+  fresh=0
+  for c in "${claims[@]}"; do
+    spec="$(python3 -c 'import json,sys;print(json.load(open(sys.argv[1]))["spec"])' "$c")"
+    record=""
+    for d in "${SPEC_DIRS[@]}"; do
+      [ -f "$d/$spec-build-record.md" ] && record="$d/$spec-build-record.md"
+    done
+    if [ -z "$record" ]; then
+      echo "pre-push: $spec claim held, no build record (not the spec being pushed, or a row that builds nothing)." >&2
+      continue
+    fi
+    if ! grep -Eqi '^#{2,3} .*(proof|lane|confirm live)' "$record"; then
+      echo "pre-push: $spec build record has no proof heading (## ... proof / lane / Confirm live)." >&2
+      continue
+    fi
+    record_mtime="$(stat -f %m "$record" 2>/dev/null || stat -c %Y "$record")"
+    if [ "$record_mtime" -lt "$newest_commit" ]; then
+      echo "pre-push: $spec build record ($(date -r "$record_mtime" '+%F %T')) is older than the newest pushed commit ($(date -r "$newest_commit" '+%F %T'))." >&2
+      continue
+    fi
+    echo "pre-push: $spec claim held, build record has proof newer than the pushed commits."
+    fresh=1
+  done
+  [ "$fresh" -eq 1 ] || refuse "no held claim has a build record with a proof heading newer than the pushed commits; record the proof for this build before pushing"
+done
+
+exit $status

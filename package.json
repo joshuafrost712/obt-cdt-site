@@ -12,7 +12,8 @@
     "fonts": "node scripts/fetch-fonts.mjs",
     "fonts:check": "node scripts/fetch-fonts.mjs --check",
     "serve:dist": "node scripts/serve-dist.mjs",
-    "labels": "node scripts/check-labels.mjs"
+    "labels": "node scripts/check-labels.mjs",
+    "hooks:install": "git config core.hooksPath .githooks && chmod +x .githooks/pre-push && echo 'hooks installed: .githooks/pre-push'"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.108.0",
