@@ -97,10 +97,28 @@ const diff = range
 // Added lines only. A line this work REMOVES is not a leak it created.
 const added = diff.split('\n').filter((l) => l.startsWith('+')).join('\n')
 
+/**
+ * Word boundaries, because a gate that cries wolf gets overridden.
+ *
+ * The first version matched substrings, so one roster surname fired on an
+ * ordinary English word that merely contains it — the name is deliberately not
+ * repeated here, because this is a public repository and the gate below would
+ * be right to refuse it. A false positive is not harmless either:
+ * the next person to see one learns to pass over the refusal, and then the
+ * real leak goes through too. So a name matches as a NAME.
+ *
+ * `\b` is used rather than a whitespace class so a name in quotes, parentheses
+ * or a comma list still matches, which is how one would actually appear. For
+ * an address the boundary is only leading, since the local part and domain
+ * carry their own punctuation.
+ */
 const hits = []
 for (const t of terms) {
   if (ALLOWED.has(t.toLowerCase())) continue
-  const re = new RegExp(t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i')
+  const esc = t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  const re = t.includes('@')
+    ? new RegExp(`\\b${esc}`, 'i')
+    : new RegExp(`\\b${esc}\\b`, 'i')
   if (re.test(added)) hits.push(t)
 }
 
@@ -112,7 +130,9 @@ if (hits.length) {
   for (const h of hits.sort()) {
     console.error(`  ${h}`)
     for (const line of added.split('\n')) {
-      if (new RegExp(h.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i').test(line)) {
+      const hesc = h.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+      const hre = h.includes('@') ? new RegExp(`\\b${hesc}`, 'i') : new RegExp(`\\b${hesc}\\b`, 'i')
+      if (hre.test(line)) {
         console.error(`      ${line.slice(0, 120)}`)
       }
     }
