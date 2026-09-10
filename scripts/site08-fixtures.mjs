@@ -283,7 +283,26 @@ async function setup() {
       set state = 'closed', opens_at = ${PAST_OPEN}, closes_at = ${PAST_CLOSE}`)
   console.log(`  round:     ${W1} closed`)
 
-  // 5. An import row, because evaluation_response_identity.import_id is a
+  // 5. Clear this round's responses before rebuilding them, so --setup is
+  //    IDEMPOTENT. Without this, every run inserts four more: measured at 16
+  //    responses and 4 imports after four runs, which broke the browser lane's
+  //    restore assertion ("8 of 4 unattached") and made pass 1 differ from
+  //    pass 2. That is finding 35's lesson arriving against this lane rather
+  //    than against a criterion, and it is why D9 asks for a rebuild contract
+  //    and a twice-run lane.
+  //
+  //    Scoped to this lane's round key throughout. The order is forced by the
+  //    foreign keys: children, then identity, then responses, then imports.
+  await sql(`
+    delete from public.evaluation_attribution_log   where round_key = ${q(W1)};
+    delete from public.evaluation_response_identity where round_key = ${q(W1)};
+    delete from public.evaluation_item_rating       where round_key = ${q(W1)};
+    delete from public.evaluation_answer            where round_key = ${q(W1)};
+    delete from public.evaluation_participant       where round_key = ${q(W1)};
+    delete from public.evaluation_response          where round_key = ${q(W1)};
+    delete from public.evaluation_import            where round_key = ${q(W1)};`)
+
+  // 6. An import row, because evaluation_response_identity.import_id is a
   //    non-null foreign key.
   const imp = await sql(`
     insert into public.evaluation_import
@@ -294,7 +313,7 @@ async function setup() {
     returning id`)
   const importId = imp[0].id
 
-  // 6. The four unattached responses, one per bucket case.
+  // 7. The four unattached responses, one per bucket case.
   const cases = [
     { key: 'matched',   typed: ROLES.real.allowName },
     { key: 'ambiguous', typed: ROLES.twin_a.allowName },
@@ -319,7 +338,7 @@ async function setup() {
   }
   console.log(`  responses: 4 unattached (matched, ambiguous, unmatched, blank)`)
 
-  // 7. The off-allowlist state, which no sequence of sign-ups can reach.
+  // 8. The off-allowlist state, which no sequence of sign-ups can reach.
   await sql(`delete from public.member_allowlist where email = ${q(addr('offlist'))}`)
   console.log('  offlist:   allowlist row deleted after registration (restored on teardown)')
 

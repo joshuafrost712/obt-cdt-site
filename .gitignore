@@ -109,3 +109,12 @@ scripts/.site05-fixture-ids.json
 # pre-added this same line on `main` on 2026-09-04, which is the conflict this
 # merge resolved by keeping both blocks.
 feedback/site05-shots/
+
+# SITE-08's browser lane photographs the administrator's attribution queue,
+# which renders the NAME A PARTICIPANT TYPED on the round-1 evaluation form.
+# That is the most identifying string this campaign holds, and program finding
+# 11's rule is that a gitignore entry protecting a public repo belongs on main
+# when the DIRECTORY appears, not when some branch merges. This entry is
+# therefore written BEFORE the lane takes its first screenshot, which is the
+# order finding 24 asks for and the order SITE-03 got wrong.
+feedback/site08-shots/
