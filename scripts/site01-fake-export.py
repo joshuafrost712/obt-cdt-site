@@ -61,6 +61,17 @@ def main() -> int:
     ap.add_argument("--extra-column", action="append", default=[],
                     help="add a header the manifest does not know: the unknown-column "
                          "refusal's positive control")
+    # SITE-08 criterion 2 needs a KNOWN MIX of named, blank and whitespace-only
+    # rows: D3 distinguishes "did not name themselves" (no identity row) from a
+    # typed blank, and the whitespace case is what proves the trim. Before these
+    # flags this script wrote a name into every row unconditionally, so no
+    # committed tool could produce criterion 2's input and the criterion could
+    # only be exercised from a hand-edited CSV. Found by the stage-6 review of
+    # SITE-08's build.
+    ap.add_argument("--blank-names", type=int, default=0,
+                    help="make this many rows carry an EMPTY name (SITE-08 criterion 2)")
+    ap.add_argument("--whitespace-names", type=int, default=0,
+                    help="make this many rows carry a whitespace-only name (SITE-08 criterion 2)")
     ap.add_argument("--drop-column", action="append", default=[],
                     help="omit a manifest column by title: the missing-column refusal")
     args = ap.parse_args()
@@ -90,7 +101,15 @@ def main() -> int:
             row.append(emails[n % len(emails)] if emails else f"site01-rls-p{n}@example.org")
         for c in cols:
             if c["column_kind"] == "identity":
-                row.append(f"Fixture Person {n}")
+                # Blanks first, then whitespace-only, then names. Deterministic
+                # by row index so a failing run reproduces, per this file's own
+                # "the rows are deterministic" rule.
+                if n < args.blank_names:
+                    row.append("")
+                elif n < args.blank_names + args.whitespace_names:
+                    row.append("   ")
+                else:
+                    row.append(f"Fixture Person {n}")
             elif c["column_kind"] == "audience":
                 row.append(groups[n % len(groups)])
             elif c["scale_mapped"]:

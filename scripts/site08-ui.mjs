@@ -3,8 +3,13 @@
  * SITE-08 criteria 6 and 17: the attribution page in a real browser.
  *
  *     node scripts/site08-fixtures.mjs --setup
- *     npm run build
- *     node scripts/site08-ui.mjs
+ *     node scripts/site08-ui.mjs        # it builds dist/ itself
+ *
+ * It builds `dist/` itself, with VITE_BASE and the backend variables, because a
+ * plain `npm run build` produces a bundle whose assets 404 under the served
+ * base and whose CSP omits the project origin. The old header said to run
+ * `npm run build` first, which is the wrong instruction and is what the stage-6
+ * review of this build caught.
  *
  * ## What this lane asserts that the SQL lane cannot
  *
@@ -67,11 +72,42 @@ function contentLabel(id) {
 function creds() {
   const out = execFileSync('/bin/zsh', ['-c',
     `set -a; . ${JSON.stringify(path.join(homedir(), '.claude/secrets/obt-cdt-supabase.env'))}; set +a; ` +
-    'printf "%s\\n%s" "$OBT_CDT_SUPABASE_PROJECT_REF" "$OBT_CDT_SUPABASE_ACCESS_TOKEN"',
+    'printf "%s\\n%s\\n%s\\n%s" "$OBT_CDT_SUPABASE_PROJECT_REF" "$OBT_CDT_SUPABASE_ACCESS_TOKEN" ' +
+    '"$OBT_CDT_SUPABASE_URL" "$OBT_CDT_SUPABASE_PUBLISHABLE_KEY"',
   ]).toString().split('\n').map((s) => s.trim())
-  return { ref: out[0], token: out[1] }
+  return { ref: out[0], token: out[1], supaUrl: out[2], supaKey: out[3] }
 }
-const { ref, token } = creds()
+const { ref, token, supaUrl, supaKey } = creds()
+
+/**
+ * The lane builds the artifact it tests, with the env CI uses.
+ *
+ * It did not, and the stage-6 review of this build found the consequence. The
+ * header of this file used to say `npm run build`, and a plain `npm run build`
+ * emits assets at `/assets/…` with no Supabase origin in the CSP. Served under
+ * `/obt-cdt-site/` every asset 404s, the app never mounts, the page is blank —
+ * and criterion 6's negative assertion ("no PostgREST read of
+ * member_allowlist") passes trivially against a blank page.
+ *
+ * Every sibling lane already does this (site03, site05, site07,
+ * verify-member-access), and cdt06-ui.mjs:249-266 carries the same guard with a
+ * comment describing this exact hazard. This lane was the one that did not, so
+ * it inherits both the build and the assertion.
+ */
+function build() {
+  console.log('=== building dist/ with the CI environment')
+  execFileSync('npm', ['run', 'build'], {
+    cwd: REPO,
+    stdio: ['ignore', 'pipe', 'pipe'],
+    env: {
+      ...process.env,
+      VITE_BASE: '/obt-cdt-site/',
+      VITE_SITE_ORIGIN: 'https://joshuafrost712.github.io',
+      VITE_SUPABASE_URL: supaUrl,
+      VITE_SUPABASE_PUBLISHABLE_KEY: supaKey,
+    },
+  })
+}
 async function sql(query) {
   const res = await fetch(`https://api.supabase.com/v1/projects/${ref}/database/query`, {
     method: 'POST',
@@ -123,7 +159,30 @@ function startServer() {
   })
 }
 
+build()
+
+// cdt06-ui.mjs:249-266's guard, inherited. The build under test is asserted
+// rather than assumed: a dist built without VITE_BASE serves a blank page, and
+// every absence assertion in this lane would pass over it.
+{
+  const shell = readFileSync(path.join(REPO, 'dist/404.html'), 'utf8')
+  const srcs = [...shell.matchAll(/(?:src|href)="(\/[^"]*\/assets\/[^"]*)"/g)].map((m) => m[1])
+  checkThat(0, 'dist was built with VITE_BASE: every asset in 404.html is under the base prefix',
+    srcs.length > 0 && srcs.every((x) => x.startsWith('/obt-cdt-site/assets/')),
+    `${srcs.length} asset reference(s)`)
+  checkThat(0, 'dist was built with the backend variables: the project origin is in the CSP',
+    shell.includes(supaUrl), supaUrl.replace(/^https:\/\//, ''))
+}
+
 const server = await startServer()
+// Note 4 of the build review: the server was killed only on the success path,
+// so a lane that threw left port 4205 held and blocked the next run. Cleaning
+// up on exit covers the throw, the refusal and the interrupt alike.
+const cleanup = () => { try { server.kill() } catch { /* already gone */ } }
+process.on('exit', cleanup)
+process.on('SIGINT', () => { cleanup(); process.exit(130) })
+process.on('uncaughtException', (e) => { cleanup(); console.error(e); process.exit(1) })
+
 const browser = await chromium.launch()
 const pageErrors = []
 
@@ -134,13 +193,40 @@ async function newPage() {
   return page
 }
 
+/**
+ * Signs in and waits for the page to REACH A DECIDED STATE, rather than
+ * sleeping and hoping.
+ *
+ * The first version ended in `waitForTimeout(1200)`. While `isAdmin` is still
+ * `undefined` the page renders only "Checking your access…", so every
+ * `querySelectorAll('[data-attrib-section]')` returned `[]` and the loops over
+ * that population did not execute — silently, because iterating an empty array
+ * asserts nothing. The stage-6 review of this build measured 30 assertions on
+ * one run and 21 on a slowed one, against the 39 this lane is supposed to make.
+ * That is program finding 33's class arriving through a race rather than a
+ * savepoint: a harness that reports success over tests that never ran.
+ *
+ * So it waits for one of the three real outcomes to appear, and REFUSES on
+ * timeout rather than proceeding into assertions that cannot fail.
+ */
 async function signIn(page, email) {
   await page.goto(`${BASE}/portal/admin/attributions`, { waitUntil: 'networkidle' })
   await page.waitForSelector('#portal-email', { timeout: 30000 })
   await page.fill('#portal-email', email)
   await page.fill('#portal-password', fx.password)
   await page.click('button[type="submit"]')
-  await page.waitForTimeout(1200)
+  // Either the queue rendered, or the refusal sentence did, or an error note.
+  // `state: 'attached'` rather than visible, because the refusal is the whole
+  // page for a non-administrator and the sections never appear for them.
+  await page.waitForSelector(
+    '[data-attrib-section], [data-dfb-node="portal.attrib.refused"], [data-dfb-node="portal.attrib.checking"]',
+    { state: 'attached', timeout: 30000 })
+  // And then wait for "checking" to be GONE, which is what distinguishes a
+  // decided page from one still resolving is_portal_admin().
+  await page.waitForFunction(
+    () => !document.querySelector('[data-dfb-node="portal.attrib.checking"]'),
+    null, { timeout: 30000 })
+  await page.waitForTimeout(250)
 }
 
 /** Two-sided geometry, measured after scrollY has stopped changing. */
@@ -243,6 +329,13 @@ async function run(pass) {
         field: node?.getAttribute('data-dfb-field') ?? null,
       }
     }))
+  // The population is asserted NON-EMPTY and of the expected size before
+  // anything iterates it. `for (const x of [])` runs zero times and reports
+  // nothing, so without this the nine assertions below can silently not exist —
+  // which is what the review measured. Program finding 47: a zero is a result.
+  checkThat(17, 'the empty-state pass found all three sections to assert over',
+    emptyStates.length === 3, `${emptyStates.length} section(s)`)
+
   for (const s of emptyStates) {
     checkThat(17, `the empty ${s.bucket} section renders its own sentence`,
       s.rows === 0 && s.text.length > 20,
@@ -323,8 +416,27 @@ checkThat(17, 'no page error outside the pre-existing class', ours.length === 0,
 await browser.close()
 server.kill()
 
+/**
+ * The assertion count is itself an assertion, exactly as D9 makes the SQL
+ * lane's mutation count one. The review found this lane reporting "30
+ * assertions, 30 pass, exit 0" — nine short — with no diagnostic, because the
+ * missing nine were inside a loop over an empty population.
+ *
+ * Equality, not a floor, so an assertion that stops running fails the run
+ * rather than shrinking the total quietly. Adding one means updating this
+ * number deliberately.
+ */
+const EXPECTED_ASSERTIONS = 43
+
 const failed = results.filter((r) => !r.ok)
 console.log(`\n${results.length} assertion(s): ${results.length - failed.length} pass, ${failed.length} fail`)
+if (results.length !== EXPECTED_ASSERTIONS) {
+  console.error(`REFUSED: ${results.length} assertion(s), expected exactly ${EXPECTED_ASSERTIONS}.`)
+  console.error('  An assertion that did not run is a gate that stopped testing, and it')
+  console.error('  would otherwise leave this run green. If you added or removed one,')
+  console.error('  update EXPECTED_ASSERTIONS.')
+  process.exit(1)
+}
 console.log(`${pageErrors.length} page error(s), ` +
   `${pageErrors.filter((e) => PREEXISTING_ERROR.test(e)).length} of the excluded hydration class`)
 if (failed.length) process.exit(1)

@@ -465,7 +465,27 @@ async function teardown() {
  * runner cannot read a number it does not hold, and a silently skipped gate
  * mutation otherwise passes the very check built to stop it.
  */
-const EXPECTED_CHUNKS = 22
+/**
+ * Both numbers are asserted by EQUALITY, and that is the whole point.
+ *
+ * The first version of this gate held `EXPECTED_CHUNKS = 22` and tested
+ * `chunks.length < EXPECTED_CHUNKS`, with 29 chunks actually present. That is
+ * seven chunks of slack, so deleting a real access-control mutation left the
+ * run at "28 chunks, 78 pass, 0 fail, 16 mutation verdicts" and exit 0, with no
+ * complaint. The mutation count was computed and only PRINTED.
+ *
+ * D9 says the count of mutation verdicts is itself an assertion. Program
+ * finding 33 says a silently skipped gate mutation otherwise passes the runner's
+ * own check — and that is exactly what happened here, in the check built to
+ * stop it, found by the stage-6 review of this build deleting a chunk and
+ * watching the run stay green.
+ *
+ * So: equality on both, and a mutation-verdict count that fails the run rather
+ * than describing it. Adding or removing a chunk means updating these numbers
+ * deliberately, which is the intended cost.
+ */
+const EXPECTED_CHUNKS = 29
+const EXPECTED_MUTATION_VERDICTS = 17
 
 async function assertions() {
   console.log('=== the attribution assertions')
@@ -499,9 +519,10 @@ async function assertions() {
     chunks.push({ name: parts[i].trim(), sql: body })
   }
   console.log(`  ${chunks.length} chunk(s) with SQL, ${headers} heading(s) with none`)
-  if (chunks.length < EXPECTED_CHUNKS) {
-    console.error(`REFUSED: ${chunks.length} chunk(s) parsed, expected at least ${EXPECTED_CHUNKS}.`)
+  if (chunks.length !== EXPECTED_CHUNKS) {
+    console.error(`REFUSED: ${chunks.length} chunk(s) parsed, expected exactly ${EXPECTED_CHUNKS}.`)
     console.error('  A chunk that silently vanished is a gate that silently stopped running.')
+    console.error('  If you added or removed a chunk deliberately, update EXPECTED_CHUNKS.')
     process.exit(1)
   }
 
@@ -535,6 +556,13 @@ async function assertions() {
   const mutations = results.filter((r) => r.label.includes('MUTATION')).length
   console.log(`\n  ${chunks.length} chunk(s): ${pass} pass, ${failed} fail, ${notes} note`)
   console.log(`  ${mutations} mutation verdict(s)`)
+  // Asserted, not printed. See EXPECTED_MUTATION_VERDICTS.
+  if (mutations !== EXPECTED_MUTATION_VERDICTS) {
+    console.error(`REFUSED: ${mutations} mutation verdict(s), expected exactly ${EXPECTED_MUTATION_VERDICTS}.`)
+    console.error('  D9 makes this count an assertion: a mutation that did not run is a gate')
+    console.error('  that stopped testing, and it would otherwise pass this very check.')
+    process.exit(1)
+  }
   if (failed) process.exit(1)
 }
 

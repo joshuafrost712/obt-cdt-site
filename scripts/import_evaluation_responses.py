@@ -633,8 +633,10 @@ def main() -> int:
         # on, so the count of it is a number an operator has to see. Program
         # finding 47: zero is a result, not a line that silently does not
         # print. This sits with the loud attach block above rather than in a
-        # mode branch below, so it prints in --dry-run, --emit-sql and --apply
-        # alike (criterion 3 runs the one that writes nothing).
+        # mode branch below, so it prints in every mode: the default (which IS
+        # the dry run — there is no --dry-run flag; criterion 3's wording and an
+        # earlier version of this comment both claimed one, and argparse
+        # rejects it), --emit-sql, and --apply.
         named = sum(1 for r in responses if (r.get("name") or "").strip())
         print(f"\nnames      {named} of {len(responses)} responses carry a name")
         if named == 0:
