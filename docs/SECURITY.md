@@ -423,6 +423,36 @@ this being closed only if no portal administrator exists yet, which is currently
 true and stops being true the day the allowlist is seeded. **Seeding the allowlist
 and applying this migration belong in the same sitting.**
 
+#### That condition was breached, and the window has been open since 2026-09-03
+
+Re-measured against the live project on 2026-09-11. The premise of the paragraph
+above no longer holds, in the direction it warned about:
+
+| What the section assumed | Live state, 2026-09-11 |
+|---|---|
+| `member_allowlist` is empty | **42 rows** |
+| no portal administrator exists | **one**, `josh_frost@sil.org`, owner, created 2026-09-03 |
+| no accounts | **22** `auth.users` |
+| TOTP not yet enabled | `mfa_totp_enroll_enabled = true` |
+| verified MFA factors | **zero** |
+| `is_portal_admin()` carries no `aal2` clause | still true, unchanged |
+
+So the deadlock this section describes opened, the allowlist was seeded and an
+administrator was created, and the migration did not follow in that sitting. The
+"same sitting" rule was the only thing holding the two together, and it was not
+enforced by anything executable. The result is the exposure the section measures,
+live, for eight days and counting, with 22 real accounts rather than fourteen
+fixtures.
+
+The remaining prerequisite is now only the enrolment itself: TOTP is enabled and
+an administrator exists, so `scripts/mfa-enrol.mjs` can run today, after which
+`20260821120000_admin_mfa.sql` applies and its own safety gate passes.
+
+Worth carrying forward as a rule rather than a note: a guard that lives only in
+prose ("these belong in the same sitting") is not a guard. The migration's DO
+block correctly refuses to run *too early*; nothing anywhere refuses to leave it
+*unrun*, which is the failure that actually happened.
+
 ## A harness temporarily replaces two objects on the live project
 
 CDT-06a's boundary harness mutates live SQL, and this section exists because
@@ -472,6 +502,31 @@ to rotate, because no credential and no person's address was disclosed.
 cloned, forked and mirrored. Rewriting it removes the evidence and not the
 exposure, and it breaks every clone. If a real key is ever found here, rotate it
 and record the rotation in this file.
+
+### Rotation record
+
+| Date | Credential | Why | Outcome |
+|---|---|---|---|
+| 2026-09-11 | Project `sb_secret_` service key | Transmitted through a chat transcript on 2026-08-21; exposed 21 days | **Rotated.** New key `sb_secret_xDxD…` created, all four stores updated, old key id `3ed27892…` revoked and confirmed dead (401); new key confirmed live (200) with service-role reach |
+| 2026-09-11 | Account management PAT (`sbp_2ee4…`) | Same transcript, same date. Account-scoped root credential, so the broader of the two | See the note below |
+
+Neither credential was exposed *in this repo*. The history scan above is clean and
+stays clean; the exposure was a chat transcript. They are recorded here because
+this file is where the project's rotations are supposed to be findable, and a
+rotation recorded only in a task list is a rotation the next session cannot verify.
+
+**A trap worth writing down, because it cost a cycle.** `POST /v1/projects/{ref}/api-keys`
+returns the new key **masked** in its create response (`sb_secret__CZJu·········`).
+Using that value directly yields a 401 that looks exactly like propagation delay,
+and no amount of waiting fixes it. The usable value comes from
+`GET /v1/projects/{ref}/api-keys?reveal=true`. Create, then reveal, then verify
+against `/rest/v1/` before revoking anything.
+
+**Order that matters for the service key**: create the replacement, verify it
+reaches the REST API *and* reads an RLS-protected table, update every store, and
+only then revoke the old one. Revoking first leaves the seeders and fixture
+scripts with no working key, and several of them are the only way to inspect the
+tables you would need to diagnose that.
 
 The scanner is proved rather than trusted: `--self-test` plants a synthetic
 address and a fake key on a **local-only** branch in a throwaway git worktree,
