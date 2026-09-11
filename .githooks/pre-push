@@ -102,7 +102,31 @@ while read -r local_ref local_sha remote_ref remote_sha; do
       continue
     fi
     case "$local_sha" in
-      "$sig"*) echo "pre-push: $spec build review signed $sig, which is the pushed tip."; verified=1 ;;
+      "$sig"*)
+        echo "pre-push: $spec build review signed $sig, which is the pushed tip."
+        # 3b. The shadow review is the model-tier experiment's only data source, and a
+        #     session that skips it produces a build indistinguishable from a compliant
+        #     one. So the record states the outcome either way: a tier and its rows, or
+        #     an explicit skip with a reason that lands in the terminal record.
+        #     Two accepted forms only. A free-text line would let "shadow: review
+        #     deferred to a later session" satisfy the gate and then be printed as
+        #     though a shadow had run, which is worse than no check.
+        shadow="$(grep -E '^shadow: *\S' "$record" | tail -1 | cut -d' ' -f2-)"
+        case "$shadow" in
+          "")
+            refuse "$spec build record has no 'shadow:' line; run the cheap shadow review (Model-Tier-Evidence-Protocol.md) or record 'shadow: skipped <reason>'" ;;
+          skipped\ ??*)
+            echo "pre-push: $spec shadow review SKIPPED: ${shadow#skipped }" >&2 ;;
+          haiku\ *|sonnet\ *)
+            jobs="$(printf '%s' "$shadow" | awk '{print $2}')"
+            case "$jobs" in
+              *[MDJ]*) echo "pre-push: $spec shadow review: $shadow." ;;
+              *) refuse "$spec 'shadow: $shadow' names no job letters; write 'shadow: <tier> <M,D,J> <date>'" ;;
+            esac ;;
+          *)
+            refuse "$spec 'shadow: $shadow' is not a recognised form; write 'shadow: <haiku|sonnet> <M,D,J> <date>' or 'shadow: skipped <reason>'" ;;
+        esac
+        verified=1 ;;
       *) echo "pre-push: $spec build review signed $sig, but the pushed tip is ${local_sha:0:12}; commits since the review are unverified." >&2 ;;
     esac
   done
