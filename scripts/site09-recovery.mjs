@@ -342,6 +342,44 @@ try {
   ok('a second device ACCEPTS the new password', (await signIn(NEW_PASSWORD)) === true)
   await p2.screenshot({ path: `${SHOTS}/04-second-device.png` })
   await fresh.close()
+
+  // ------------------------------------------------------------ criterion 6
+  // A person in recovery can leave WITHOUT setting a password, lands signed
+  // out, and the persisted flag is cleared. Without this they are stuck on the
+  // form: the flag outlives the session by design, so a browser that never
+  // completes recovery would show the form forever.
+  //
+  // Needs its own link because the first one is consumed. Added after the
+  // shadow review pointed out criterion 6 had no assertion at all — it had
+  // verified the BEHAVIOUR by reading auth-js (signOut defaults to global
+  // scope), which is better than assuming, but the contract wants it tested.
+  const link2 = await (
+    await admin('admin/generate_link', {
+      method: 'POST',
+      body: JSON.stringify({ type: 'recovery', email: ADDR, redirect_to: `${BASE}/portal` }),
+    })
+  ).json()
+  if (!link2.action_link) throw new Error('could not mint a second recovery link')
+
+  const leaveCtx = await browser.newContext()
+  const p3 = await leaveCtx.newPage()
+  await p3.goto(link2.action_link, { waitUntil: 'networkidle' })
+  await p3.waitForSelector('[data-portal-state="recovery"]', { timeout: 10000 }).catch(() => {})
+  ok('criterion 6: the form renders on a second link', (await p3.locator('[data-portal-state="recovery"]').count()) > 0)
+
+  await p3.getByRole('button', { name: /Not now/ }).click()
+  await p3.waitForTimeout(2000)
+  ok(
+    'criterion 6: leaving clears the persisted recovery flag',
+    (await p3.evaluate(() => localStorage.getItem('obtcdt.portal.recovery'))) === null,
+  )
+  // Signed out, so the sign-in card is what a reload shows — not the recovery
+  // form, and not the member shell.
+  await p3.goto(`${BASE}/portal`, { waitUntil: 'networkidle' })
+  ok('criterion 6: they land signed out', (await p3.locator('#portal-password').count()) > 0)
+  ok('criterion 6: and not back on the recovery form', (await p3.locator('[data-portal-state="recovery"]').count()) === 0)
+  await p3.screenshot({ path: `${SHOTS}/05-left-recovery.png` })
+  await leaveCtx.close()
 } catch (e) {
   fail++
   console.log(`  FAIL  lane threw: ${e.message}`)

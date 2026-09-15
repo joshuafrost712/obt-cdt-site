@@ -107,6 +107,11 @@
         "label": "That password is too short. Please use at least the number of characters shown."
       },
       {
+        "id": "portal.recovery.expired",
+        "type": "labelToken",
+        "label": "That reset link has expired or has already been used. Please ask for a new one from the sign-in page."
+      },
+      {
         "id": "portal.recovery.leave",
         "type": "labelToken",
         "label": "Not now"

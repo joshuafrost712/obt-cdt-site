@@ -186,7 +186,22 @@ function RecoveryCard() {
     setErrorText('')
     const { error } = await supabase().auth.updateUser({ password })
     if (error) {
-      setErrorText(error.message)
+      // The likeliest real failure here is an expired or already-used link:
+      // `mailer_otp_exp` is 3600, so an hour-old email fails at exactly this
+      // call, and the person is already locked out and now reading a raw
+      // server sentence. That is the shape of program finding 65, which the
+      // shadow review noticed surviving in this form. Everything else falls
+      // back to the server's message, because inventing a diagnosis the
+      // browser cannot make is worse than quoting the one fact available.
+      const expired = /expired|invalid|not found|token/i.test(error.message)
+      setErrorText(
+        expired
+          ? siteLabel(
+              'portal.recovery.expired',
+              'That reset link has expired or has already been used. Please ask for a new one from the sign-in page.',
+            )
+          : error.message,
+      )
       setStatus('error')
       return
     }
