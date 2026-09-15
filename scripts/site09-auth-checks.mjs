@@ -188,16 +188,55 @@ ok('c1 must_not: no new route — src/App.tsx is untouched', appUntouched, appDi
 //    below is the JS-form digest of that same D0 capture, and a future reader
 //    comparing it with the build record's `ebb6cc4b…` is looking at the same
 //    config through a different serializer, not at a changed setting.
-const D0_CONFIG_SHA = 'd2cc6170369c174773080576117df96b45146630f0aefb9c8c67f78ff8f05890'
-const secretish = (k) => /secret|key|password_hash|token/i.test(k)
-const nonSecret = Object.fromEntries(
+const D0_CONFIG_SHA = 'ba28d495048d0ef155d5d7b748f90083d415cb50682bf535e82618a6dd2a4273'
+//    Every key is hashed. Secret VALUES are redacted rather than their keys
+//    dropped, because dropping by name silently narrows the check.
+//
+//    The first version dropped any key matching /secret|key|password_hash|token/
+//    and the substring match caught 46 keys, of which several are not secrets at
+//    all: `refresh_token_rotation_enabled`, `security_refresh_token_reuse_interval`,
+//    `passkey_enabled`, `rate_limit_token_refresh`, the whole `external_keycloak_*`
+//    family. The re-review proved it exploitable — it turned refresh-token
+//    rotation OFF, widened the reuse interval to 99999 and disabled passkeys, and
+//    this check still reported "no GoTrue setting changed", 15 pass / 0 fail.
+//    The contract says "covering all 243 keys rather than a chosen few"; it was
+//    covering 197, and the key-count assertion cannot see a value change.
+//
+//    Redaction is anchored to the END of the name, so `..._secret`, `..._secrets`,
+//    `..._api_key`, `..._auth_token` and `..._access_key` are masked while
+//    `refresh_token_rotation_enabled` is hashed like any other setting. A masked
+//    key still contributes its NAME and a stable placeholder, so a secret
+//    appearing or disappearing still changes the digest.
+//    `smtp_pass` is named explicitly because it matches no suffix rule and is a
+//    live credential: the custom SMTP password. Caught by a safety check while
+//    building this, not by the pattern — which is the argument for keeping that
+//    check rather than trusting the regex.
+const isSecretValue = (k) =>
+  /(_secret|_secrets|_api_key|_auth_token|_access_key|_password_hash)$/i.test(k) || k === 'smtp_pass'
+const REDACTED = '<redacted>'
+const hashable = Object.fromEntries(
   Object.keys(cfg)
-    .filter((k) => !secretish(k))
     .sort()
-    .map((k) => [k, cfg[k]]),
+    .map((k) => [k, isSecretValue(k) ? (cfg[k] == null ? null : REDACTED) : cfg[k]]),
 )
-const configSha = createHash('sha256').update(JSON.stringify(nonSecret)).digest('hex')
+const configSha = createHash('sha256').update(JSON.stringify(hashable)).digest('hex')
+const redactedCount = Object.keys(cfg).filter(isSecretValue).length
 ok('c1 must_not: the auth config still has 243 keys', Object.keys(cfg).length === 243, `keys=${Object.keys(cfg).length}`)
+ok(
+  'c1 must_not: the hash covers every key, redacting only secret values',
+  Object.keys(hashable).length === Object.keys(cfg).length,
+  `hashed=${Object.keys(hashable).length} of ${Object.keys(cfg).length}, ${redactedCount} value(s) redacted`,
+)
+
+// A credential must never reach the digest input, because a digest is a thing
+// people paste into records. This is the check that caught `smtp_pass`, which
+// matches no suffix rule; it stays so the next added credential is caught the
+// same way rather than by luck. Heuristic: a long opaque string with no spaces
+// that is not a URL is a credential shape.
+const leaked = Object.entries(hashable)
+  .filter(([, v]) => typeof v === 'string' && v !== REDACTED && v.length > 40 && !v.includes(' ') && !v.startsWith('http'))
+  .map(([k]) => k)
+ok('c1 must_not: no credential-shaped value reaches the digest input', leaked.length === 0, leaked.join(', ') || 'none')
 ok(
   'c1 must_not: no GoTrue setting changed — config sha256 matches D0',
   configSha === D0_CONFIG_SHA,

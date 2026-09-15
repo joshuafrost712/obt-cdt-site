@@ -495,6 +495,59 @@ try {
   ok('criterion 6: and not back on the recovery form', (await p3.locator('[data-portal-state="recovery"]').count()) === 0)
   await p3.screenshot({ path: `${SHOTS}/05-left-recovery.png` })
   await leaveCtx.close()
+
+  // ------------------------------------------------- criteria 4 and 3, arm two
+  // Both were flagged by the re-review as unmet AND undeclared, which is the
+  // worse half: the contract read as covered.
+  //
+  // Criterion 4: the reset panel renders the SAME content node for an address
+  // with an account and one without, both arms in the same run. If it did not,
+  // the form would answer "is this person in the cohort?" to anyone who typed
+  // an address — the same disclosure c2 exists to prevent, through a different
+  // door.
+  //
+  // Criterion 3, second arm: a failed sign-in must not state whether the
+  // address exists. F6 asserted the bad-credentials sentence for a WRONG
+  // PASSWORD on a real account; this asserts the same sentence for an address
+  // with no account at all. One node, two causes, which is the two-sided proof
+  // the c3 must_not needs.
+  const resetSent = findLabel(content, 'portal.signin.reset-sent')
+  ok('the reset-sent content node was read at run time', Boolean(resetSent), resetSent ? 'found' : 'MISSING')
+
+  const panelCtx = await browser.newContext()
+  const p4 = await panelCtx.newPage()
+
+  const askReset = async (addr) => {
+    await p4.goto(`${BASE}/portal`, { waitUntil: 'networkidle' })
+    await p4.getByRole('button', { name: /I forgot my password|Forgot/i }).click()
+    await p4.locator('#portal-email').fill(addr)
+    await p4.getByRole('button', { name: /Email me a reset link/ }).click()
+    await p4.waitForTimeout(2500)
+    return (await p4.locator('body').innerText()).includes(resetSent)
+  }
+  // The fixture HAS an account. A random address on nobody's list does not.
+  const strangerAddr = `site09-nobody-${Date.now()}@example.org`
+  const withAccount = await askReset(ADDR)
+  const withoutAccount = await askReset(strangerAddr)
+  ok('criterion 4: the reset panel answers the same for an address WITH an account', withAccount)
+  ok('criterion 4: and the same for one WITHOUT', withoutAccount)
+  ok('criterion 4: both arms resolve to the same node, in one run', withAccount && withoutAccount)
+
+  // Criterion 3, arm two: an unknown address gets the bad-credentials sentence,
+  // the same one a wrong password gets.
+  await p4.goto(`${BASE}/portal`, { waitUntil: 'networkidle' })
+  await p4.locator('#portal-email').fill(strangerAddr)
+  await p4.locator('#portal-password').fill('SomeLongEnoughPassword2026')
+  await p4.getByRole('button', { name: /^Sign in$/ }).click()
+  await p4.waitForTimeout(2500)
+  const unknownBody = await p4.locator('body').innerText()
+  ok(
+    'criterion 3: an UNKNOWN address gets the same bad-credentials sentence as a wrong password',
+    badCreds ? unknownBody.includes(badCreds) : false,
+  )
+  ok('criterion 3: and is not signed in', (await p4.getByRole('button', { name: /^Sign out$/ }).count()) === 0)
+  await p4.screenshot({ path: `${SHOTS}/06-enumeration.png` })
+  await panelCtx.close()
 } catch (e) {
   fail++
   console.log(`  FAIL  lane threw: ${e.message}`)
