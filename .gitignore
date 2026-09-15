@@ -118,3 +118,9 @@ feedback/site05-shots/
 # therefore written BEFORE the lane takes its first screenshot, which is the
 # order finding 24 asks for and the order SITE-03 got wrong.
 feedback/site08-shots/
+
+# Spec SITE-09's shots. They photograph a password-recovery form driven by the
+# lane's own fixture account, so no participant appears in them. Ignored anyway,
+# per findings 11 and 36 and criterion 10: a screenshot directory is gitignored
+# BEFORE the first run, not after someone notices what landed in it.
+feedback/site09-shots/

@@ -1,0 +1,365 @@
+/**
+ * SITE-09 contract c1: a person who clicks the reset link sets a new password
+ * and signs in with it on a different device.
+ *
+ *   npm i -D --no-save playwright && npx playwright install chromium
+ *   npm run build
+ *   node scripts/site09-recovery.mjs --assert
+ *
+ * ## The defect this proves is fixed
+ *
+ * Measured 2026-09-10: the reset email sent a link, the link signed the person
+ * in, and NO screen anywhere in `src/` called `updateUser`. So the password
+ * never changed and a second device could never sign in. `recovery_sent_at` was
+ * 0 across all 22 accounts, which means no participant had yet walked it.
+ *
+ * ## `redirect_to` must be TOP-LEVEL on generate_link
+ *
+ * Found in this build, 2026-09-15, and it is a trap worth naming. Passing
+ * `options.redirect_to` (the shape the client SDK uses) is accepted, ignored,
+ * and silently falls back to `site_url` — which is PRODUCTION. A lane that did
+ * not check would have driven a real browser against the live site while
+ * believing it was local. The assertion below refuses any link whose
+ * `redirect_to` is not this lane's own localhost origin.
+ *
+ * ## Why 4191
+ *
+ * `uri_allow_list` has four entries and no wildcard, so the lane cannot invent a
+ * port. 4191 is on the list and is booked by four other lanes (CDT-04, CDT-06a,
+ * SITE-04, SITE-05); this lane holds it exclusively while running.
+ *
+ * ## Mutations (contract c1)
+ *
+ *   1. Remove the `recovery` branch in `AuthGate` → the member shell renders and
+ *      the form is absent.
+ *   2. Make `markRecovery()` a no-op → the reload-and-navigate arm fails while
+ *      first paint still passes. This is the one that proves persistence, and it
+ *      is the defect review finding B1 caught in the design.
+ */
+import { execFileSync, spawn } from 'node:child_process'
+import { existsSync, mkdirSync, readFileSync } from 'node:fs'
+import { homedir } from 'node:os'
+import path from 'node:path'
+import { chromium } from 'playwright'
+
+const ASSERT = process.argv.includes('--assert')
+if (!ASSERT) {
+  console.error('usage: node scripts/site09-recovery.mjs --assert')
+  process.exit(2)
+}
+
+const PORT = 4191
+const BASE = `http://localhost:${PORT}/obt-cdt-site`
+const PREFIX = 'site09-rec-'
+const NEW_PASSWORD = 'Fixture-New-Pass-2026-Xyz'
+const OLD_PASSWORD = 'OldFixturePass2026x'
+const SHOTS = 'feedback/site09-shots'
+
+let pass = 0
+let fail = 0
+const ok = (name, cond, detail = '') => {
+  if (cond) {
+    pass++
+    console.log(`  ok    ${name}${detail ? `  ${detail}` : ''}`)
+  } else {
+    fail++
+    console.log(`  FAIL  ${name}${detail ? `  ${detail}` : ''}`)
+  }
+}
+
+function creds() {
+  const file = path.join(homedir(), '.claude/secrets/obt-cdt-supabase.env')
+  if (!existsSync(file)) {
+    console.error(`missing ${file}`)
+    process.exit(2)
+  }
+  const out = execFileSync('/bin/zsh', [
+    '-c',
+    `set -a; . ${JSON.stringify(file)}; set +a; ` +
+      'printf "%s\\n%s\\n%s\\n%s" "$OBT_CDT_SUPABASE_PROJECT_REF" "$OBT_CDT_SUPABASE_ACCESS_TOKEN" ' +
+      '"$OBT_CDT_SUPABASE_SECRET_KEY" "$OBT_CDT_SUPABASE_URL"',
+  ])
+    .toString()
+    .split('\n')
+    .map((s) => s.trim())
+  const [ref, token, secret, url] = out
+  if (!ref || !token || !secret || !url) {
+    console.error(`incomplete credentials in ${file}`)
+    process.exit(2)
+  }
+  return { ref, token, secret, url }
+}
+
+const { ref, token, secret, url } = creds()
+
+// ------------------------------------------------------------ roster guard
+// Contract c1: no recovery link is ever minted against a cohort address. The
+// guard is the lane prefix AND absence from the dated roster export, and it
+// REFUSES when that export is absent (review finding B3).
+function rosterGuard(addr) {
+  // The same file `site08-name-scan.mjs` reads, deliberately: one roster, one
+  // location, so a lane cannot pass by checking a staler copy than the scan.
+  // It lives in ~/Documents and never in this repo.
+  const roster = execFileSync('/bin/zsh', [
+    '-c',
+    `ls ${JSON.stringify(homedir())}/Documents/obt-cdt-allowlist-names-*.csv 2>/dev/null | tail -1`,
+  ])
+    .toString()
+    .trim()
+  if (!roster) {
+    console.error('REFUSED: no roster export found; cannot prove this address is not a participant.')
+    console.error('Expected ~/Documents/obt-cdt-allowlist-names-<date>.csv')
+    process.exit(2)
+  }
+  const text = readFileSync(roster, 'utf8').toLowerCase()
+  if (text.includes(addr.toLowerCase())) {
+    console.error(`REFUSED: ${addr} appears in the roster export.`)
+    process.exit(1)
+  }
+  if (!addr.startsWith(PREFIX) || !addr.endsWith('@example.org')) {
+    console.error(`REFUSED: ${addr} is not a lane fixture address.`)
+    process.exit(1)
+  }
+  return path.basename(roster)
+}
+
+const sql = async (query) => {
+  const res = await fetch(`https://api.supabase.com/v1/projects/${ref}/database/query`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ query }),
+  })
+  if (!res.ok) throw new Error(`sql ${res.status}: ${(await res.text()).slice(0, 200)}`)
+  return res.json()
+}
+
+const admin = async (route, init = {}) =>
+  fetch(`${url}/auth/v1/${route}`, {
+    ...init,
+    headers: {
+      apikey: secret,
+      Authorization: `Bearer ${secret}`,
+      'Content-Type': 'application/json',
+      ...(init.headers ?? {}),
+    },
+  })
+
+// --------------------------------------------------------------- fixture
+const ADDR = `${PREFIX}${Date.now()}@example.org`
+const rosterName = rosterGuard(ADDR)
+console.log(`fixture   = ${PREFIX}<ts>@example.org`)
+console.log(`roster    = ${rosterName} (checked, address absent)`)
+
+let userId = null
+let server = null
+let browser = null
+
+async function teardown() {
+  try {
+    if (browser) await browser.close()
+  } catch {}
+  try {
+    if (server) server.kill()
+  } catch {}
+  if (userId) {
+    await admin(`admin/users/${userId}`, { method: 'DELETE' }).catch(() => {})
+  }
+  await sql(`delete from public.member_allowlist where email = '${ADDR}'`).catch(() => {})
+}
+
+process.on('exit', () => {})
+
+try {
+  // Allowlist first: handle_new_portal_user() refuses any address absent from it.
+  await sql(`insert into public.member_allowlist (email, full_name) values ('${ADDR}', 'Site09 Recovery Fixture') on conflict (email) do nothing`)
+
+  const created = await (
+    await admin('admin/users', {
+      method: 'POST',
+      body: JSON.stringify({ email: ADDR, password: OLD_PASSWORD, email_confirm: true }),
+    })
+  ).json()
+  userId = created.id
+  if (!userId) throw new Error(`fixture account not created: ${JSON.stringify(created).slice(0, 200)}`)
+
+  // ------------------------------------------------- build as production does
+  //
+  // The lane builds `dist/` itself rather than trusting whatever is on disk,
+  // because TWO build-env mistakes each produce a page that looks exactly like
+  // "the recovery form does not render" while the product is in fact correct.
+  // Both were hit in this build, 2026-09-15, and cost seven false failures each:
+  //
+  //   1. `VITE_BASE` unset defaults to `/`, so the bundle emits
+  //      `src="/assets/..."`. Served under this server's `/obt-cdt-site/` base
+  //      every asset 404s and the body renders blank.
+  //   2. `VITE_SUPABASE_*` unset makes `backendEnabled` false (config.ts:25), so
+  //      `App.tsx` never registers the `/portal` route at all and the SPA
+  //      renders its 404 page instead. This is the sharper of the two: the page
+  //      is fully rendered and entirely wrong.
+  //
+  // The publishable key is public by design and ships in the live bundle; it is
+  // read from there rather than stored, so this lane holds no key of its own.
+  const liveBundle = await (
+    await fetch('https://joshuafrost712.github.io/obt-cdt-site/assets/index-C6BLGjsx.js')
+  ).text()
+  const pubKey = /sb_publishable_[A-Za-z0-9_-]+/.exec(liveBundle)?.[0]
+  const projectUrl = /https:\/\/[a-z]+\.supabase\.co/.exec(liveBundle)?.[0]
+  if (!pubKey || !projectUrl) {
+    console.error('REFUSED: could not read the publishable key or project URL from the live bundle.')
+    process.exit(2)
+  }
+
+  console.log('building dist/ with the deploy\'s own environment…')
+  execFileSync('npm', ['run', 'build'], {
+    stdio: 'ignore',
+    env: {
+      ...process.env,
+      VITE_BASE: '/obt-cdt-site/',
+      VITE_SUPABASE_URL: projectUrl,
+      VITE_SUPABASE_PUBLISHABLE_KEY: pubKey,
+    },
+  })
+
+  // Both preconditions, asserted on the artifact rather than assumed from the
+  // env we just passed.
+  const four04 = readFileSync('dist/404.html', 'utf8')
+  ok('dist/ is built with the production base path', four04.includes('src="/obt-cdt-site/assets/'))
+  const builtEntry = /src="\/obt-cdt-site\/(assets\/index-[A-Za-z0-9_-]+\.js)"/.exec(four04)?.[1]
+  const entryText = builtEntry ? readFileSync(path.join('dist', builtEntry), 'utf8') : ''
+  ok('dist/ is built with the backend enabled', entryText.includes('sb_publishable_'))
+
+  server = spawn('node', ['scripts/serve-dist.mjs', '--port', String(PORT)], { stdio: 'ignore' })
+  // Readiness is probed at the BASE, not at /portal. The portal is an SPA route
+  // with no file behind it, so this server answers it through 404.html with a
+  // 404 status, exactly as GitHub Pages does. A readiness check on `r.ok` at
+  // /portal therefore never goes true even though the server is up and correct.
+  const up = async () => {
+    for (let i = 0; i < 60; i++) {
+      try {
+        const r = await fetch(`${BASE}/`)
+        if (r.ok) return true
+      } catch {}
+      await new Promise((r) => setTimeout(r, 250))
+    }
+    return false
+  }
+  if (!(await up())) throw new Error(`dist server did not come up on ${PORT}`)
+
+  // ------------------------------------------------------ mint the link
+  // redirect_to is TOP-LEVEL. Nested under options it is ignored and falls back
+  // to site_url, which is production.
+  const linkRes = await (
+    await admin('admin/generate_link', {
+      method: 'POST',
+      body: JSON.stringify({ type: 'recovery', email: ADDR, redirect_to: `${BASE}/portal` }),
+    })
+  ).json()
+  const actionLink = linkRes.action_link
+  if (!actionLink) throw new Error(`no action_link: ${JSON.stringify(linkRes).slice(0, 200)}`)
+
+  const redirectTo = new URL(actionLink).searchParams.get('redirect_to')
+  ok(
+    'the minted link redirects to THIS lane, not to production',
+    redirectTo === `${BASE}/portal`,
+    `redirect_to=${redirectTo}`,
+  )
+  if (redirectTo !== `${BASE}/portal`) throw new Error('refusing to drive a browser against production')
+
+  // --------------------------------------------------------- the browser
+  mkdirSync(SHOTS, { recursive: true })
+  browser = await chromium.launch()
+  const ctx = await browser.newContext()
+  const page = await ctx.newPage()
+  await page.goto(actionLink, { waitUntil: 'networkidle' })
+
+  // Criterion 1: the recovery form renders, the member shell does not, and the
+  // origin is this lane's own localhost.
+  ok('the lane is on its own origin, not production', new URL(page.url()).origin === `http://localhost:${PORT}`, page.url().split('#')[0])
+  await page.waitForSelector('[data-portal-state="recovery"]', { timeout: 10000 }).catch(() => {})
+  ok('the new-password form renders', await page.locator('[data-portal-state="recovery"]').count() > 0)
+  ok('two password fields are present', (await page.locator('input[type="password"]').count()) === 2)
+  ok('the member sign-out bar is absent', (await page.locator('[data-portal-state="recovery"]').count()) > 0 && (await page.getByRole('button', { name: /^Sign out$/ }).count()) === 0)
+
+  // The nav must not offer the member entries while the password is unset. The
+  // person holds a live session, so without the recovery check in `SiteLayout`
+  // the full member nav renders behind this form. Found by READING THE
+  // SCREENSHOT, 2026-09-15, not by an assertion — which is why there is one now.
+  const memberNav = await page.getByRole('link', { name: /^(Members|Materials|Psalms handbook)$/ }).count()
+  ok('the nav hides the member entries during recovery', memberNav === 0, `member links=${memberNav}`)
+  await page.screenshot({ path: `${SHOTS}/01-recovery-form.png` })
+
+  // Criterion 1a: it survives a reload and a route change. This is the arm that
+  // makes review finding B1 false.
+  await page.reload({ waitUntil: 'networkidle' })
+  ok('the form survives a reload', (await page.locator('[data-portal-state="recovery"]').count()) > 0)
+  await page.goto(`${BASE}/portal/evaluations`, { waitUntil: 'networkidle' })
+  ok('the form survives a route change', (await page.locator('[data-portal-state="recovery"]').count()) > 0)
+  await page.screenshot({ path: `${SHOTS}/02-after-nav.png` })
+
+  // Criterion 5: both inputs refuse a short value before any network call.
+  const floor = Number(/PASSWORD_MIN_LENGTH\s*=\s*(\d+)/.exec(readFileSync('src/lib/backend/passwordPolicy.ts', 'utf8'))[1])
+  const mins = await page.locator('input[type="password"]').evaluateAll((els) => els.map((e) => e.minLength))
+  ok('both recovery inputs carry the floor', mins.length === 2 && mins.every((m) => m === floor), `mins=${mins.join(',')} floor=${floor}`)
+
+  // Criterion 5, second half: a mismatch is refused before any network call.
+  await page.goto(`${BASE}/portal`, { waitUntil: 'networkidle' })
+  await page.locator('#portal-recovery-password').fill(NEW_PASSWORD)
+  await page.locator('#portal-recovery-confirm').fill(`${NEW_PASSWORD}-different`)
+  await page.getByRole('button', { name: /Save the new password/ }).click()
+  await page.waitForTimeout(400)
+  ok('a mismatch is refused and the form stays', (await page.locator('[data-portal-state="recovery"]').count()) > 0)
+
+  // Criterion 2: the password actually sets.
+  const before = (await sql(`select encrypted_password from auth.users where id = '${userId}'`))[0].encrypted_password
+  await page.locator('#portal-recovery-confirm').fill(NEW_PASSWORD)
+  await page.getByRole('button', { name: /Save the new password/ }).click()
+  await page.waitForSelector('[data-portal-state="recovery-done"]', { timeout: 15000 }).catch(() => {})
+  ok('the page confirms the password is set', (await page.locator('[data-portal-state="recovery-done"]').count()) > 0)
+  await page.screenshot({ path: `${SHOTS}/03-done.png` })
+
+  const after = (await sql(`select encrypted_password from auth.users where id = '${userId}'`))[0].encrypted_password
+  ok('encrypted_password changed', before !== after)
+
+  // And the suppression ends when recovery does: the member entries return
+  // without a reload, because `clearRecovery()` is followed by a session
+  // notification. Without that the nav stays empty until the person reloads.
+  const navBack = await page.getByRole('link', { name: /^(Members|Materials|Psalms handbook)$/ }).count()
+  ok('the nav restores the member entries after success', navBack > 0, `member links=${navBack}`)
+
+  // Criterion 3: a second context with no storage is refused the OLD password
+  // and accepts the NEW one, in that order.
+  const fresh = await browser.newContext()
+  const p2 = await fresh.newPage()
+  const signIn = async (pw) => {
+    await p2.goto(`${BASE}/portal`, { waitUntil: 'networkidle' })
+    await p2.locator('#portal-email').fill(ADDR)
+    await p2.locator('#portal-password').fill(pw)
+    await p2.getByRole('button', { name: /^Sign in$/ }).click()
+    await p2.waitForTimeout(2500)
+    return (await p2.getByRole('button', { name: /^Sign out$/ }).count()) > 0
+  }
+  ok('a second device is REFUSED the old password', (await signIn(OLD_PASSWORD)) === false)
+  ok('a second device ACCEPTS the new password', (await signIn(NEW_PASSWORD)) === true)
+  await p2.screenshot({ path: `${SHOTS}/04-second-device.png` })
+  await fresh.close()
+} catch (e) {
+  fail++
+  console.log(`  FAIL  lane threw: ${e.message}`)
+} finally {
+  // Criterion 12: teardown asserts a count per table by name.
+  await teardown()
+  try {
+    const t = (await sql(
+      `select (select count(*) from auth.users where email like '${PREFIX}%') as users,` +
+        ` (select count(*) from public.member_allowlist where email like '${PREFIX}%') as allowlist`,
+    ))[0]
+    ok('teardown: no fixture users remain', Number(t.users) === 0, `users=${t.users}`)
+    ok('teardown: no fixture allowlist rows remain', Number(t.allowlist) === 0, `allowlist=${t.allowlist}`)
+  } catch (e) {
+    fail++
+    console.log(`  FAIL  teardown count: ${e.message}`)
+  }
+}
+
+console.log(`\nsite09-recovery: pass=${pass} fail=${fail}`)
+process.exit(fail === 0 ? 0 : 1)

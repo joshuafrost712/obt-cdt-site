@@ -3,6 +3,7 @@ import { Link, NavLink } from 'react-router-dom'
 import { getContent, navItems, siteLabel } from '../../lib/content/loader'
 import { backendEnabled } from '../../lib/backend/config'
 import { hasLiveSession, SESSION_EVENT } from '../../lib/backend/sessionHint'
+import { inRecovery } from '../../lib/backend/recovery'
 import { Txt } from '../text'
 import { DevFeedbackMount } from './DevFeedbackMount'
 import { MovedAnchors } from './MovedAnchors'
@@ -30,7 +31,18 @@ function SiteHeader() {
   // would be a hydration mismatch on every page of the site.
   const [signedIn, setSignedIn] = useState(false)
   useEffect(() => {
-    const read = () => setSignedIn(backendEnabled && hasLiveSession())
+    // Spec SITE-09 c1. A browser in password recovery HOLDS a live session —
+    // the reset link signs the person in — so `hasLiveSession()` alone renders
+    // the full member nav behind the new-password form. `AuthGate` keeps them
+    // on that form through any click (criterion 1a), so this is not the old
+    // defect; it is an invitation to wander when they have exactly one thing to
+    // do. Treating recovery as not-yet-signed-in retires the member entries
+    // until the password is set.
+    //
+    // `recovery.ts` is dependency-free like `sessionHint.ts` beside it, so this
+    // keeps supabase-js out of the entry chunk, which CDT-04 measured and
+    // CDT-06a asserts.
+    const read = () => setSignedIn(backendEnabled && hasLiveSession() && !inRecovery())
     read()
     // `storage` alone is not enough: it fires for other tabs and never for the
     // one that signed in, so the nav would stay wrong until a reload.

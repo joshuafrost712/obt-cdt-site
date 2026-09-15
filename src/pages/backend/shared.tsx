@@ -6,6 +6,8 @@ import { siteLabel } from '../../lib/content/loader'
 import { classifySignInError, SIGNIN_ERROR_NODE } from '../../lib/backend/signinErrors'
 import { clearHadAccount, hadAccount, markHadAccount } from '../../lib/backend/seen'
 import { notifySessionChanged } from '../../lib/backend/sessionHint'
+import { clearRecovery } from '../../lib/backend/recovery'
+import { PASSWORD_MIN_LENGTH } from '../../lib/backend/passwordPolicy'
 
 /**
  * Wraps every portal page: resolves the session, shows the sign-in card when
@@ -55,7 +57,7 @@ export function AuthGate({
   wide?: boolean
   children: (session: Session) => ReactNode
 }) {
-  const { session } = useSession()
+  const { session, recovery } = useSession()
 
   useEffect(() => {
     if (session) markHadAccount()
@@ -96,6 +98,19 @@ export function AuthGate({
   }
   if (session === null) return panel(<SignInCard returning={hadAccount()} />)
 
+  // Spec SITE-09 c1. A reset link hands back a real session, so without this the
+  // person lands in the member shell and no screen ever sets a password — the
+  // defect the audit measured on 2026-09-10.
+  //
+  // It sits INSIDE the gate rather than at one mount point because `App.tsx`
+  // mounts a gate per route (review finding B1). Every portal route therefore
+  // shows this form until the password is set, which is what makes criterion 1a
+  // true across a reload and a nav rather than only on first paint.
+  //
+  // `wide` is deliberately ignored: a wide page hands the layout to its
+  // children, and the children are exactly what must not render yet.
+  if (recovery) return panel(<RecoveryCard />)
+
   if (wide) {
     return (
       <div className="pb-16">
@@ -112,6 +127,167 @@ export function AuthGate({
       <MemberBar email={session.user.email ?? ''} compact={compact} />
       {children(session)}
     </>,
+  )
+}
+
+/**
+ * The new-password form, shown to a browser that arrived through a reset link.
+ *
+ * Spec SITE-09 c1. Three things here are criteria rather than choices.
+ *
+ * `updateUser` is the whole point: the old flow emailed a link, signed the
+ * person in, and never called it, so the password never changed. Criterion 2
+ * proves the change against `encrypted_password` rather than `updated_at`,
+ * because consuming the token moves `updated_at` anyway.
+ *
+ * GoTrue's `LogoutAllExceptMe` fires on a password change, so the sentence about
+ * other devices is a description of what happens, not a courtesy. Criterion 3a
+ * asserts the other session row is actually gone.
+ *
+ * Both inputs carry `PASSWORD_MIN_LENGTH` and the mismatch is caught before any
+ * network call (criterion 5), which is what keeps a person out of the raw
+ * server error that finding 65 describes.
+ */
+function RecoveryCard() {
+  const [password, setPassword] = useState('')
+  const [confirm, setConfirm] = useState('')
+  const [status, setStatus] = useState<'idle' | 'working' | 'done' | 'error'>('idle')
+  const [errorText, setErrorText] = useState('')
+
+  const submit = async (e: FormEvent) => {
+    e.preventDefault()
+    if (status === 'working') return
+
+    // Both checks run before any network call, per criterion 5. Length first:
+    // a person who typed two different short passwords should be told the thing
+    // they can fix without retyping both.
+    if (password.length < PASSWORD_MIN_LENGTH) {
+      setErrorText(
+        siteLabel(
+          'portal.recovery.tooshort',
+          'That password is too short. Please use at least the number of characters shown.',
+        ),
+      )
+      setStatus('error')
+      return
+    }
+    if (password !== confirm) {
+      setErrorText(
+        siteLabel(
+          'portal.recovery.mismatch',
+          'Those two passwords are not the same. Please type the same one twice.',
+        ),
+      )
+      setStatus('error')
+      return
+    }
+
+    setStatus('working')
+    setErrorText('')
+    const { error } = await supabase().auth.updateUser({ password })
+    if (error) {
+      setErrorText(error.message)
+      setStatus('error')
+      return
+    }
+    // Cleared only on success. A failed attempt leaves the person in recovery,
+    // which is where they still are.
+    clearRecovery()
+    // The nav suppresses the member entries while in recovery, so it has to be
+    // told the moment that ends; otherwise they stay missing until a reload.
+    notifySessionChanged()
+    setStatus('done')
+  }
+
+  if (status === 'done') {
+    return (
+      <div className="mt-8" data-portal-state="recovery-done">
+        <p className="text-ink">
+          {siteLabel('portal.recovery.done', 'Your password is set. You can sign in with it on any device.')}
+        </p>
+      </div>
+    )
+  }
+
+  return (
+    // The discriminator criterion 1 asserts on. `MemberBar` carries no data
+    // attribute today, so the lane proves the member shell is absent by finding
+    // this instead of by failing to find that.
+    <div className="mt-8" data-portal-state="recovery">
+      {/* The panel's own <h1> is the page's title ("Member portal"), which does
+          not say what this screen is for. This heading does, and it is also the
+          string criterion 13 greps for in the served chunks. */}
+      <h2 className="font-display text-2xl font-semibold tracking-tight text-ink">
+        {siteLabel('portal.recovery.heading', 'Set a new password')}
+      </h2>
+      <p className="mt-2 text-ink-soft">
+        {siteLabel(
+          'portal.recovery.body',
+          'Choose a password you have not used before. Signing in on your other devices will need the new one.',
+        )}
+      </p>
+      <form onSubmit={(e) => void submit(e)} className="mt-4 flex flex-col gap-3">
+        <label
+          className="text-xs font-semibold uppercase tracking-wide text-ink-faint"
+          htmlFor="portal-recovery-password"
+        >
+          {siteLabel('portal.recovery.password', 'New password')}
+        </label>
+        <input
+          id="portal-recovery-password"
+          type="password"
+          required
+          minLength={PASSWORD_MIN_LENGTH}
+          autoComplete="new-password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className="rounded-lg border border-ink/20 bg-white px-3 py-2.5 text-ink outline-none focus:border-accent"
+        />
+
+        <label
+          className="text-xs font-semibold uppercase tracking-wide text-ink-faint"
+          htmlFor="portal-recovery-confirm"
+        >
+          {siteLabel('portal.recovery.confirm', 'New password again')}
+        </label>
+        <input
+          id="portal-recovery-confirm"
+          type="password"
+          required
+          minLength={PASSWORD_MIN_LENGTH}
+          autoComplete="new-password"
+          value={confirm}
+          onChange={(e) => setConfirm(e.target.value)}
+          className="rounded-lg border border-ink/20 bg-white px-3 py-2.5 text-ink outline-none focus:border-accent"
+        />
+
+        <button
+          type="submit"
+          disabled={status === 'working'}
+          className="rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-white hover:bg-accent disabled:opacity-50"
+        >
+          {status === 'working'
+            ? siteLabel('portal.recovery.working', 'Saving…')
+            : siteLabel('portal.recovery.cta', 'Save the new password')}
+        </button>
+      </form>
+
+      {status === 'error' && <ErrorNote error={errorText} />}
+
+      {/* Criterion 6: leaving without setting a password must be possible, and
+          must clear the flag, or the browser is stuck on this form forever. */}
+      <button
+        type="button"
+        className="mt-4 text-xs font-medium text-ink-soft underline hover:text-ink"
+        onClick={() => {
+          clearRecovery()
+          clearHadAccount()
+          void supabase().auth.signOut()
+        }}
+      >
+        {siteLabel('portal.recovery.leave', 'Not now')}
+      </button>
+    </div>
   )
 }
 
@@ -276,7 +452,7 @@ function SignInCard({ returning }: { returning: boolean }) {
               id="portal-password"
               type="password"
               required
-              minLength={8}
+              minLength={PASSWORD_MIN_LENGTH}
               autoComplete={mode === 'register' ? 'new-password' : 'current-password'}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
