@@ -154,6 +154,26 @@ let userId = null
 let server = null
 let browser = null
 
+/**
+ * Remove every row this run created, and PROVE it before returning.
+ *
+ * The first version swallowed both deletes with `.catch(() => {})` and returned
+ * immediately, so the count assertions ran against whatever state happened to
+ * exist. The build review caught it the only way it could be caught: by running
+ * the lane and watching one run leave `users=1, allowlist=1` behind — three live
+ * rows (`auth.users`, `profiles`, `member_allowlist`) on the PRODUCTION project,
+ * taking it to 23/43/23 against D0's 22/42/22. A flaky teardown against the real
+ * cohort's database is the worst place to have one.
+ *
+ * Two causes, both handled here. The admin DELETE can transiently fail, and a
+ * swallowed rejection looked identical to success. And the delete of the
+ * `auth.users` row cascades to `profiles`, which is not instantaneous, so a
+ * count taken immediately after the call can still see the row.
+ *
+ * So: retry each delete, then poll until the rows are actually gone, and only
+ * then return. A teardown that cannot confirm its own work fails loudly rather
+ * than leaving the caller to assert against a race.
+ */
 async function teardown() {
   try {
     if (browser) await browser.close()
@@ -161,10 +181,32 @@ async function teardown() {
   try {
     if (server) server.kill()
   } catch {}
-  if (userId) {
-    await admin(`admin/users/${userId}`, { method: 'DELETE' }).catch(() => {})
+
+  for (let attempt = 0; attempt < 5; attempt++) {
+    if (userId) {
+      try {
+        await admin(`admin/users/${userId}`, { method: 'DELETE' })
+      } catch {}
+    }
+    try {
+      await sql(`delete from public.member_allowlist where email = '${ADDR}'`)
+    } catch {}
+
+    // Confirm, rather than assume. `profiles` is included because the cascade
+    // from `auth.users` is what lags.
+    try {
+      const left = (
+        await sql(
+          `select (select count(*) from auth.users where email = '${ADDR}') u,` +
+            ` (select count(*) from public.profiles where id = '${userId ?? '00000000-0000-0000-0000-000000000000'}') p,` +
+            ` (select count(*) from public.member_allowlist where email = '${ADDR}') a`,
+        )
+      )[0]
+      if (Number(left.u) === 0 && Number(left.p) === 0 && Number(left.a) === 0) return
+    } catch {}
+    await new Promise((r) => setTimeout(r, 1000))
   }
-  await sql(`delete from public.member_allowlist where email = '${ADDR}'`).catch(() => {})
+  console.log('  WARN  teardown could not confirm its own deletes after 5 attempts')
 }
 
 process.on('exit', () => {})
@@ -309,6 +351,30 @@ try {
   await page.waitForTimeout(400)
   ok('a mismatch is refused and the form stays', (await page.locator('[data-portal-state="recovery"]').count()) > 0)
 
+  // ----------------------------------------------------------- criterion 3a
+  // The form TELLS the person their other devices will need the new password.
+  // That sentence has to be true, not decorative. GoTrue's LogoutAllExceptMe
+  // fires on a password change, so a session signed in before the reset must be
+  // gone after it.
+  //
+  // The build review found this unasserted while the RecoveryCard doc comment
+  // claimed it was — a false sentence in the source about a user-facing promise
+  // nothing checked. So: sign in from a third context NOW, record the session
+  // row, and assert below that it is gone.
+  const otherCtx = await browser.newContext()
+  const pOther = await otherCtx.newPage()
+  await pOther.goto(`${BASE}/portal`, { waitUntil: 'networkidle' })
+  await pOther.locator('#portal-email').fill(ADDR)
+  await pOther.locator('#portal-password').fill(OLD_PASSWORD)
+  await pOther.getByRole('button', { name: /^Sign in$/ }).click()
+  await pOther.waitForTimeout(2500)
+  const otherSignedIn = (await pOther.getByRole('button', { name: /^Sign out$/ }).count()) > 0
+  ok('criterion 3a: another device is signed in before the reset', otherSignedIn)
+  const sessionsBefore = Number(
+    (await sql(`select count(*) as n from auth.sessions where user_id = '${userId}'`))[0].n,
+  )
+  ok('criterion 3a: that session exists in auth.sessions', sessionsBefore > 0, `sessions=${sessionsBefore}`)
+
   // Criterion 2: the password actually sets.
   const before = (await sql(`select encrypted_password from auth.users where id = '${userId}'`))[0].encrypted_password
   await page.locator('#portal-recovery-confirm').fill(NEW_PASSWORD)
@@ -320,6 +386,18 @@ try {
   const after = (await sql(`select encrypted_password from auth.users where id = '${userId}'`))[0].encrypted_password
   ok('encrypted_password changed', before !== after)
 
+  // Criterion 3a, the other half: the pre-reset session is gone, so the
+  // sentence on the form is a description of what happened.
+  const sessionsAfter = Number(
+    (await sql(`select count(*) as n from auth.sessions where user_id = '${userId}'`))[0].n,
+  )
+  ok(
+    'criterion 3a: the other device\'s session is gone after the reset',
+    sessionsAfter < sessionsBefore,
+    `before=${sessionsBefore} after=${sessionsAfter}`,
+  )
+  await otherCtx.close()
+
   // And the suppression ends when recovery does: the member entries return
   // without a reload, because `clearRecovery()` is followed by a session
   // notification. Without that the nav stays empty until the person reloads.
@@ -330,16 +408,53 @@ try {
   // and accepts the NEW one, in that order.
   const fresh = await browser.newContext()
   const p2 = await fresh.newPage()
+  // The refusal is compared against the content node `bad-credentials` resolves
+  // to, READ AT RUN TIME from the content file rather than typed here — finding
+  // 50, and the build review's F6. Inferring refusal from "no Sign out button"
+  // is weaker in exactly the way finding 50 names: a page that failed to render,
+  // or that threw, also has no Sign out button, so that assertion passes on a
+  // broken page. This one needs the specific sentence to be on screen.
+  const content = JSON.parse(readFileSync('src/content/site-content.json', 'utf8'))
+  const findLabel = (node, id) => {
+    if (Array.isArray(node)) {
+      for (const n of node) {
+        const hit = findLabel(n, id)
+        if (hit) return hit
+      }
+      return null
+    }
+    if (node && typeof node === 'object') {
+      if (node.id === id && typeof node.label === 'string') return node.label
+      for (const v of Object.values(node)) {
+        const hit = findLabel(v, id)
+        if (hit) return hit
+      }
+    }
+    return null
+  }
+  const badCreds = findLabel(content, 'portal.signin.error.bad-credentials')
+  ok('the bad-credentials content node was read at run time', Boolean(badCreds), badCreds ? 'found' : 'MISSING')
+
   const signIn = async (pw) => {
     await p2.goto(`${BASE}/portal`, { waitUntil: 'networkidle' })
     await p2.locator('#portal-email').fill(ADDR)
     await p2.locator('#portal-password').fill(pw)
     await p2.getByRole('button', { name: /^Sign in$/ }).click()
     await p2.waitForTimeout(2500)
-    return (await p2.getByRole('button', { name: /^Sign out$/ }).count()) > 0
+    const body = await p2.locator('body').innerText()
+    return {
+      signedIn: (await p2.getByRole('button', { name: /^Sign out$/ }).count()) > 0,
+      refusedWithWords: badCreds ? body.includes(badCreds) : false,
+    }
   }
-  ok('a second device is REFUSED the old password', (await signIn(OLD_PASSWORD)) === false)
-  ok('a second device ACCEPTS the new password', (await signIn(NEW_PASSWORD)) === true)
+  const oldTry = await signIn(OLD_PASSWORD)
+  ok('a second device is REFUSED the old password', oldTry.signedIn === false)
+  ok(
+    'and the refusal is the bad-credentials sentence, not a blank page',
+    oldTry.refusedWithWords,
+    oldTry.refusedWithWords ? '' : 'the sentence was not on screen',
+  )
+  ok('a second device ACCEPTS the new password', (await signIn(NEW_PASSWORD)).signedIn === true)
   await p2.screenshot({ path: `${SHOTS}/04-second-device.png` })
   await fresh.close()
 
@@ -387,12 +502,26 @@ try {
   // Criterion 12: teardown asserts a count per table by name.
   await teardown()
   try {
+    // Criterion 12: a count per table BY NAME. `profiles` is counted because
+    // the build review found it leaking alongside the other two and the
+    // original assertion could not see it: the row is created by
+    // `handle_new_portal_user()` and removed by cascade, so it is the one most
+    // likely to lag. `auth.sessions` is counted against its D0 value rather
+    // than a prefix, because sessions carry no address.
     const t = (await sql(
       `select (select count(*) from auth.users where email like '${PREFIX}%') as users,` +
-        ` (select count(*) from public.member_allowlist where email like '${PREFIX}%') as allowlist`,
+        ` (select count(*) from public.member_allowlist where email like '${PREFIX}%') as allowlist,` +
+        ` (select count(*) from public.profiles p join auth.users u on u.id = p.id where u.email like '${PREFIX}%') as profiles,` +
+        ` (select count(*) from auth.users) as total_users,` +
+        ` (select count(*) from public.member_allowlist) as total_allowlist`,
     ))[0]
     ok('teardown: no fixture users remain', Number(t.users) === 0, `users=${t.users}`)
     ok('teardown: no fixture allowlist rows remain', Number(t.allowlist) === 0, `allowlist=${t.allowlist}`)
+    ok('teardown: no fixture profiles remain', Number(t.profiles) === 0, `profiles=${t.profiles}`)
+    // And the project is back to the numbers D0 recorded, which is the check
+    // that would catch a fixture from a DIFFERENT prefix or an earlier crashed
+    // run. D0 2026-09-15: 22 users, 42 allowlist.
+    ok('teardown: the project is back to its D0 totals', Number(t.total_users) === 22 && Number(t.total_allowlist) === 42, `users=${t.total_users} allowlist=${t.total_allowlist}`)
   } catch (e) {
     fail++
     console.log(`  FAIL  teardown count: ${e.message}`)

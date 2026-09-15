@@ -142,7 +142,8 @@ export function AuthGate({
  *
  * GoTrue's `LogoutAllExceptMe` fires on a password change, so the sentence about
  * other devices is a description of what happens, not a courtesy. Criterion 3a
- * asserts the other session row is actually gone.
+ * asserts it: the lane signs a third context in before the reset and compares
+ * `auth.sessions` for this user before and after.
  *
  * Both inputs carry `PASSWORD_MIN_LENGTH` and the mismatch is caught before any
  * network call (criterion 5), which is what keeps a person out of the raw
