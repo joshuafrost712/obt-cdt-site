@@ -124,3 +124,17 @@ feedback/site08-shots/
 # per findings 11 and 36 and criterion 10: a screenshot directory is gitignored
 # BEFORE the first run, not after someone notices what landed in it.
 feedback/site09-shots/
+
+# Spec SITE-12's shots. The account screen's entire subject is a person's name,
+# organisation and email address, so a picture of it signed in is the most
+# directly identifying frame this campaign takes. The lane drives a generated
+# non-roster fixture, so no participant appears in them; ignored anyway, per
+# findings 11 and 36 and the spec's must_not rule 5, which asks for this entry
+# to be on main BEFORE the first screenshot rather than after someone notices
+# what landed in the directory.
+feedback/site12-shots/
+
+# SITE-12 fixture ids, written by scripts/site12-ui.mjs --setup. Carries the
+# fixture auth uuids, its allowlist row and the lane's throwaway password, and
+# the fixture's generated name, which criterion 8 scans the working tree for.
+scripts/.site12-fixture-ids.json
