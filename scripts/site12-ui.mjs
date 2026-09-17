@@ -166,14 +166,26 @@ async function pubkey() {
  *   ('authenticated=rw/postgres'::aclitem)::text like '%authenticated=w%'  →  false
  */
 async function writableColumns() {
-  const cols = await sql(`select a.attname
-                          from pg_attribute a,
-                               lateral aclexplode(a.attacl) x
-                          where a.attrelid='public.profiles'::regclass
-                            and a.attacl is not null
-                            and x.privilege_type = 'UPDATE'
-                            and x.grantee = 'authenticated'::regrole
-                          order by a.attname`)
+  // has_column_privilege, NOT a scan of who appears in attacl. This is the SAME
+  // defect as the text pattern, one level up, and the signing re-review found it
+  // after the first fix: reading the ACL asks "is `authenticated` named here",
+  // while Postgres answers "can `authenticated` write this" through PUBLIC
+  // grants and role membership, neither of which puts that name in the column's
+  // ACL at all. Measured live 2026-09-17 inside a rollback block:
+  //
+  //   grant update (created_at) on public.profiles to public;
+  //     aclexplode/grantee='authenticated'  →  {full_name, org}      (blind)
+  //     has_column_privilege('authenticated', …)  →  {created_at, full_name, org}
+  //
+  // So a PUBLIC grant made a third column writable by every member with the
+  // criterion still green. The function asks the question the must_not actually
+  // makes, and it enumerates from information_schema so a NEW column is covered
+  // the moment it exists rather than when someone remembers to add it.
+  const cols = await sql(`select column_name as attname
+                          from information_schema.columns
+                          where table_schema='public' and table_name='profiles'
+                            and has_column_privilege('authenticated','public.profiles',column_name,'UPDATE')
+                          order by column_name`)
   return cols.map((r) => r.attname)
 }
 
@@ -600,10 +612,16 @@ async function laneCatalog(s) {
   ok('criterion 6: the writable column set is exactly {full_name, org}',
      JSON.stringify(writable) === JSON.stringify(['full_name', 'org']),
      `got {${writable.join(', ')}}`)
+  // The table half, asked the same way and for the same reason. The regex on
+  // relacl was blind to `grant update on profiles to public`, which renders as
+  // `=w/postgres` with an EMPTY grantee and so never matches `authenticated=`.
+  // has_table_privilege resolves it.
+  const tbl = (await sql(`select has_table_privilege('authenticated','public.profiles','UPDATE') as v`))[0].v
+  ok('criterion 6: authenticated holds no table-level UPDATE on profiles', tbl === false,
+     `has_table_privilege → ${tbl}`)
   const rel = (await sql(`select relacl::text as v from pg_class where oid='public.profiles'::regclass`))[0].v
-  const authEntry = /authenticated=([a-zA-Z]*)\//.exec(rel)?.[1] ?? ''
-  ok('criterion 6: the table-level grant to authenticated carries no w', !authEntry.includes('w'),
-     `authenticated=${authEntry}`)
+  ok('criterion 6: the relacl entry for authenticated is unchanged from D0',
+     /authenticated=rxtm\//.test(rel), rel)
 
   // Criterion 7, both halves of the UPDATE policy.
   const pol = await sql(`select polname, pg_get_expr(polqual,polrelid) as u, pg_get_expr(polwithcheck,polrelid) as c
@@ -778,6 +796,28 @@ const MUTATIONS = {
       }
     },
   },
+  6: {
+    // The shape that defeated BOTH previous versions of criterion 6, so the new
+    // check is exercised in the form that broke the old one rather than only in
+    // the form it was written for. `created_at` deliberately, not `email`: the
+    // behavioural 403 probe already guards `email`, so a mutation on it could
+    // pass through that assertion instead and this one would not be testing the
+    // column-set check at all.
+    label: 'grant UPDATE on profiles.created_at to PUBLIC (a grant authenticated inherits)',
+    expected: 'criterion 6: writable column set is not equal to {full_name, org}',
+    apply: async () => { await sql(`grant update (created_at) on public.profiles to public`) },
+    restore: async () => {
+      await sql(`revoke update (created_at) on public.profiles from public`)
+      const left = await sql(`select count(*)::int as n from information_schema.columns
+                              where table_schema='public' and table_name='profiles'
+                                and column_name='created_at'
+                                and has_column_privilege('authenticated','public.profiles',column_name,'UPDATE')`)
+      if (left[0].n !== 0) {
+        console.error('RESTORE FAILED: authenticated can still UPDATE profiles.created_at. Revoke by hand.')
+        process.exit(3)
+      }
+    },
+  },
   5: {
     // Contract c2's FIRST mutation, and it had no implementation at all until
     // the signing review found it on 2026-09-17. The contract named it and the
@@ -863,7 +903,7 @@ async function restoreFunction() {
 async function mutate(which) {
   const s = JSON.parse(readFileSync(STATE, 'utf8'))
   // 5 runs before 4 only because both rebuild dist/; order is otherwise free.
-  const list = which === 'all' ? [1, 2, 3, 5, 4] : [Number(which)]
+  const list = which === 'all' ? [1, 2, 3, 6, 5, 4] : [Number(which)]
   let reds = 0
   for (const n of list) {
     const m = MUTATIONS[n]
@@ -894,7 +934,7 @@ async function mutate(which) {
         if (registered) reds++
         if (id) { try { await authApi('DELETE', `admin/users/${id}`) } catch {}; await sql(`delete from public.profiles where id = ${q(id)}`) }
         await sql(`delete from public.member_allowlist where email = ${q(offlist)}`)
-      } else if (n === 3) {
+      } else if (n === 3 || n === 6) {
         // The SAME query criterion 6 uses, called through the shared helper
         // rather than copied. The duplicate that used to live here still held
         // the old text pattern after criterion 6 was fixed, so the mutation
