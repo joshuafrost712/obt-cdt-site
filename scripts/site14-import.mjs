@@ -230,6 +230,20 @@ const COUNT_QUERY = `select
   (select count(*)::int from member_allowlist) as member_allowlist,
   (select count(*)::int from portal_admin) as portal_admin`
 
+/**
+ * How much of THIS LANE is on the project, counted by prefix rather than by a
+ * total. It answers "is anything of ours still here?", which is the question
+ * criterion 11 actually asks and the one that cannot drift with the world: the
+ * baseline comparison moves the day a real report is imported, this does not.
+ */
+const RESIDUE_QUERY = `select
+  (select count(*)::int from publication where recipient_email like 'site14-imp-%') as publication,
+  (select count(*)::int from auth.users where email like 'site14-imp-%') as auth_users,
+  (select count(*)::int from profiles where email like 'site14-imp-%') as profiles,
+  (select count(*)::int from member_allowlist where email like 'site14-imp-%') as member_allowlist,
+  (select count(*)::int from portal_admin pa join profiles p on p.id = pa.profile_id
+     where p.email like 'site14-imp-%') as portal_admin`
+
 async function setup() {
   console.log('=== setup')
   const roster = rosterGuard(addr('admin'))
@@ -243,8 +257,33 @@ async function setup() {
   // the contract's own re-verification can never go green again. A leak gate
   // that cries wolf gets ignored or hand-edited, which is how SITE-09's three
   // leaked rows went unnoticed in the first place.
-  const baseline = (await sql(COUNT_QUERY))[0]
-  console.log(`  baseline:  ${Object.entries(baseline).map(([k, v]) => `${k}=${v}`).join(' ')}`)
+  //
+  // But a measurement is only a baseline when NOTHING of this lane is already on
+  // the project, and setup is documented idempotent, so the ordinary
+  // crash-recovery move is to run it again over residue. Re-review finding 1,
+  // reproduced here: a second --setup measured profiles=25 with its own fixtures
+  // present, overwrote the good file, and --teardown --verify then reported
+  // 0 pass / 6 fail against a project that was exactly at D0. So residue is
+  // counted first, and a baseline is never re-measured over it.
+  const residue = (await sql(RESIDUE_QUERY))[0]
+  const dirty = Object.values(residue).some((n) => n > 0)
+  let baseline
+  if (dirty) {
+    const kept = existsSync(IDS_FILE) ? JSON.parse(readFileSync(IDS_FILE, 'utf8')).baseline : null
+    if (!kept) {
+      console.error(
+        `REFUSED: lane fixtures are already on the project (${Object.entries(residue).map(([k, v]) => `${k}=${v}`).join(' ')}) ` +
+          `and ${IDS_FILE} carries no baseline to keep. Run --teardown first, then --setup on a clean project.`,
+      )
+      process.exit(2)
+    }
+    baseline = kept
+    console.log(`  baseline:  KEPT from ${IDS_FILE}; not re-measured, because lane residue is present`)
+    console.log(`             residue: ${Object.entries(residue).map(([k, v]) => `${k}=${v}`).join(' ')}`)
+  } else {
+    baseline = (await sql(COUNT_QUERY))[0]
+    console.log(`  baseline:  ${Object.entries(baseline).map(([k, v]) => `${k}=${v}`).join(' ')}`)
+  }
 
   // The allowlist rows, with their attested names. NOACCOUNT is on the list
   // because handle_new_portal_user() refuses anything else, so criterion 5's
@@ -815,6 +854,21 @@ async function teardown() {
     if (Object.entries(D0).every(([k, v]) => counts[k] === v)) break
     await new Promise((r) => setTimeout(r, 1500))
   }
+  // The primary gate, and the one that cannot drift: nothing carrying this
+  // lane's prefix is left anywhere. Re-review finding 1 is why this leads rather
+  // than the baseline comparison — "is anything of ours still here?" stays true
+  // as a question however much the rest of the project changes.
+  let residue = null
+  for (let i = 0; i < 20; i++) {
+    residue = (await sql(RESIDUE_QUERY))[0]
+    if (Object.values(residue).every((n) => n === 0)) break
+    await new Promise((r) => setTimeout(r, 1500))
+  }
+  console.log('  per table, lane residue by prefix:')
+  for (const [table, n] of Object.entries(residue)) {
+    ok(`teardown: no ${table} rows carrying the lane prefix`, n === 0, `residue=${n}`)
+  }
+
   console.log('  per table, against the baseline --setup measured before inserting anything:')
   for (const [table, expected] of Object.entries(D0)) {
     ok(`teardown: ${table} back to baseline`, counts[table] === expected, `expected=${expected} actual=${counts[table]}`)
