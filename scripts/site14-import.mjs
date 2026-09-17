@@ -237,12 +237,12 @@ const COUNT_QUERY = `select
  * baseline comparison moves the day a real report is imported, this does not.
  */
 const RESIDUE_QUERY = `select
-  (select count(*)::int from publication where recipient_email like 'site14-imp-%') as publication,
-  (select count(*)::int from auth.users where email like 'site14-imp-%') as auth_users,
-  (select count(*)::int from profiles where email like 'site14-imp-%') as profiles,
-  (select count(*)::int from member_allowlist where email like 'site14-imp-%') as member_allowlist,
+  (select count(*)::int from publication where recipient_email like '${PREFIX}%') as publication,
+  (select count(*)::int from auth.users where email like '${PREFIX}%') as auth_users,
+  (select count(*)::int from profiles where email like '${PREFIX}%') as profiles,
+  (select count(*)::int from member_allowlist where email like '${PREFIX}%') as member_allowlist,
   (select count(*)::int from portal_admin pa join profiles p on p.id = pa.profile_id
-     where p.email like 'site14-imp-%') as portal_admin`
+     where p.email like '${PREFIX}%') as portal_admin`
 
 async function setup() {
   console.log('=== setup')
@@ -869,9 +869,27 @@ async function teardown() {
     ok(`teardown: no ${table} rows carrying the lane prefix`, n === 0, `residue=${n}`)
   }
 
+  const residueClean = Object.values(residue).every((n) => n === 0)
+
   console.log('  per table, against the baseline --setup measured before inserting anything:')
+  const baselineFailures = []
   for (const [table, expected] of Object.entries(D0)) {
-    ok(`teardown: ${table} back to baseline`, counts[table] === expected, `expected=${expected} actual=${counts[table]}`)
+    const good = counts[table] === expected
+    if (!good) baselineFailures.push(table)
+    ok(`teardown: ${table} back to baseline`, good, `expected=${expected} actual=${counts[table]}`)
+  }
+
+  // Residue clean but the baseline red means the stored baseline no longer
+  // describes the world, not that this lane leaked: the likeliest cause is a row
+  // somebody else added between setup and teardown, and the first real report
+  // import will do exactly that. Say so, because the correct move is to
+  // re-measure on a clean project rather than to hunt a leak.
+  if (residueClean && baselineFailures.length > 0) {
+    console.log(
+      `\n  NOTE: no row carrying this lane's prefix is left (${Object.keys(residue).length} of ${Object.keys(residue).length} clean), ` +
+        `so this lane leaked nothing. The baseline in ${IDS_FILE} has gone stale on: ${baselineFailures.join(', ')}. ` +
+        `Delete that file and re-run --setup on a clean project to re-measure; do not hunt a leak.`,
+    )
   }
   console.log(`\nTeardown: ${pass} pass / ${fail} fail`)
 }
