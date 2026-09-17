@@ -138,3 +138,14 @@ feedback/site12-shots/
 # fixture auth uuids, its allowlist row and the lane's throwaway password, and
 # the fixture's generated name, which criterion 8 scans the working tree for.
 scripts/.site12-fixture-ids.json
+
+# Mutation backups written by scripts/site12-ui.mjs --mutate 4 and 5, restored in
+# a `finally`. A crash mid-mutation leaves one behind; it is source, not secret,
+# but an untracked stray that shadows a real file should never be committable.
+*.site12-backup
+
+# NOT gitignored: scripts/.site12-scan-probe.txt. Criterion 8's second direction
+# plants that file and requires `git grep --untracked` to FIND it, proving the
+# scan can see. An ignore entry makes the probe invisible and the "both
+# directions" assertion fails — which is what happened when it was added here on
+# 2026-09-17. The probe is written and deleted inside one run.

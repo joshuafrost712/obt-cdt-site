@@ -2,7 +2,7 @@
 /**
  * SITE-12: the account screen, and where a member's name comes from.
  *
- *     node scripts/site12-ui.mjs --setup       provision the two fixtures
+ *     node scripts/site12-ui.mjs --setup       provision the four fixtures
  *     node scripts/site12-ui.mjs --assert      the full lane (implies build+serve)
  *     node scripts/site12-ui.mjs --assert --lane seed    contract c1, seed only
  *     node scripts/site12-ui.mjs --assert --lane gate    contract c1, gate only
@@ -133,6 +133,50 @@ async function authApi(method, pathname, body) {
   return text ? JSON.parse(text) : {}
 }
 
+// The publishable key is PUBLIC by design and ships in the live bundle, so it
+// is read from there rather than stored here: this lane holds no key of its own.
+// Used by the criterion 7 PATCH probes, which must act as a real member through
+// PostgREST rather than as the service role.
+let PUBKEY = null
+async function pubkey() {
+  if (PUBKEY) return PUBKEY
+  const index = await (await fetch('https://joshuafrost712.github.io/obt-cdt-site/')).text()
+  const chunk = /assets\/(index-[A-Za-z0-9_-]+\.js)/.exec(index)?.[1]
+  const bundle = await (await fetch(`https://joshuafrost712.github.io/obt-cdt-site/assets/${chunk}`)).text()
+  PUBKEY = /sb_publishable_[A-Za-z0-9_-]+/.exec(bundle)?.[0]
+  if (!PUBKEY) { console.error('REFUSED: could not read the publishable key from the live bundle'); process.exit(2) }
+  return PUBKEY
+}
+
+/**
+ * The columns `authenticated` may UPDATE on public.profiles.
+ *
+ * ONE definition, deliberately, and the reason is a defect this lane shipped
+ * with. Criterion 6 and mutation 3 each held their own copy of this query; the
+ * criterion was corrected and the mutation's copy was not, so the mutation
+ * exercised the OLD check and went green against a live grant it should have
+ * caught. A check and the mutation that proves it can fail must be the same
+ * code, or the mutation grades a stale twin.
+ *
+ * aclexplode, NOT a text pattern on attacl. An aclitem renders its privilege
+ * letters together: `grant select (email), update (email)` produces
+ * `authenticated=rw/postgres`, and `like '%authenticated=w%'` returns FALSE
+ * against it, so the pattern form would leave criterion 6 green while `email`
+ * became writable. Measured live 2026-09-17:
+ *   ('authenticated=rw/postgres'::aclitem)::text like '%authenticated=w%'  →  false
+ */
+async function writableColumns() {
+  const cols = await sql(`select a.attname
+                          from pg_attribute a,
+                               lateral aclexplode(a.attacl) x
+                          where a.attrelid='public.profiles'::regclass
+                            and a.attacl is not null
+                            and x.privilege_type = 'UPDATE'
+                            and x.grantee = 'authenticated'::regrole
+                          order by a.attname`)
+  return cols.map((r) => r.attname)
+}
+
 const q = (s) => `'${String(s).replace(/'/g, "''")}'`
 const tag = () => randomBytes(4).toString('hex')
 
@@ -187,6 +231,15 @@ function plan() {
       attested: '',
       typed: `Site12 Fallback ${t}`,
     },
+    // Fallback rung THREE: no roster name AND no client metadata, so the
+    // coalesce falls all the way to ''. Unexercised until the signing review
+    // noted it; without it criterion 2 covers only rungs one and two, and the
+    // rung that must never throw is the one nothing tried.
+    bare: {
+      email: `${PREFIX}bare-${t}@example.invalid`,
+      attested: '',
+      typed: '',
+    },
     admin: {
       email: `${PREFIX}admin-${t}@example.invalid`,
       attested: `Site12 Admin ${t}`,
@@ -214,7 +267,7 @@ async function setup() {
 
   // The generated names must not collide with a real participant's. Asserted
   // before a single write, which is the moment the control has to run.
-  const generated = [p.member.attested, p.member.typed, p.unnamed.typed, p.admin.attested]
+  const generated = [p.member.attested, p.member.typed, p.unnamed.typed, p.admin.attested].filter(Boolean)
   const collision = generated.filter((g) => names.some((n) => n.toLowerCase() === g.toLowerCase()))
   if (collision.length) {
     console.error(`REFUSED: generated name collides with the roster: ${collision.join(', ')}`)
@@ -225,12 +278,13 @@ async function setup() {
   const ids = {}
   ids.member = await register(p.member)
   ids.unnamed = await register(p.unnamed)
+  ids.bare = await register(p.bare)
   ids.admin = await register(p.admin)
   await sql(`insert into public.portal_admin (profile_id) values (${q(ids.admin)})
              on conflict (profile_id) do nothing`)
 
   writeFileSync(STATE, JSON.stringify({ ...p, ids }, null, 2))
-  console.log(`  ok    3 accounts, 3 allowlist rows, 1 portal_admin row`)
+  console.log(`  ok    4 accounts, 4 allowlist rows, 1 portal_admin row`)
   console.log(`  state ${path.relative(REPO, STATE)}`)
   return { ...p, ids }
 }
@@ -245,7 +299,10 @@ async function teardown() {
   // population is the prefix, which no failure mode can lose.
   const s = existsSync(STATE) ? JSON.parse(readFileSync(STATE, 'utf8')) : null
   const ids = Object.values(s?.ids ?? {})
-  const emails = s ? [s.member.email, s.unnamed.email, s.admin.email] : []
+  // Derived from the plan, never a hand-written list: the hardcoded three said
+  // "3 fixture addresses removed" after the fourth fixture was added, which is a
+  // count a later session would have read as the truth.
+  const emails = s ? Object.values(s).filter((v) => v && typeof v === 'object' && v.email).map((v) => v.email) : []
   // Every account carrying this lane's prefix, whatever created it: the three
   // fixtures, an account a mutation registered, or an orphan from a prior run.
   const strays = await sql(`select id from auth.users where email like ${q(`${PREFIX}%`)}`)
@@ -363,8 +420,14 @@ async function laneSeed(s) {
   ok('criterion 2: an unnamed roster row falls back to the client metadata name',
      byEmail[s.unnamed.email] === s.unnamed.typed,
      `got ${JSON.stringify(byEmail[s.unnamed.email])}`)
-  ok('criterion 2: the insert never failed — both fixtures have a profile row',
-     Object.keys(byEmail).length >= 2)
+  // Rung three: neither source has a name, so the value is '' and the insert
+  // still succeeds. The row EXISTING is the assertion that matters; an empty
+  // name with no row would mean the trigger threw.
+  ok('criterion 2: a roster row with no name and no metadata seeds the empty string',
+     byEmail[s.bare.email] === '', `got ${JSON.stringify(byEmail[s.bare.email])}`)
+  ok('criterion 2: the insert never failed — all three fixtures have a profile row',
+     [s.member.email, s.unnamed.email, s.bare.email].every((e) => e in byEmail),
+     `present: ${Object.keys(byEmail).length}`)
 }
 
 async function laneGate(s) {
@@ -421,11 +484,23 @@ async function laneScreen(s, asAdmin = false) {
     }
     await page.goto(`${BASE}/portal/account`, { waitUntil: 'networkidle' })
     await page.waitForTimeout(2200)
-    ok('the account screen renders', (await page.locator('[data-site12-account]').count()) > 0)
+    const rendered = (await page.locator('[data-site12-account]').count()) > 0
+    ok('the account screen renders', rendered)
 
     // Criterion 4. Signed in as the administrator, whose may_see_profile()
     // returns true for OTHER rows, the screen must still show the
-    // administrator's own name. Mutation 2 turns this red.
+    // administrator's own name. Mutation 5 turns this red.
+    //
+    // The early return is what makes that mutation legible. With the subject
+    // filter gone the read throws PGRST116 and the screen renders ErrorNote, so
+    // `#site12-name` never exists and a bare inputValue() would throw a locator
+    // timeout 30 seconds later — a crash, not a criterion. The signing review
+    // measured exactly that on 2026-09-17. Now the criterion fails by NAME.
+    if (!rendered) {
+      ok(`criterion 4: the screen shows ${asAdmin ? "the administrator's OWN" : "the member's"} name`,
+         false, 'the account screen did not render its form; the profile read failed')
+      return
+    }
     const shownName = await page.locator('#site12-name').inputValue()
     ok(`criterion 4: the screen shows ${asAdmin ? "the administrator's OWN" : "the member's"} name`,
        shownName === who.attested, `got ${JSON.stringify(shownName)}, expected ${JSON.stringify(who.attested)}`)
@@ -464,6 +539,15 @@ async function laneScreen(s, asAdmin = false) {
       // read as a pass for the wrong reason.
       ok('c1 must_not 1: the register form rendered at all (population is not empty)',
          inputIds.length > 0, 'the register card did not render; the check below would be vacuous')
+
+      // And that it is REGISTER mode, not sign-in. The mode switch is clicked by
+      // an accessible-name regex, and sign-in mode's input set is IDENTICAL, so
+      // a relabelled button (SITE-09 owns shared.tsx) would make the click fail
+      // silently and this assertion grade the wrong form while still passing.
+      // Asserted on the register heading, which only that mode renders.
+      const heading = await reg.getByRole('heading', { name: /Create your account/i }).count()
+      ok('c1 must_not 1: the form is in REGISTER mode, not sign-in',
+         heading > 0, 'the register heading is absent; the mode switch did not take')
       ok('c1 must_not 1: the register form\'s input set is exactly {portal-email, portal-password}',
          JSON.stringify(inputIds) === JSON.stringify(['portal-email', 'portal-password']),
          `got {${inputIds.join(', ')}}`)
@@ -477,7 +561,7 @@ async function laneScreen(s, asAdmin = false) {
     // second address field added later is caught too.
     const addr = who.email
     const editableWithAddress = await page.evaluate((a) => {
-      const nodes = [...document.querySelectorAll('input, textarea, [contenteditable="true"]')]
+      const nodes = [...document.querySelectorAll('input, textarea, [contenteditable]:not([contenteditable="false"])')]
       return nodes.filter((n) => (n.value ?? '').trim() === a || (n.textContent ?? '').trim() === a).length
     }, addr)
     ok('criterion 5: no editable control carries the address', editableWithAddress === 0,
@@ -509,12 +593,10 @@ async function laneScreen(s, asAdmin = false) {
 
 async function laneCatalog(s) {
   console.log('\n-- contract c2: grants and policies --')
+  await pubkey()
   // Criterion 6, set-equal rather than a screen for `email`, so granting a
   // THIRD column is a failure rather than a pass.
-  const cols = await sql(`select attname from pg_attribute
-                          where attrelid='public.profiles'::regclass and attacl is not null
-                            and array_to_string(attacl,',') like '%authenticated=w%' order by attname`)
-  const writable = cols.map((r) => r.attname)
+  const writable = await writableColumns()
   ok('criterion 6: the writable column set is exactly {full_name, org}',
      JSON.stringify(writable) === JSON.stringify(['full_name', 'org']),
      `got {${writable.join(', ')}}`)
@@ -530,11 +612,53 @@ async function laneCatalog(s) {
   ok('criterion 7: its USING is auth.uid() = id', /auth\.uid\(\)\s*=\s*id/.test(pol[0]?.u ?? ''), pol[0]?.u)
   ok('criterion 7: its WITH CHECK is auth.uid() = id', /auth\.uid\(\)\s*=\s*id/.test(pol[0]?.c ?? ''), pol[0]?.c)
 
-  // Criterion 7, behavioural: the member cannot write the administrator's row,
-  // and zero-rows is distinguished from an error (program finding 61).
-  const before = (await sql(`select full_name from public.profiles where id = ${q(s.ids.admin)}`))[0].full_name
-  ok('criterion 7: the administrator\'s name is unchanged by a member\'s attempt',
-     before === s.admin.attested)
+  // Criterion 7, behavioural. This USED to read the administrator's row and
+  // assert it was unchanged without anyone having attempted to change it, which
+  // is green by construction and labelled as something that did not happen. The
+  // signing review caught it on 2026-09-17. The member fixture now really does
+  // PATCH the administrator's row, as the member, through PostgREST.
+  //
+  // Three outcomes are distinguished, per program finding 61: an UPDATE that
+  // matches zero rows is NOT an error, so a lane that only checks for a thrown
+  // exception would read the refusal as a success.
+  const patch = async (asEmail, targetId, body) => {
+    const tok = await fetch(`${authUrl}/auth/v1/token?grant_type=password`, {
+      method: 'POST', headers: { apikey: PUBKEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: asEmail, password: PASSWORD }),
+    }).then((r) => r.json())
+    const res = await fetch(`${authUrl}/rest/v1/profiles?id=eq.${targetId}`, {
+      method: 'PATCH',
+      headers: {
+        apikey: PUBKEY, Authorization: `Bearer ${tok.access_token}`,
+        'Content-Type': 'application/json', Prefer: 'return=representation',
+      },
+      body: JSON.stringify(body),
+    })
+    return { status: res.status, rows: await res.json().catch(() => null) }
+  }
+
+  const adminBefore = (await sql(`select full_name from public.profiles where id = ${q(s.ids.admin)}`))[0].full_name
+  const attempt = await patch(s.member.email, s.ids.admin, { full_name: 'Site12 Intruder' })
+  ok('criterion 7: a member PATCHing the administrator\'s row is not an error',
+     attempt.status === 200, `status ${attempt.status}`)
+  ok('criterion 7: it affects ZERO rows (the refusal is silent filtering, not a 4xx)',
+     Array.isArray(attempt.rows) && attempt.rows.length === 0, JSON.stringify(attempt.rows)?.slice(0, 120))
+  const adminAfter = (await sql(`select full_name from public.profiles where id = ${q(s.ids.admin)}`))[0].full_name
+  ok('criterion 7: the administrator\'s name is unchanged by the attempt',
+     adminAfter === adminBefore && adminAfter === s.admin.attested)
+
+  // The control, so the zero above is a refusal rather than a broken request:
+  // the same call against the member's OWN row affects exactly one.
+  const control = await patch(s.member.email, s.ids.member, { org: 'Site12 Control Org' })
+  ok('criterion 7 control: the same PATCH on the member\'s OWN row affects one row',
+     control.status === 200 && Array.isArray(control.rows) && control.rows.length === 1,
+     `status ${control.status}, rows ${JSON.stringify(control.rows)?.slice(0, 80)}`)
+
+  // And the column grant, behaviourally: email is refused outright (42501),
+  // which is a different mechanism from the row filter above.
+  const emailTry = await patch(s.member.email, s.ids.member, { email: 'site12-moved@example.invalid' })
+  ok('criterion 6: a member writing their OWN email is refused 403 by the column grant',
+     emailTry.status === 403, `status ${emailTry.status}`)
 
   // Criterion 14, set-equal over the live catalog rather than a screen.
   const fns = await sql(`select proname from pg_proc p join pg_namespace n on n.oid=p.pronamespace
@@ -567,7 +691,14 @@ async function laneScan(s) {
   console.log('\n-- criterion 8: the fixture identity does not reach the tree --')
   // git grep --untracked reaches files git does not track yet and stops short
   // of ignored ones, which is what we want: dist/ is correctly out of range.
-  const terms = [s.member.attested, s.member.typed, s.unnamed.typed, s.admin.attested, s.member.email]
+  // Every identity string this lane creates, including the addresses the earlier
+  // version omitted (the signing review's note: the admin and unnamed addresses
+  // and the edited name were outside the term list, so the scan's population was
+  // narrower than the identities it was protecting).
+  const terms = [
+    s.member.attested, s.member.typed, s.unnamed.typed, s.admin.attested,
+    s.member.email, s.unnamed.email, s.bare.email, s.admin.email,
+  ].filter(Boolean)
   let found = 0
   for (const t of terms) {
     let hit = ''
@@ -625,10 +756,60 @@ const MUTATIONS = {
     },
   },
   3: {
-    label: 'grant authenticated UPDATE on profiles.email',
+    // The COMBINED grant, deliberately: select+update on the same column renders
+    // as `authenticated=rw/postgres`, which the old text-pattern check could not
+    // see. Mutating in the shape that defeated the previous implementation is
+    // what makes this mutation evidence rather than decoration.
+    label: 'grant authenticated SELECT+UPDATE on profiles.email (the combined rw grant)',
     expected: 'criterion 6: writable column set is not equal to {full_name, org}',
-    apply: async () => { await sql(`grant update (email) on public.profiles to authenticated`) },
-    restore: async () => { await sql(`revoke update (email) on public.profiles from authenticated`) },
+    apply: async () => { await sql(`grant select (email), update (email) on public.profiles to authenticated`) },
+    // BOTH privileges, or the restore is partial. Revoking only UPDATE leaves
+    // `email` carrying `authenticated=r/postgres`, a column grant that did not
+    // exist at D0 and that no later assertion looks at — a mutation quietly
+    // changing the production project's grants and calling itself restored.
+    restore: async () => {
+      await sql(`revoke update (email) on public.profiles from authenticated`)
+      await sql(`revoke select (email) on public.profiles from authenticated`)
+      const left = await sql(`select count(*)::int as n from pg_attribute
+                              where attrelid='public.profiles'::regclass and attname='email' and attacl is not null`)
+      if (left[0].n !== 0) {
+        console.error('RESTORE FAILED: profiles.email still carries a column grant. Revoke it by hand.')
+        process.exit(3)
+      }
+    },
+  },
+  5: {
+    // Contract c2's FIRST mutation, and it had no implementation at all until
+    // the signing review found it on 2026-09-17. The contract named it and the
+    // record claimed every expected_red was a string a mutation produced; this
+    // one had never run.
+    //
+    // The form matters. Simply deleting `.eq('id', userId)` leaves `userId`
+    // unused and `tsc` fails with TS6133, so the lane dies at `npm run build`
+    // and goes red for the wrong reason — a mutation that proves nothing about
+    // the control. `void userId` keeps it compiling, so the red is the product's
+    // behaviour: with the filter gone, `.maybeSingle()` sees the administrator's
+    // several visible rows and throws PGRST116, the screen renders ErrorNote,
+    // and criterion 4 cannot read a name. That is D6's predicted shape.
+    label: 'remove the .eq subject filter from getProfile (RLS alone narrows the read)',
+    file: path.join(REPO, 'src/lib/backend/api.ts'),
+    expected: 'criterion 4: the account screen did not show exactly the signed-in member\'s name',
+    apply: function () {
+      const p = this.file
+      const src = readFileSync(p, 'utf8')
+      writeFileSync(`${p}.site12-backup`, src)
+      writeFileSync(p, src.replace(
+        ".from('profiles').select('id, full_name, org').eq('id', userId).maybeSingle()",
+        ".from('profiles').select('id, full_name, org').maybeSingle(); void userId;",
+      ))
+    },
+    restore: function () {
+      const p = this.file
+      if (existsSync(`${p}.site12-backup`)) {
+        writeFileSync(p, readFileSync(`${p}.site12-backup`, 'utf8'))
+        unlinkSync(`${p}.site12-backup`)
+      }
+    },
   },
   4: {
     label: 'bind the address to an input (the screen offers an editable email)',
@@ -681,7 +862,8 @@ async function restoreFunction() {
 
 async function mutate(which) {
   const s = JSON.parse(readFileSync(STATE, 'utf8'))
-  const list = which === 'all' ? [1, 2, 3, 4] : [Number(which)]
+  // 5 runs before 4 only because both rebuild dist/; order is otherwise free.
+  const list = which === 'all' ? [1, 2, 3, 5, 4] : [Number(which)]
   let reds = 0
   for (const n of list) {
     const m = MUTATIONS[n]
@@ -713,13 +895,41 @@ async function mutate(which) {
         if (id) { try { await authApi('DELETE', `admin/users/${id}`) } catch {}; await sql(`delete from public.profiles where id = ${q(id)}`) }
         await sql(`delete from public.member_allowlist where email = ${q(offlist)}`)
       } else if (n === 3) {
-        const cols = await sql(`select attname from pg_attribute where attrelid='public.profiles'::regclass
-                                and attacl is not null and array_to_string(attacl,',') like '%authenticated=w%' order by attname`)
-        const writable = cols.map((r) => r.attname)
+        // The SAME query criterion 6 uses, called through the shared helper
+        // rather than copied. The duplicate that used to live here still held
+        // the old text pattern after criterion 6 was fixed, so the mutation
+        // reported "writable set = {full_name, org}" under a live `rw` grant on
+        // `email` and went green — a mutation grading a stale copy of the check
+        // it exists to exercise. Caught on 2026-09-17.
+        const writable = await writableColumns()
         console.log(`    observed: writable set = {${writable.join(', ')}}`)
         const red = JSON.stringify(writable) !== JSON.stringify(['full_name', 'org'])
         ok(`mutation ${n} turns criterion 6 RED`, red)
         if (red) reds++
+      } else if (n === 5) {
+        // The ADMIN session is the only one that can observe this: a member sees
+        // exactly one profile row either way, so the filter's removal changes
+        // nothing for them. D6's whole argument, executed.
+        await buildDist()
+        const server = await serve()
+        try {
+          const browser = await chromium.launch()
+          try {
+            const ctx = await browser.newContext()
+            const page = await ctx.newPage()
+            await page.goto(`${BASE}/portal`, { waitUntil: 'networkidle' })
+            await signIn(page, s.admin.email)
+            await page.goto(`${BASE}/portal/account`, { waitUntil: 'networkidle' })
+            await page.waitForTimeout(2200)
+            const formUp = (await page.locator('[data-site12-account]').count()) > 0
+            const shown = formUp ? await page.locator('#site12-name').inputValue().catch(() => null) : null
+            console.log(`    observed: form rendered = ${formUp}, name field = ${JSON.stringify(shown)}`)
+            const red = !formUp || shown !== s.admin.attested
+            ok(`mutation ${n} turns criterion 4 RED`, red,
+               'the admin screen still showed exactly the administrator\'s own name')
+            if (red) reds++
+          } finally { await browser.close().catch(() => {}) }
+        } finally { server.kill() }
       } else if (n === 4) {
         await buildDist()
         const server = await serve()
@@ -732,7 +942,7 @@ async function mutate(which) {
             await signIn(page, s.member.email)
             await page.goto(`${BASE}/portal/account`, { waitUntil: 'networkidle' })
             await page.waitForTimeout(2200)
-            const editable = await page.evaluate((a) => [...document.querySelectorAll('input, textarea, [contenteditable="true"]')]
+            const editable = await page.evaluate((a) => [...document.querySelectorAll('input, textarea, [contenteditable]:not([contenteditable="false"])')]
               .filter((n) => (n.value ?? '').trim() === a).length, s.member.email)
             console.log(`    observed: ${editable} editable control(s) carry the address`)
             ok(`mutation ${n} turns criterion 5 RED`, editable > 0)
@@ -745,7 +955,9 @@ async function mutate(which) {
       // is genuinely altered, which is the whole reason D9 requires a finally.
       if (dbMutation) await restoreFunction()
       else if (m.restore) await m.restore()
-      if (n === 4) { await buildDist() }
+      // Both source mutations must leave dist/ rebuilt from the RESTORED source,
+      // or the next lane grades a bundle carrying the mutation.
+      if (n === 4 || n === 5) { await buildDist() }
     }
     void before
   }
