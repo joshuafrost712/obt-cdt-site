@@ -222,11 +222,29 @@ async function asUser(email, pubKey) {
 
 // ---------------------------------------------------------------------- setup
 
+const COUNT_QUERY = `select
+  (select count(*)::int from publication) as publication,
+  (select count(*)::int from publication_event) as publication_event,
+  (select count(*)::int from profiles) as profiles,
+  (select count(*)::int from auth.users) as auth_users,
+  (select count(*)::int from member_allowlist) as member_allowlist,
+  (select count(*)::int from portal_admin) as portal_admin`
+
 async function setup() {
   console.log('=== setup')
   const roster = rosterGuard(addr('admin'))
   for (const a of [addr('member_a'), addr('member_b'), NOACCOUNT, OFFLIST]) rosterGuard(a)
   console.log(`  guard:     lane prefix + absence from ${roster}`)
+
+  // The baseline is MEASURED here, before a single fixture is inserted, and not
+  // written into the lane as a constant. Signing review finding 2: a hardcoded
+  // `publication: 0` is falsified the day contract 2 has Joshua import a real
+  // report, after which --teardown --verify fails permanently on two tables and
+  // the contract's own re-verification can never go green again. A leak gate
+  // that cries wolf gets ignored or hand-edited, which is how SITE-09's three
+  // leaked rows went unnoticed in the first place.
+  const baseline = (await sql(COUNT_QUERY))[0]
+  console.log(`  baseline:  ${Object.entries(baseline).map(([k, v]) => `${k}=${v}`).join(' ')}`)
 
   // The allowlist rows, with their attested names. NOACCOUNT is on the list
   // because handle_new_portal_user() refuses anything else, so criterion 5's
@@ -266,7 +284,7 @@ async function setup() {
              on conflict do nothing`)
   console.log('  admin:     1 portal_admin row')
 
-  writeFileSync(IDS_FILE, JSON.stringify({ ids, at: new Date().toISOString() }, null, 1))
+  writeFileSync(IDS_FILE, JSON.stringify({ ids, baseline, at: new Date().toISOString() }, null, 1))
   console.log(`  ids:       ${IDS_FILE}`)
 }
 
@@ -308,12 +326,31 @@ async function sqlLane() {
     nonAdminInvalid.body?.code === '42501',
     `code=${nonAdminInvalid.body?.code}`,
   )
-  ok('criterion 2: and no row was written', (await countPub()) === before2, `publication=${before2}`)
+  // The detail prints the AFTER count, so a red names the row that was actually
+  // written rather than the count before the call. Signing review finding 3: it
+  // printed `before2`, which reads as a state the lane never asserted.
+  const after2 = await countPub()
+  ok('criterion 2: and no row was written', after2 === before2, `before=${before2} after=${after2}`)
   // Two-sided per finding 60: the gate is present AND the insert it guards is
   // present, so a mutation that merely empties the function body fails too.
   const def = (await sql(`select pg_get_functiondef('public.import_publication_manual(text,text,text,text,text,text,text,text,timestamptz)'::regprocedure) as d`))[0].d
   ok('criterion 2: the definition carries is_portal_admin()', def.includes('is_portal_admin()'))
   ok('criterion 2: and still carries the insert it guards', /insert into publication/i.test(def))
+
+  // The admin-side half of criterion 2's argument check. Without it the four
+  // in-body checks are exercised only under mutation 1 and never in the green
+  // lane, so their errcodes are asserted nowhere. Signing review note 1.
+  const adminEmpty = await admin.rpc('import_publication_manual', {
+    _recipient_email: '',
+    _document_id: 'site14-empty',
+    _title: 'Fixture', _workshop_name: 'Fixture workshop', _date_label: '2026',
+    _body_md: '# Fixture', _event_id: null,
+  })
+  ok(
+    'criterion 2: an administrator with an empty address gets the ARGUMENT error, by its own errcode',
+    adminEmpty.body?.code === '23514',
+    `code=${adminEmpty.body?.code}`,
+  )
 
   // ---- criterion 3: source, imported_by and recipient_role are not arguments.
   const args = (await sql(`select pg_get_function_identity_arguments('public.import_publication_manual(text,text,text,text,text,text,text,text,timestamptz)'::regprocedure) as a`))[0].a
@@ -364,6 +401,15 @@ async function sqlLane() {
     nowAllowed.status === 200 && typeof nowAllowed.body === 'string',
     `status=${nowAllowed.status}`,
   )
+  // This row is criterion 6's unmatched arm. OFFLIST has no account and never
+  // registers in this lane, so it stays unmatched for the whole run; the row
+  // criterion 5 imports does NOT, because criterion 5 registers that address
+  // two steps later and asserts the flip to matched. Using the claimed row
+  // there would let a policy carrying `and match_state = 'matched'` on the admin
+  // disjunct pass the very arm that exists to exclude it. Signing review
+  // finding 1, measured: after a full lane run, site14-doc-late is matched and
+  // site14-offlist is the only unmatched row on the table.
+  const offlistId = typeof nowAllowed.body === 'string' ? nowAllowed.body : null
 
   // ---- criterion 17: resolve_import_recipient() is gated, and gated FIRST.
   const resolveNonAdmin = await memberA.rpc('resolve_import_recipient', { _email: addr('member_b') })
@@ -507,9 +553,20 @@ async function sqlLane() {
   const adminIds = new Set((adminList.body ?? []).map((r) => r.id))
   ok("criterion 6: the administrator's list contains A's report", adminIds.has(pubId))
   ok("criterion 6: and B's", adminIds.has(xssId))
+  // The state is re-measured HERE rather than inherited from the import, so the
+  // arm cannot quietly become a matched-row assertion if a later edit changes
+  // when the fixtures register.
+  const offlistState = offlistId
+    ? (await sql(`select match_state, profile_id from publication where id = ${q(offlistId)}`))[0]
+    : null
   ok(
-    'criterion 6: and the UNMATCHED row too, which is the superset the policy actually grants',
-    adminIds.has(lateId),
+    'criterion 6: the row this arm uses is genuinely unmatched at this moment',
+    offlistState?.match_state === 'unmatched' && offlistState?.profile_id === null,
+    `state=${offlistState?.match_state}`,
+  )
+  ok(
+    'criterion 6: and the administrator sees that UNMATCHED row too, which is the superset the policy actually grants',
+    !!offlistId && adminIds.has(offlistId),
     `admin sees ${adminIds.size} row(s)`,
   )
 
@@ -735,27 +792,32 @@ async function teardown() {
 
   if (!VERIFY) return
 
+  // The baseline this asserts against is the one --setup MEASURED before it
+  // inserted anything, never a constant: see the note in setup(). It REFUSES
+  // when that file is absent rather than falling back to a typed number, on the
+  // same reasoning the roster guard refuses without its export.
+  if (!existsSync(IDS_FILE)) {
+    console.error(`REFUSED: ${IDS_FILE} is absent, so there is no measured baseline to verify against. Run --setup first.`)
+    process.exit(2)
+  }
+  const D0 = JSON.parse(readFileSync(IDS_FILE, 'utf8')).baseline
+  if (!D0) {
+    console.error(`REFUSED: ${IDS_FILE} carries no baseline. Re-run --setup.`)
+    process.exit(2)
+  }
+
   // SITE-09's leak is the reason this polls rather than assuming. The cascade
   // from auth.users to profiles LAGS, so a single read can report a clean
   // database while rows are still going.
-  const D0 = { publication: 0, publication_event: 0, profiles: 22, auth_users: 22, member_allowlist: 42, portal_admin: 1 }
   let counts = null
   for (let i = 0; i < 20; i++) {
-    counts = (
-      await sql(`select
-        (select count(*)::int from publication) as publication,
-        (select count(*)::int from publication_event) as publication_event,
-        (select count(*)::int from profiles) as profiles,
-        (select count(*)::int from auth.users) as auth_users,
-        (select count(*)::int from member_allowlist) as member_allowlist,
-        (select count(*)::int from portal_admin) as portal_admin`)
-    )[0]
+    counts = (await sql(COUNT_QUERY))[0]
     if (Object.entries(D0).every(([k, v]) => counts[k] === v)) break
     await new Promise((r) => setTimeout(r, 1500))
   }
-  console.log('  per table, against the D0 totals recorded in the build record:')
+  console.log('  per table, against the baseline --setup measured before inserting anything:')
   for (const [table, expected] of Object.entries(D0)) {
-    ok(`teardown: ${table} back to D0`, counts[table] === expected, `expected=${expected} actual=${counts[table]}`)
+    ok(`teardown: ${table} back to baseline`, counts[table] === expected, `expected=${expected} actual=${counts[table]}`)
   }
   console.log(`\nTeardown: ${pass} pass / ${fail} fail`)
 }
