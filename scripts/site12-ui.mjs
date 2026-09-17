@@ -434,6 +434,45 @@ async function laneScreen(s, asAdmin = false) {
          shownName !== s.member.attested && shownName !== s.unnamed.typed)
     }
 
+    // Contract c1's must_not rule 1, and it was MISSING until the shadow build
+    // review found it on 2026-09-17. The rule says the register form gains no
+    // name field, enforced by "site12-ui.mjs asserts the register form's input
+    // set is set-equal to {email, password} in register mode". Nothing in this
+    // lane scanned that form; the property held by manual inspection and the
+    // contract claimed automated enforcement it did not have. That is this
+    // campaign's single most repeated defect class, a must_not enforced by
+    // prose, arriving in a build rather than in a spec.
+    //
+    // Asserted by DRIVING the register card, not by editing shared.tsx, which
+    // SITE-09 owns for the length of its row. Set-equality rather than a screen
+    // for a name field, so a THIRD input of any kind fails this too.
+    if (!asAdmin) {
+      // A SEPARATE, SIGNED-OUT context. The register card only renders when
+      // there is no session, so reusing `ctx` (which just signed in) reads an
+      // input set of {} and the assertion passes vacuously on an empty page —
+      // which is what the first version of this check did, and exactly the
+      // "population of zero is a pass" defect this campaign keeps recording.
+      const anon = await browser.newContext()
+      const reg = await anon.newPage()
+      await reg.goto(`${BASE}/portal`, { waitUntil: 'networkidle' })
+      await reg.getByRole('button', { name: /Create an account|Create your account|Register/i }).first().click().catch(() => {})
+      await reg.waitForTimeout(1200)
+      const inputIds = await reg.evaluate(() =>
+        [...document.querySelectorAll('input')].map((i) => i.id || i.type).sort())
+      // The population is asserted non-empty FIRST. An empty input set means the
+      // card did not render, and a set-equality check against {} would otherwise
+      // read as a pass for the wrong reason.
+      ok('c1 must_not 1: the register form rendered at all (population is not empty)',
+         inputIds.length > 0, 'the register card did not render; the check below would be vacuous')
+      ok('c1 must_not 1: the register form\'s input set is exactly {portal-email, portal-password}',
+         JSON.stringify(inputIds) === JSON.stringify(['portal-email', 'portal-password']),
+         `got {${inputIds.join(', ')}}`)
+      ok('c1 must_not 1: no name field on the register form',
+         inputIds.length > 0 && inputIds.every((i) => !/name/i.test(i)), `got {${inputIds.join(', ')}}`)
+      await reg.close()
+      await anon.close()
+    }
+
     // Criterion 5, structural over the WHOLE form rather than by id, so a
     // second address field added later is caught too.
     const addr = who.email
@@ -726,6 +765,25 @@ try {
     const all = await mutate(val('--mutate', 'all'))
     process.exit(all ? 0 : 1)
   } else if (has('--assert')) {
+    // A REUSED fixture is refused rather than graded, and this is program
+    // finding 61's shape: the screen lane edits the member's name as its own
+    // round-trip proof, so a second `--assert` over the same fixture asserts
+    // criterion 1 against a name this lane itself changed and fails against a
+    // product that is correct. Measured on 2026-09-17, twice.
+    //
+    // The lane could re-baseline instead, but that would make criterion 1
+    // unfalsifiable on every run after the first, which is worse. So: state
+    // present means tear down first, said plainly.
+    if (existsSync(STATE)) {
+      const prior = JSON.parse(readFileSync(STATE, 'utf8'))
+      const live = await sql(`select full_name from public.profiles where email = ${q(prior.member.email)}`)
+      if (live[0] && live[0].full_name !== prior.member.attested) {
+        console.error('REFUSED: the fixture member\'s name has been edited by a previous run.')
+        console.error(`  expected ${JSON.stringify(prior.member.attested)}, live is ${JSON.stringify(live[0].full_name)}`)
+        console.error('  Criterion 1 would grade this lane\'s own edit. Run --teardown first.')
+        process.exit(2)
+      }
+    }
     const fresh = !existsSync(STATE)
     const s = fresh ? await setup() : JSON.parse(readFileSync(STATE, 'utf8'))
     const lane = val('--lane', null)

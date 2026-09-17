@@ -1,20 +1,23 @@
 /**
- * DORMANT — not routed, not reachable.
+ * Typed data access for the accounts backend.
  *
- * Written against `supabase/schema.sql`'s fresh-project design (a `profiles`
- * table with a role column, plus `registrations` / `evaluations` /
- * `certificates`). The live portal project has none of those tables: it is a
- * reports-only portal whose schema lives in `supabase/migrations/`. Routing this
- * page would show a participant a raw PostgREST "table not found".
+ * PARTLY DORMANT, and the split matters to anyone editing this file. `getProfile`
+ * and `updateProfile` are LIVE: SITE-12 routed `/portal/account` and both run on
+ * every visit to it, against the real `public.profiles`. Everything below them
+ * that touches `registrations`, `events` or `certificates` is dormant, written
+ * against `supabase/schema.sql`'s fresh-project design; the live portal project
+ * has none of those tables, so calling one returns a PostgREST "table not found".
  *
- * Kept rather than deleted because docs/PHASE-2-BACKEND.md still describes this
- * design and a memo pointing at deleted files becomes archaeology. Bring it back
- * when event registration or certificates are actually built.
- */
-/**
- * Typed data access for the accounts backend. Row shapes mirror
- * supabase/schema.sql; RLS guarantees every query below only ever returns the
- * signed-in user's own rows.
+ * The whole-file DORMANT header this replaced was written when nothing here was
+ * routed. It survived SITE-12 unchanged and read as if the live helpers were
+ * dead too, which the build's shadow review flagged on 2026-09-17.
+ *
+ * `listMyEvaluations` and `EvaluationRow` were removed in the same pass: their
+ * only caller was the account page SITE-12 rewrote, and an export whose one
+ * caller was deleted is dead code, not a reserve. `/portal/evaluations` is
+ * SITE-02's surface and has its own helpers in `evalApi.ts`.
+ *
+ * RLS is not the only thing narrowing these reads; see `getProfile`.
  */
 import { supabase } from './client'
 
@@ -49,16 +52,6 @@ export interface Registration {
   id: string
   event_id: string
   status: 'registered' | 'waitlist' | 'attended' | 'cancelled'
-}
-
-export interface EvaluationRow {
-  id: string
-  score: number
-  evaluator: string
-  note: string
-  occasion: string | null
-  created_at: string
-  ksas: { id: string; competency: string; label: string } | null
 }
 
 export interface CertificateRow {
@@ -115,16 +108,6 @@ export async function register(userId: string, event: EventRow): Promise<void> {
 export async function cancelRegistration(registrationId: string): Promise<void> {
   const { error } = await supabase().from('registrations').update({ status: 'cancelled' }).eq('id', registrationId)
   if (error) throw error
-}
-
-export async function listMyEvaluations(userId: string): Promise<EvaluationRow[]> {
-  const { data, error } = await supabase()
-    .from('evaluations')
-    .select('id, score, evaluator, note, occasion, created_at, ksas (id, competency, label)')
-    .eq('profile_id', userId)
-    .order('created_at', { ascending: true })
-  if (error) throw error
-  return (data ?? []) as unknown as EvaluationRow[]
 }
 
 export async function listMyCertificates(userId: string): Promise<CertificateRow[]> {
