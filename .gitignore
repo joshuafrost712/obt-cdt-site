@@ -139,6 +139,18 @@ feedback/site12-shots/
 # the fixture's generated name, which criterion 8 scans the working tree for.
 scripts/.site12-fixture-ids.json
 
+# Spec SITE-14's shots. The import screen shows a recipient address, a resolved
+# roster name and the body of a report, so a picture of it mid-import is the most
+# identity-dense frame in this campaign after the report page itself. The lane
+# drives generated non-roster fixtures and a fixture body, so no participant
+# appears in them; ignored anyway, and on main BEFORE the first run rather than
+# after somebody notices what landed in the directory.
+feedback/site14-shots/
+
+# SITE-14 fixture ids, written by scripts/site14-import.mjs --setup. Carries the
+# fixture auth uuids, their allowlist rows and the lane's throwaway password.
+scripts/.site14-fixture-ids.json
+
 # Mutation backups written by scripts/site12-ui.mjs --mutate 4 and 5, restored in
 # a `finally`. A crash mid-mutation leaves one behind; it is source, not secret,
 # but an untracked stray that shadows a real file should never be committable.
