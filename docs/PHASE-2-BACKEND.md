@@ -35,6 +35,15 @@ none of it appears.
 Evaluations and certificates are written via the Supabase dashboard or the
 workshop-evaluation pipeline (service role), never by participants.
 
+**The account screen shipped, at a different path (spec SITE-12, 2026-09-17).**
+A member edits their name and organisation at **`/portal/account`**, reached
+from a card on `/portal` rather than from a nav entry. The `/account` route
+this memo reserves above is untouched and still unused, as are `/events` and
+`/certificates`. The member's name is seeded from `member_allowlist.full_name`
+by `handle_new_portal_user()` when the profile is created, so it is attested
+rather than self-asserted; the email address is shown as text and is not
+editable, because a column-level grant makes it unwritable by the member.
+
 ## Original design memo
 
 The MVP is a fully static site. Phase 2 adds user accounts so participants can

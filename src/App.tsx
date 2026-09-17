@@ -14,13 +14,17 @@ import { NotFoundPage } from './pages/NotFoundPage'
 // Participant-area pages: lazy chunks so supabase-js never touches the main
 // bundle or the SSR prerender. Routes exist only when the backend flag is on.
 //
-// AccountPage / EventsPage / CertificatesPage are deliberately NOT routed. They
-// were written against `supabase/schema.sql`'s fresh-project design (profiles
-// with a role column, registrations, evaluations, certificates), and the live
-// portal project has none of those tables — so routing them would show a
-// participant a raw PostgREST "table not found" inside the sign-in shell. The
-// files stay, with a DORMANT header, because docs/PHASE-2-BACKEND.md is a memo
-// people read and a memo describing deleted files becomes archaeology.
+// EventsPage / CertificatesPage are deliberately NOT routed. They were written
+// against `supabase/schema.sql`'s fresh-project design (registrations, events,
+// certificates), and the live portal project has none of those tables — so
+// routing them would show a participant a raw PostgREST "table not found"
+// inside the sign-in shell. The files stay, with a DORMANT header, because
+// docs/PHASE-2-BACKEND.md is a memo people read and a memo describing deleted
+// files becomes archaeology.
+//
+// AccountPage was in that list until SITE-12 and is no longer: it was rewritten
+// against the live schema and routed at /portal/account below. The memo's
+// reserved `/account` path is untouched and still unused.
 const PortalPage = lazy(() => import('./pages/backend/PortalPage'))
 const PortalReportPage = lazy(() => import('./pages/backend/PortalReportPage'))
 // Spec CDT-04. `/portal/a/:assignmentId` is the PERMANENT anchor: once an
@@ -45,6 +49,12 @@ const EvaluationPage = lazy(() => import('./pages/backend/EvaluationPage'))
 // `is_portal_admin()` with a refusal sentence rather than a redirect, and it
 // adopts CDT-10's TwoFactorGate when that lands.
 const AttributionsPage = lazy(() => import('./pages/backend/AttributionsPage'))
+// Spec SITE-12. The member's own name and organisation. Routed at
+// /portal/account, which leaves docs/PHASE-2-BACKEND.md's reserved `/account`
+// free; the way in is a card on /portal, not a nav entry, because program
+// finding 25 measured the signed-in bar at nine entries already clipping at
+// 768px and `navItems()` builds that bar from `content.pages` anyway.
+const AccountPage = lazy(() => import('./pages/backend/AccountPage'))
 
 function Deferred({ children }: { children: ReactNode }) {
   return <Suspense fallback={<p className="mx-auto max-w-3xl px-5 py-16 text-ink-faint">Loading…</p>}>{children}</Suspense>
@@ -124,6 +134,7 @@ export default function App() {
             <Route path="/portal/a/:assignmentId" element={<Deferred><AssignmentPage /></Deferred>} />
             <Route path="/portal/evaluations" element={<Deferred><EvaluationsPage /></Deferred>} />
             <Route path="/portal/e/:roundKey" element={<Deferred><EvaluationPage /></Deferred>} />
+            <Route path="/portal/account" element={<Deferred><AccountPage /></Deferred>} />
             <Route path="/portal/admin/attributions" element={<Deferred><AttributionsPage /></Deferred>} />
           </>
         )}

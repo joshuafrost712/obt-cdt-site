@@ -1282,6 +1282,81 @@
         "label": "Your workshop evaluations"
       },
       {
+        "id": "portal.account.card.body",
+        "type": "labelToken",
+        "label": "Your name is how the portal addresses you, and it comes from the OBT-CDT participant list. Change it here if it is wrong, or if you would rather be called something else."
+      },
+      {
+        "id": "portal.account.card.cta",
+        "type": "labelToken",
+        "label": "Your name and details"
+      },
+      {
+        "id": "portal.account.title",
+        "type": "labelToken",
+        "label": "Your name and details"
+      },
+      {
+        "id": "portal.account.loading",
+        "type": "labelToken",
+        "label": "Loading your details…"
+      },
+      {
+        "id": "portal.account.name.label",
+        "type": "labelToken",
+        "label": "Your name"
+      },
+      {
+        "id": "portal.account.name.hint",
+        "type": "labelToken",
+        "label": "This is the name the portal greets you by. It started from the participant list your address was checked against."
+      },
+      {
+        "id": "portal.account.org.label",
+        "type": "labelToken",
+        "label": "Where you work"
+      },
+      {
+        "id": "portal.account.org.hint",
+        "type": "labelToken",
+        "label": "Optional. Only four people can read this: you, anyone you are paired with on an assignment, the head mentor and the portal administrator. Nobody else, and nowhere public."
+      },
+      {
+        "id": "portal.account.email.label",
+        "type": "labelToken",
+        "label": "Your email address"
+      },
+      {
+        "id": "portal.account.email.hint",
+        "type": "labelToken",
+        "label": "This is the address your account and the participant list are both keyed to, so it is not something you can change here. Email us if it needs to move."
+      },
+      {
+        "id": "portal.account.save",
+        "type": "labelToken",
+        "label": "Save"
+      },
+      {
+        "id": "portal.account.saving",
+        "type": "labelToken",
+        "label": "Saving…"
+      },
+      {
+        "id": "portal.account.saved",
+        "type": "labelToken",
+        "label": "Saved."
+      },
+      {
+        "id": "portal.account.error",
+        "type": "labelToken",
+        "label": "That did not save. Try again, and tell us if it keeps happening."
+      },
+      {
+        "id": "portal.account.back",
+        "type": "labelToken",
+        "label": "Back to your portal"
+      },
+      {
         "id": "portal.eval.done.list",
         "type": "labelToken",
         "label": "All my evaluations"

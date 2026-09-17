@@ -18,11 +18,21 @@
  */
 import { supabase } from './client'
 
+/**
+ * The live `public.profiles` table is `id, email, full_name, org, created_at`.
+ *
+ * There is NO `role` column and there never was on this project: it belongs to
+ * `supabase/schema.sql`'s fresh-project design, which nobody built. `getProfile`
+ * selected it anyway, so the helper would have failed with a PostgREST 400 the
+ * first time any routed screen called it (SITE-12 D5; measured 2026-09-11 and
+ * again 2026-09-17, count 0 in information_schema.columns). SITE-12's criterion
+ * 11 asserts the selected set is a SUBSET of the live columns, so this cannot
+ * rot back.
+ */
 export interface Profile {
   id: string
   full_name: string
   org: string
-  role: 'participant' | 'mentor' | 'admin'
 }
 
 export interface EventRow {
@@ -58,7 +68,14 @@ export interface CertificateRow {
 }
 
 export async function getProfile(userId: string): Promise<Profile | null> {
-  const { data, error } = await supabase().from('profiles').select('id, full_name, org, role').eq('id', userId).maybeSingle()
+  // `.eq('id', userId)` names the subject explicitly and is NOT decoration.
+  // `may_see_profile()` admits the owner, assignment counterparties, the head
+  // mentor and the portal administrator, so RLS alone returns every row the
+  // caller may see rather than one. A screen saying "your name" that trusted
+  // RLS to have narrowed the set would show an administrator someone else's.
+  // SITE-12 criterion 4 and its mutation 2; the read shape is pinned by D6,
+  // because `.maybeSingle()` is what makes a broken filter observable.
+  const { data, error } = await supabase().from('profiles').select('id, full_name, org').eq('id', userId).maybeSingle()
   if (error) throw error
   return data
 }

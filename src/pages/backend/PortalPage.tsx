@@ -19,6 +19,7 @@ export default function PortalPage() {
       {() => (
         <>
           <EvaluationsLink />
+          <AccountLink />
           <ReportList />
         </>
       )}
@@ -53,6 +54,39 @@ function EvaluationsLink() {
         className="mt-3 inline-block rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-white hover:bg-accent"
       >
         {siteLabel('portal.list.evaluations.cta', 'Your workshop evaluations')}
+      </Link>
+    </div>
+  )
+}
+
+/**
+ * The way in to `/portal/account`. Spec SITE-12, on SITE-02's precedent above.
+ *
+ * A card rather than a nav entry, for the reason EvaluationsLink gives: program
+ * finding 25 measured the signed-in bar at nine entries clipping at 768px, and
+ * `navItems()` builds that bar from `content.pages`, which a `/portal/*` route
+ * is not in.
+ *
+ * SITE-12 D4 names the gap this leaves rather than hiding it: a member who
+ * follows a covering-email link straight to `/portal/evaluations` never passes
+ * `/portal` and never sees this card. The fix is one link in `MemberBar`, which
+ * lives in `shared.tsx` — a file SITE-09 owns for the length of its row, so it
+ * is handed to that spec's re-review rather than taken here.
+ */
+function AccountLink() {
+  return (
+    <div className="mt-8 rounded-2xl border border-ink/10 bg-white/60 p-5" data-portal-account>
+      <p className="text-sm leading-relaxed text-ink">
+        {siteLabel(
+          'portal.account.card.body',
+          'Your name is how the portal addresses you, and it comes from the OBT-CDT participant list. Change it here if it is wrong, or if you would rather be called something else.',
+        )}
+      </p>
+      <Link
+        to="/portal/account"
+        className="mt-3 inline-block rounded-full border border-brand/40 px-5 py-2.5 text-sm font-semibold text-brand hover:border-accent hover:text-accent"
+      >
+        {siteLabel('portal.account.card.cta', 'Your name and details')}
       </Link>
     </div>
   )
