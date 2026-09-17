@@ -1475,6 +1475,161 @@
         "id": "portal.attrib.detach",
         "type": "labelToken",
         "label": "Detach this response (needs a reason above)"
+      },
+      {
+        "id": "portal.import.title",
+        "type": "labelToken",
+        "label": "Import a report"
+      },
+      {
+        "id": "portal.import.checking",
+        "type": "labelToken",
+        "label": "Checking your access…"
+      },
+      {
+        "id": "portal.import.refused",
+        "type": "labelToken",
+        "label": "This page is for portal administrators. Your account is not one, so there is nothing here for you to do."
+      },
+      {
+        "id": "portal.import.intro",
+        "type": "labelToken",
+        "label": "Paste a report that was emailed before the portal existed, and the person it is about will be able to read it here for as long as they have an account."
+      },
+      {
+        "id": "portal.import.manual",
+        "type": "labelToken",
+        "label": "A report filed here is marked as imported by hand. That is a record of your word for where it came from, not a signed claim from the system that produced it."
+      },
+      {
+        "id": "portal.import.mfa",
+        "type": "labelToken",
+        "label": "This page is protected by your password alone. Two-factor protection for administrator screens is not yet switched on for this project."
+      },
+      {
+        "id": "portal.import.source",
+        "type": "labelToken",
+        "label": "Paste from the Google Drive copy rather than any other, since that is the one people edit. Never paste a source-observations or facilitator-only document: those are not for participants to read."
+      },
+      {
+        "id": "portal.import.field.email",
+        "type": "labelToken",
+        "label": "Who the report is for (their email address)"
+      },
+      {
+        "id": "portal.import.field.document",
+        "type": "labelToken",
+        "label": "Document id (anything that names this report, e.g. the file name)"
+      },
+      {
+        "id": "portal.import.field.title",
+        "type": "labelToken",
+        "label": "Title"
+      },
+      {
+        "id": "portal.import.field.workshop",
+        "type": "labelToken",
+        "label": "Workshop name"
+      },
+      {
+        "id": "portal.import.field.date",
+        "type": "labelToken",
+        "label": "Date label (as it should read on the report)"
+      },
+      {
+        "id": "portal.import.field.event",
+        "type": "labelToken",
+        "label": "Workshop this belongs to (optional)"
+      },
+      {
+        "id": "portal.import.field.event.none",
+        "type": "labelToken",
+        "label": "Not listed"
+      },
+      {
+        "id": "portal.import.field.body",
+        "type": "labelToken",
+        "label": "The report itself, pasted"
+      },
+      {
+        "id": "portal.import.resolve",
+        "type": "labelToken",
+        "label": "Check who this is for"
+      },
+      {
+        "id": "portal.import.confirm.title",
+        "type": "labelToken",
+        "label": "Check this is the right person before you file the report."
+      },
+      {
+        "id": "portal.import.confirm.roster",
+        "type": "labelToken",
+        "label": "On the participant list as"
+      },
+      {
+        "id": "portal.import.confirm.noname",
+        "type": "labelToken",
+        "label": "On the participant list, with no name recorded against it."
+      },
+      {
+        "id": "portal.import.confirm.offlist",
+        "type": "labelToken",
+        "label": "This address is not on the participant list, so the import will be refused. Add it to the list first, or that person could never register to read the report."
+      },
+      {
+        "id": "portal.import.confirm.account",
+        "type": "labelToken",
+        "label": "They have an account, so they will see it straight away."
+      },
+      {
+        "id": "portal.import.confirm.noaccount",
+        "type": "labelToken",
+        "label": "They have not registered yet. The report will wait for them and appear when they do."
+      },
+      {
+        "id": "portal.import.commit",
+        "type": "labelToken",
+        "label": "File this report"
+      },
+      {
+        "id": "portal.import.cancel",
+        "type": "labelToken",
+        "label": "Not them, go back"
+      },
+      {
+        "id": "portal.import.done",
+        "type": "labelToken",
+        "label": "The report is filed."
+      },
+      {
+        "id": "portal.import.done.unmatched",
+        "type": "labelToken",
+        "label": "That person has not registered yet, so the report is waiting for them. It will appear in their portal by itself on the day they sign up, and nobody needs to do anything more."
+      },
+      {
+        "id": "portal.import.done.matched",
+        "type": "labelToken",
+        "label": "That person already has an account, so the report is in their portal now."
+      },
+      {
+        "id": "portal.import.again",
+        "type": "labelToken",
+        "label": "Import another report"
+      },
+      {
+        "id": "portal.import.back",
+        "type": "labelToken",
+        "label": "Back to the portal"
+      },
+      {
+        "id": "portal.list.admin_note",
+        "type": "labelToken",
+        "label": "You are a portal administrator, so this list shows every report in the portal, including ones filed for people who have not registered yet. It is not only yours."
+      },
+      {
+        "id": "portal.report.admin_note",
+        "type": "labelToken",
+        "label": "You are a portal administrator, so you can open any report in the portal. This one may belong to somebody else, whatever the heading says."
       }
     ]
   },

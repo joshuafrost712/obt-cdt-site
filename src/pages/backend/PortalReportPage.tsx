@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { AuthGate, ErrorNote } from './shared'
 import { getMyReport, type PortalReport } from '../../lib/backend/portalApi'
+import { amPortalAdmin } from '../../lib/backend/evalApi'
 import { Markdown } from '../../lib/backend/markdown'
 import { siteLabel } from '../../lib/content/loader'
 
@@ -17,7 +18,23 @@ function ReportBody() {
   const { reportId } = useParams()
   const [state, setState] = useState<'loading' | 'missing' | 'ready' | 'error'>('loading')
   const [report, setReport] = useState<PortalReport | null>(null)
+  const [isAdmin, setIsAdmin] = useState(false)
   const [error, setError] = useState('')
+
+  // Spec SITE-14 criterion 7. `portal.report.title` renders "Your report", and
+  // for an administrator opening a colleague's evaluation that is false at the
+  // top of the page while they read a participant's assessment of themselves.
+  // The title is not changed, because it is true for the 22 members it was
+  // written for; a note is added for the one reader it is wrong for.
+  useEffect(() => {
+    let alive = true
+    amPortalAdmin()
+      .then((a) => alive && setIsAdmin(a))
+      .catch(() => {})
+    return () => {
+      alive = false
+    }
+  }, [])
 
   useEffect(() => {
     let alive = true
@@ -70,6 +87,18 @@ function ReportBody() {
       <Link to="/portal" className="text-sm underline">
         {siteLabel('portal.report.back', 'Back to your reports')}
       </Link>
+
+      {isAdmin && (
+        <p
+          className="mt-4 rounded-2xl border border-brand/25 bg-brand-soft/30 px-4 py-3 text-sm text-ink-soft"
+          data-site14-report-admin-note
+        >
+          {siteLabel(
+            'portal.report.admin_note',
+            'You are a portal administrator, so you can open any report in the portal. This one may belong to somebody else, whatever the heading says.',
+          )}
+        </p>
+      )}
 
       <header className="mt-6">
         <h2 className="font-display text-2xl font-semibold text-ink">{report.title || report.subject}</h2>

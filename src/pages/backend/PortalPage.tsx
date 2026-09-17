@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { AuthGate, ErrorNote } from './shared'
 import { listMyReports, type PortalReportRow } from '../../lib/backend/portalApi'
+import { amPortalAdmin } from '../../lib/backend/evalApi'
 import { siteLabel } from '../../lib/content/loader'
 
 /**
@@ -94,6 +95,7 @@ function AccountLink() {
 
 function ReportList() {
   const [rows, setRows] = useState<PortalReportRow[] | undefined>(undefined)
+  const [isAdmin, setIsAdmin] = useState(false)
   const [error, setError] = useState('')
 
   useEffect(() => {
@@ -101,6 +103,15 @@ function ReportList() {
     listMyReports()
       .then((r) => alive && setRows(r))
       .catch((e: unknown) => alive && setError(e instanceof Error ? e.message : String(e)))
+    // Spec SITE-14 criterion 7. This is a SECOND query on every portal load, for
+    // all 22 members, to make one sentence conditional — and D4 names it as an
+    // accepted cost rather than leaving a later reader to find it. Admin-ness
+    // cannot be derived from the rows already fetched, because LIST_COLUMNS does
+    // not select `profile_id`; widening it would send every row's profile id to
+    // every client to save a call, trading a query for a disclosure.
+    amPortalAdmin()
+      .then((a) => alive && setIsAdmin(a))
+      .catch(() => {})
     return () => {
       alive = false
     }
@@ -135,6 +146,25 @@ function ReportList() {
 
   return (
     <div className="mt-8 flex flex-col gap-8">
+      {/* Spec SITE-14 criterion 7. The read policy on `publication` ends in `or
+          is_portal_admin()` with NO match_state, visibility or recipient_role
+          filter, and listMyReports() adds none either, so an administrator's
+          list is every report in the portal and not their own. It says "every"
+          rather than "every matched" for that reason: rows for people who have
+          not registered yet will be the common case while the backfill runs.
+          Asserted in both directions, present for an admin and absent for a
+          member, so a node that rendered unconditionally would fail. */}
+      {isAdmin && (
+        <p
+          className="rounded-2xl border border-brand/25 bg-brand-soft/30 px-4 py-3 text-sm text-ink-soft"
+          data-site14-admin-note
+        >
+          {siteLabel(
+            'portal.list.admin_note',
+            'You are a portal administrator, so this list shows every report in the portal, including ones filed for people who have not registered yet. It is not only yours.',
+          )}
+        </p>
+      )}
       {groups.map((group) => (
         <section key={group.name}>
           <h2 className="font-display text-lg font-semibold text-ink">{group.name}</h2>

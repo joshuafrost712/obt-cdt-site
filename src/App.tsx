@@ -55,6 +55,11 @@ const AttributionsPage = lazy(() => import('./pages/backend/AttributionsPage'))
 // finding 25 measured the signed-in bar at nine entries already clipping at
 // 768px and `navItems()` builds that bar from `content.pages` anyway.
 const AccountPage = lazy(() => import('./pages/backend/AccountPage'))
+// Spec SITE-14. The SECOND admin-only route, copying the gate above. The module
+// filename is fixed by that spec rather than free: Vite sets no `chunkFileNames`
+// here, so the lazy chunk takes this stem and the confirm-live proof greps
+// `assets/ImportPage-<hash>.js` for it.
+const ImportPage = lazy(() => import('./pages/backend/ImportPage'))
 
 function Deferred({ children }: { children: ReactNode }) {
   return <Suspense fallback={<p className="mx-auto max-w-3xl px-5 py-16 text-ink-faint">Loading…</p>}>{children}</Suspense>
@@ -136,6 +141,7 @@ export default function App() {
             <Route path="/portal/e/:roundKey" element={<Deferred><EvaluationPage /></Deferred>} />
             <Route path="/portal/account" element={<Deferred><AccountPage /></Deferred>} />
             <Route path="/portal/admin/attributions" element={<Deferred><AttributionsPage /></Deferred>} />
+            <Route path="/portal/admin/import" element={<Deferred><ImportPage /></Deferred>} />
           </>
         )}
         <Route path="*" element={<NotFoundPage />} />
