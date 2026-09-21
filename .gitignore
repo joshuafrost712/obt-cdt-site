@@ -161,3 +161,12 @@ scripts/.site14-fixture-ids.json
 # scan can see. An ignore entry makes the probe invisible and the "both
 # directions" assertion fails — which is what happened when it was added here on
 # 2026-09-17. The probe is written and deleted inside one run.
+
+# Spec SITE-15's shots. They photograph the register form, which carries a
+# fixture address in the email box at the moment of the mismatch and the
+# successful submit. The address is a lane fixture and not a participant's, but
+# the rule here is the same one every shots entry above states: a screenshot is a
+# disclosure channel no text gate reads, so it is held locally and reported
+# rather than committed. Added BEFORE the lane's first run, which is the only
+# time this is a guard rather than a cleanup.
+feedback/site15-shots/
