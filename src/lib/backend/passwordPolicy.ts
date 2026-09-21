@@ -18,9 +18,15 @@
  * config, behind the management API and a token no visitor holds. So this value
  * is necessarily a copy, and a copy can drift. The guard against drift is not in
  * the running site but in `scripts/site09-auth-checks.mjs`, which reads the live
- * floor through the management API and asserts BOTH inputs' `minLength` equal
- * it. Change the project's floor without changing this line and that lane goes
- * red, which is the loud failure the spec asks for.
+ * floor through the management API and asserts that EVERY password input's
+ * `minLength` equals it. Change the project's floor without changing this line
+ * and that lane goes red, which is the loud failure the spec asks for.
+ *
+ * "BOTH inputs" until 2026-09-21: the comment counted the two inputs that
+ * existed when SITE-09 wrote it, and the lane itself only ever asserted a floor
+ * of three. SITE-15 added a fourth input and made that assertion an exact count
+ * derived from the number of `type="password"` inputs in `shared.tsx`, so the
+ * number is no longer written down in either place.
  *
  * Keeping it here rather than in `signinErrors.ts` because it is a fact about
  * the project's configuration, not a reading of somebody's error message.

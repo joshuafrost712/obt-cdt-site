@@ -611,14 +611,48 @@ than leaving as an unexplained gap, because the earlier draft of this document
 listed it among settings that were "all free," and a later reader would otherwise
 try to apply it and hit the same 402.
 
-What stands in its place, and it is not nothing: the minimum password length is
-now 12, sign-up is gated by `member_allowlist` so a stranger's credentials get
-them a refusal rather than an account, Supabase's server-side auth rate limits
-apply, and MFA is required for the two roles that can read the whole cohort. What
-is genuinely not covered is a participant who reuses a password that has appeared
-in a public breach. **Revisit when the project moves to Pro for any other reason**,
-at which point it is a single toggle, or sooner if the cohort grows past the point
-where the allowlist is the main gate.
+What stands in its place, and it is three things rather than four: the minimum
+password length is now 12, sign-up is gated by `member_allowlist` so a stranger's
+credentials get them a refusal rather than an account, and Supabase's server-side
+auth rate limits apply. What is genuinely not covered is a participant who reuses
+a password that has appeared in a public breach. **Revisit when the project moves
+to Pro for any other reason**, at which point it is a single toggle, or sooner if
+the cohort grows past the point where the allowlist is the main gate.
+
+**The fourth item this list used to claim is not in force, corrected 2026-09-21.**
+It read "and MFA is required for the two roles that can read the whole cohort."
+Measured on 2026-09-21 against the live project, that is false: `auth.mfa_factors`
+holds **0** verified factors, and `pg_get_functiondef('public.is_portal_admin()')`
+contains no `aal2` test, so the administrator account that can read all 42
+allowlist rows and every report is protected by a password alone. The migration is
+written and reviewed and not applied, which the section below states plainly. The
+claim was quoted by a later spec in support of a risk judgment before anyone
+re-measured it, which is why it is corrected here rather than in a comment.
+Closing it is spec SITE-16, whose only remaining prerequisite is Joshua's own TOTP
+enrolment. `is_head_mentor()` does carry its `aal2` test; the gap is the
+administrator role specifically.
+
+```sql
+select (select count(*) from auth.mfa_factors where status='verified') as verified_factors,
+       (pg_get_functiondef('public.is_portal_admin()'::regprocedure) like '%aal2%') as admin_has_aal2;
+-- 2026-09-21: verified_factors=0  admin_has_aal2=false
+```
+
+**ASVS V6.2.4 is knowingly unmet, decided 2026-09-17.** The 2026-08-21 call above
+settled HaveIBeenPwned, which is ASVS V6.2.12 and NIST's SHALL. It did not
+consider **V6.2.4**, which is an **L1** row and a different thing: "Verify that
+passwords submitted during account registration or password change are checked
+against an available set of, at least, the top 3000 passwords which match the
+application's password policy." That one needs no paid plan and no third-party
+origin, because a 3,000-entry list filtered to twelve-plus characters is a small
+static asset checked in the browser before `signUp`. Joshua's decision of
+2026-09-17 (SITE-15 decision 1) was **not to bundle it**, and to record the gap by
+name instead: the exposure is small against an allowlist-gated 42-person cohort
+with a twelve-character floor and server-side rate limits, and a browser-side
+check is advisory in any case, since anything the browser computes a script can
+skip. The posture is therefore an L1 row left unmet knowingly, which is different
+from one nobody had noticed. Revisit it with the HIBP trigger above; if the
+project moves to Pro, the server-side check supersedes this question entirely.
 
 **The MFA migration is written, reviewed and not applied.** Its safety gate will
 refuse until an administrator has enrolled, which is the correct behaviour and

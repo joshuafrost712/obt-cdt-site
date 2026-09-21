@@ -152,6 +152,21 @@
         "label": "Password"
       },
       {
+        "id": "portal.signin.confirm",
+        "type": "labelToken",
+        "label": "Password again"
+      },
+      {
+        "id": "portal.signin.hint",
+        "type": "labelToken",
+        "label": "Use at least {min} characters. Any mix of characters is fine."
+      },
+      {
+        "id": "portal.signin.mismatch",
+        "type": "labelToken",
+        "label": "Those two passwords are not the same. Please type the same one twice."
+      },
+      {
         "id": "portal.signin.cta",
         "type": "labelToken",
         "label": "Sign in"

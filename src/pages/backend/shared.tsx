@@ -336,12 +336,35 @@ function SignInCard({ returning }: { returning: boolean }) {
   const [mode, setMode] = useState<Mode>('signin')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [confirm, setConfirm] = useState('')
   const [status, setStatus] = useState<Status>('idle')
   const [errorText, setErrorText] = useState('')
 
   const submit = async (e: FormEvent) => {
     e.preventDefault()
     if (!email.trim() || status === 'working') return
+
+    // SITE-15 criterion 1. The mismatch is caught here, BEFORE `setStatus` and
+    // before any network call, so a typo never reaches `signUp` and no account
+    // is created with a password the person did not mean to type. Register mode
+    // only: sign-in and reset render no confirm box, and `confirm` stays '' in
+    // both, so an unguarded comparison would refuse every sign-in.
+    //
+    // This is a usability control against a typo, not a security control. The
+    // spec's brief is explicit that neither ASVS nor NIST asks for a confirm
+    // field; what they ask for is the blocklist check, which is a separate and
+    // recorded decision (docs/SECURITY.md, ASVS V6.2.4).
+    if (mode === 'register' && password !== confirm) {
+      setErrorText(
+        siteLabel(
+          'portal.signin.mismatch',
+          'Those two passwords are not the same. Please type the same one twice.',
+        ),
+      )
+      setStatus('error')
+      return
+    }
+
     setStatus('working')
     setErrorText('')
     const addr = email.trim().toLowerCase()
@@ -477,6 +500,51 @@ function SignInCard({ returning }: { returning: boolean }) {
           </>
         )}
 
+        {/* SITE-15. The second box and the rule, register mode only.
+
+            The hint states the floor the SERVER will actually apply, composed
+            from `PASSWORD_MIN_LENGTH` rather than typed, so the digit exists in
+            exactly one place in this repo and `site09-auth-checks.mjs` keeps
+            that place equal to the live `password_min_length`. Criterion 3
+            asserts the digit is absent as a literal from BOTH this component and
+            the node's label, because `siteLabel` returns `node.label ?? fallback`
+            and a content edit would otherwise win over the component silently.
+
+            It is a requirements hint, not a strength score, and that is a
+            deliberate refusal rather than an omission: nothing server-side
+            scores entropy, so a meter would promise an acceptance the server
+            never granted. `password_required_characters` is empty by design
+            (ASVS V6.2.5, NIST SHOULD NOT), so the hint names length only.
+
+            Always visible, per decision 2: it prevents the failure rather than
+            explaining it after the fact. */}
+        {mode === 'register' && (
+          <>
+            <label
+              className="text-xs font-semibold uppercase tracking-wide text-ink-faint"
+              htmlFor="portal-confirm"
+            >
+              {siteLabel('portal.signin.confirm', 'Password again')}
+            </label>
+            <input
+              id="portal-confirm"
+              type="password"
+              required
+              minLength={PASSWORD_MIN_LENGTH}
+              autoComplete="new-password"
+              value={confirm}
+              onChange={(e) => setConfirm(e.target.value)}
+              className="rounded-lg border border-ink/20 bg-white px-3 py-2.5 text-ink outline-none focus:border-accent"
+            />
+            <p className="text-xs text-ink-faint" data-portal-hint>
+              {siteLabel(
+                'portal.signin.hint',
+                'Use at least {min} characters. Any mix of characters is fine.',
+              ).replace('{min}', String(PASSWORD_MIN_LENGTH))}
+            </p>
+          </>
+        )}
+
         <button
           type="submit"
           disabled={status === 'working'}
@@ -496,17 +564,17 @@ function SignInCard({ returning }: { returning: boolean }) {
 
       <div className="mt-4 flex flex-wrap gap-4 text-xs text-ink-faint">
         {mode !== 'signin' && (
-          <button type="button" className="underline" onClick={() => { setMode('signin'); setStatus('idle') }}>
+          <button type="button" className="underline" onClick={() => { setMode('signin'); setStatus('idle'); setConfirm('') }}>
             {siteLabel('portal.signin.switch.signin', 'Back to sign in')}
           </button>
         )}
         {mode !== 'register' && (
-          <button type="button" className="underline" onClick={() => { setMode('register'); setStatus('idle') }}>
+          <button type="button" className="underline" onClick={() => { setMode('register'); setStatus('idle'); setConfirm('') }}>
             {siteLabel('portal.signin.switch.register', 'I need to create an account')}
           </button>
         )}
         {mode !== 'reset' && (
-          <button type="button" className="underline" onClick={() => { setMode('reset'); setStatus('idle') }}>
+          <button type="button" className="underline" onClick={() => { setMode('reset'); setStatus('idle'); setConfirm('') }}>
             {siteLabel('portal.signin.switch.reset', 'I forgot my password')}
           </button>
         )}

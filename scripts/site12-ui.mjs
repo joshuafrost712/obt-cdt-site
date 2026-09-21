@@ -560,8 +560,16 @@ async function laneScreen(s, asAdmin = false) {
       const heading = await reg.getByRole('heading', { name: /Create your account/i }).count()
       ok('c1 must_not 1: the form is in REGISTER mode, not sign-in',
          heading > 0, 'the register heading is absent; the mode switch did not take')
-      ok('c1 must_not 1: the register form\'s input set is exactly {portal-email, portal-password}',
-         JSON.stringify(inputIds) === JSON.stringify(['portal-email', 'portal-password']),
+      // The expected set gained `portal-confirm` on 2026-09-21, owned by SITE-15,
+      // which added the confirm-password input to this form. The rule is
+      // unchanged and still set-equality, so a FOURTH input of any kind still
+      // fails; only the expected membership moved.
+      //
+      // ALPHABETICAL, because `inputIds` is built with `.sort()` above. Render
+      // order is irrelevant here and a list written in the order the fields
+      // appear on screen would be red against a correct product.
+      ok('c1 must_not 1: the register form\'s input set is exactly {portal-confirm, portal-email, portal-password}',
+         JSON.stringify(inputIds) === JSON.stringify(['portal-confirm', 'portal-email', 'portal-password']),
          `got {${inputIds.join(', ')}}`)
       ok('c1 must_not 1: no name field on the register form',
          inputIds.length > 0 && inputIds.every((i) => !/name/i.test(i)), `got {${inputIds.join(', ')}}`)

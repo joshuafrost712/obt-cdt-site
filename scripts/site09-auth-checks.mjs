@@ -100,6 +100,10 @@ ok(
 // ------------------------------------------- every built input carries it
 // The portal chunk is whichever built chunk holds the sign-in card. Discovered
 // rather than named, so a chunk rename does not silently pass this lane.
+// Read once, used by SITE-15's derived minLength count below and by the c2
+// branch assertion further down. Hoisted to the first use rather than read twice.
+const sharedSrc = readFileSync('src/pages/backend/shared.tsx', 'utf8')
+
 const assets = readdirSync('dist/assets').filter((f) => f.endsWith('.js'))
 const withInputs = assets.filter((f) =>
   readFileSync(path.join('dist/assets', f), 'utf8').includes('portal-recovery-password'),
@@ -113,7 +117,26 @@ const built = chunk ? readFileSync(path.join('dist/assets', chunk), 'utf8') : ''
 // literal is exactly what contract c3 forbids, so this counts ALL of them
 // rather than looking for the three we know about.
 const found = [...built.matchAll(/minLength:\s*(\d+)/g)].map((m) => Number(m[1]))
-ok('at least three password inputs carry a minLength', found.length >= 3, `found=${found.length} values=${found.join(',')}`)
+
+// SITE-15 criterion 5. This read `found.length >= 3` until 2026-09-21, which is
+// a floor and not a count: it passed before and after SITE-15's confirm input
+// and so could never have caught that input shipping WITHOUT a minLength, which
+// is the one defect this assertion exists for. SITE-15's review 1 (finding B1)
+// caught it in the spec rather than in a build.
+//
+// The expected number is DERIVED from the source rather than typed, so adding a
+// fourth password input to the form does not require editing a literal here and
+// cannot drift from what ships. `shared.tsx` is the only file in `src/` carrying
+// `type="password"` (measured 2026-09-21: 4 occurrences, 0 elsewhere), and the
+// lane already reads that file below for the c2 branch assertion.
+const passwordInputs = (sharedSrc.match(/type="password"/g) ?? []).length
+ok('the source population is non-empty', passwordInputs > 0,
+   `shared.tsx carries ${passwordInputs} password inputs; a zero here would make the count below vacuous`)
+ok(
+  'every password input in the source carries a minLength in the built chunk',
+  found.length === passwordInputs,
+  `built=${found.length} source=${passwordInputs} values=${found.join(',')}`,
+)
 ok(
   'every password input equals the live floor',
   found.length > 0 && found.every((n) => n === liveFloor),
@@ -136,7 +159,7 @@ ok('the built chunk carries the recovery discriminator', built.includes('recover
 // the broken feature it exists to catch: two branches that no longer agree.
 // Both arms are now read, and the assertion is that they are EQUAL rather than
 // that either one has a particular value.
-const sharedSrc = readFileSync('src/pages/backend/shared.tsx', 'utf8')
+// `sharedSrc` is read once, above, at its first use.
 
 // The register branch, up to its closing brace: the last setStatus in it is the
 // success arm, and the one guarded by `kind === 'not-on-list'` is the refusal.
