@@ -118,13 +118,34 @@ while read -r local_ref local_sha remote_ref remote_sha; do
           skipped\ ??*)
             echo "pre-push: $spec shadow review SKIPPED: ${shadow#skipped }" >&2 ;;
           haiku\ *|sonnet\ *)
+            # The bare family form predates 2026-09-29, when the alias stopped naming
+            # one model (the CLI moved to Sonnet 5.5, the extension stayed on 5).
             jobs="$(printf '%s' "$shadow" | awk '{print $2}')"
+            when="$(printf '%s' "$shadow" | awk '{print $3}')"
+            if [[ ! "$when" < "2026-09-29" ]]; then
+              refuse "$spec 'shadow: $shadow' names a bare family on or after 2026-09-29; write 'shadow: <label> <resolved id> <M,D,J> <date>', the id read from the shadow's transcript"
+            fi
             case "$jobs" in
               *[MDJ]*) echo "pre-push: $spec shadow review: $shadow." ;;
-              *) refuse "$spec 'shadow: $shadow' names no job letters; write 'shadow: <tier> <M,D,J> <date>'" ;;
+              *) refuse "$spec 'shadow: $shadow' names no job letters" ;;
+            esac ;;
+          *-[0-9]*\ claude-*)
+            # shadow: <label> <resolved id> <jobs> <date>. The label is re-derived from
+            # the id (the same rule as _Meta/scripts/models.py label), so a shadow that
+            # ran on one model cannot be recorded under another's label.
+            lbl="$(printf '%s' "$shadow" | awk '{print $1}')"
+            sid="$(printf '%s' "$shadow" | awk '{print $2}')"
+            jobs="$(printf '%s' "$shadow" | awk '{print $3}')"
+            sid="${sid%%\[*}"
+            [[ "$sid" =~ -[0-9]{8}$ ]] && sid="${sid%-*}"
+            x="${sid#claude-}"; fam="${x%%-*}"; ver="${x#*-}"; want="$fam-${ver//-/.}"
+            [ "$lbl" = "$want" ] || refuse "$spec 'shadow: $shadow': label $lbl does not match id $sid (expected $want)"
+            case "$jobs" in
+              *[MDJ]*) echo "pre-push: $spec shadow review: $shadow." ;;
+              *) refuse "$spec 'shadow: $shadow' names no job letters" ;;
             esac ;;
           *)
-            refuse "$spec 'shadow: $shadow' is not a recognised form; write 'shadow: <haiku|sonnet> <M,D,J> <date>' or 'shadow: skipped <reason>'" ;;
+            refuse "$spec 'shadow: $shadow' is not a recognised form; write 'shadow: <label> <resolved id> <M,D,J> <date>' (e.g. 'shadow: sonnet-5.5 claude-sonnet-5-5 M,D,J 2026-09-30') or 'shadow: skipped <reason>'" ;;
         esac
         verified=1 ;;
       *) echo "pre-push: $spec build review signed $sig, but the pushed tip is ${local_sha:0:12}; commits since the review are unverified." >&2 ;;
