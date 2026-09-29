@@ -122,7 +122,9 @@ while read -r local_ref local_sha remote_ref remote_sha; do
             # one model (the CLI moved to Sonnet 5.5, the extension stayed on 5).
             jobs="$(printf '%s' "$shadow" | awk '{print $2}')"
             when="$(printf '%s' "$shadow" | awk '{print $3}')"
-            if [[ ! "$when" < "2026-09-29" ]]; then
+            # A missing or malformed date must refuse, not compare: an empty string
+            # sorts before any date and would pass (build review, 2026-09-29).
+            if [[ ! "$when" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]] || [[ ! "$when" < "2026-09-29" ]]; then
               refuse "$spec 'shadow: $shadow' names a bare family on or after 2026-09-29; write 'shadow: <label> <resolved id> <M,D,J> <date>', the id read from the shadow's transcript"
             fi
             case "$jobs" in
