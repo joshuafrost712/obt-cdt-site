@@ -67,6 +67,26 @@
         "label": "Set a new password"
       },
       {
+        "id": "portal.recovery.forced.heading",
+        "type": "labelToken",
+        "label": "Choose your own password"
+      },
+      {
+        "id": "portal.recovery.forced.body",
+        "type": "labelToken",
+        "label": "You signed in with a temporary password. Please choose one only you know before you continue."
+      },
+      {
+        "id": "portal.recovery.cancel",
+        "type": "labelToken",
+        "label": "Cancel"
+      },
+      {
+        "id": "portal.account.password.open",
+        "type": "labelToken",
+        "label": "Change my password"
+      },
+      {
         "id": "portal.recovery.body",
         "type": "labelToken",
         "label": "Choose a password you have not used before. Signing in on your other devices will need the new one."

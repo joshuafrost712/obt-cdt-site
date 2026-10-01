@@ -170,3 +170,4 @@ scripts/.site14-fixture-ids.json
 # rather than committed. Added BEFORE the lane's first run, which is the only
 # time this is a guard rather than a cleanup.
 feedback/site15-shots/
+scripts/.site18-shots/

@@ -109,7 +109,12 @@ export function AuthGate({
   //
   // `wide` is deliberately ignored: a wide page hands the layout to its
   // children, and the children are exactly what must not render yet.
-  if (recovery) return panel(<RecoveryCard />)
+  // A temporary password was handed over by hand (mail was unreliable), so the
+  // account is flagged and the member must choose their own before anything else
+  // renders. `user_metadata` is user-writable, so this is a courtesy gate and not
+  // a security boundary; the real protection is that the password is unique.
+  const mustChange = session.user.user_metadata?.must_change_password === true
+  if (recovery || mustChange) return panel(<RecoveryCard mode={recovery ? 'recovery' : 'forced'} />)
 
   if (wide) {
     return (
@@ -149,7 +154,13 @@ export function AuthGate({
  * network call (criterion 5), which is what keeps a person out of the raw
  * server error that finding 65 describes.
  */
-function RecoveryCard() {
+export function RecoveryCard({
+  mode = 'recovery',
+  onClose,
+}: {
+  mode?: 'recovery' | 'forced' | 'voluntary'
+  onClose?: () => void
+}) {
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
   const [status, setStatus] = useState<'idle' | 'working' | 'done' | 'error'>('idle')
@@ -185,7 +196,10 @@ function RecoveryCard() {
 
     setStatus('working')
     setErrorText('')
-    const { error } = await supabase().auth.updateUser({ password })
+    const { error } = await supabase().auth.updateUser({
+      password,
+      data: { must_change_password: false },
+    })
     if (error) {
       // The likeliest real failure here is an expired or already-used link:
       // `mailer_otp_exp` is 3600, so an hour-old email fails at exactly this
@@ -221,6 +235,15 @@ function RecoveryCard() {
         <p className="text-ink">
           {siteLabel('portal.recovery.done', 'Your password is set. You can sign in with it on any device.')}
         </p>
+        {onClose && (
+          <button
+            type="button"
+            className="mt-4 rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-white hover:bg-accent"
+            onClick={onClose}
+          >
+            {siteLabel('portal.account.back', 'Back to your portal')}
+          </button>
+        )}
       </div>
     )
   }
@@ -234,13 +257,20 @@ function RecoveryCard() {
           not say what this screen is for. This heading does, and it is also the
           string criterion 13 greps for in the served chunks. */}
       <h2 className="font-display text-2xl font-semibold tracking-tight text-ink">
-        {siteLabel('portal.recovery.heading', 'Set a new password')}
+        {mode === 'forced'
+          ? siteLabel('portal.recovery.forced.heading', 'Choose your own password')
+          : siteLabel('portal.recovery.heading', 'Set a new password')}
       </h2>
       <p className="mt-2 text-ink-soft">
-        {siteLabel(
-          'portal.recovery.body',
-          'Choose a password you have not used before. Signing in on your other devices will need the new one.',
-        )}
+        {mode === 'forced'
+          ? siteLabel(
+              'portal.recovery.forced.body',
+              'You signed in with a temporary password. Please choose one only you know before you continue.',
+            )
+          : siteLabel(
+              'portal.recovery.body',
+              'Choose a password you have not used before. Signing in on your other devices will need the new one.',
+            )}
       </p>
       <form onSubmit={(e) => void submit(e)} className="mt-4 flex flex-col gap-3">
         <label
@@ -296,12 +326,20 @@ function RecoveryCard() {
         type="button"
         className="mt-4 text-xs font-medium text-ink-soft underline hover:text-ink"
         onClick={() => {
+          if (mode === 'voluntary') {
+            onClose?.()
+            return
+          }
           clearRecovery()
           clearHadAccount()
           void supabase().auth.signOut()
         }}
       >
-        {siteLabel('portal.recovery.leave', 'Not now')}
+        {mode === 'voluntary'
+          ? siteLabel('portal.recovery.cancel', 'Cancel')
+          : mode === 'forced'
+            ? siteLabel('portal.signout', 'Sign out')
+            : siteLabel('portal.recovery.leave', 'Not now')}
       </button>
     </div>
   )

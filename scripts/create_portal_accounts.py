@@ -247,7 +247,7 @@ def main() -> None:
             "email": address,
             "password": password,
             "email_confirm": True,
-            "user_metadata": {"full_name": name} if name else {},
+            "user_metadata": ({"full_name": name} if name else {}) | {"must_change_password": True},
         })
         if "__error__" in created:
             print(f"  ! {show(address):<38} FAILED  {created['__error__']}", file=sys.stderr)

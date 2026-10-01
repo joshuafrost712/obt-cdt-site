@@ -41,7 +41,7 @@ import type { Session } from '@supabase/supabase-js'
 import { Link } from 'react-router-dom'
 import { getProfile, updateProfile, type Profile } from '../../lib/backend/api'
 import { siteLabel } from '../../lib/content/loader'
-import { AuthGate, ErrorNote } from './shared'
+import { AuthGate, ErrorNote, RecoveryCard } from './shared'
 
 export default function AccountPage() {
   return (
@@ -54,6 +54,7 @@ export default function AccountPage() {
 function AccountBody({ session }: { session: Session }) {
   const [profile, setProfile] = useState<Profile | null | undefined>(undefined)
   const [error, setError] = useState('')
+  const [changingPassword, setChangingPassword] = useState(false)
 
   useEffect(() => {
     let alive = true
@@ -73,6 +74,18 @@ function AccountBody({ session }: { session: Session }) {
   return (
     <div className="mt-8 space-y-8" data-site12-account>
       <ProfileForm session={session} profile={profile} />
+      {changingPassword ? (
+        <RecoveryCard mode="voluntary" onClose={() => setChangingPassword(false)} />
+      ) : (
+        <button
+          type="button"
+          data-site18-change-password
+          className="rounded-full border border-ink/20 px-5 py-2.5 text-sm font-semibold text-ink-soft hover:bg-paper-deep"
+          onClick={() => setChangingPassword(true)}
+        >
+          {siteLabel('portal.account.password.open', 'Change my password')}
+        </button>
+      )}
       <p>
         <Link to="/portal" className="text-sm font-semibold text-brand hover:text-accent">
           {siteLabel('portal.account.back', 'Back to your portal')}
