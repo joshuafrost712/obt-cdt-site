@@ -19,7 +19,7 @@
  *   - the default is a dry run that writes nothing.
  */
 import { execFileSync } from 'node:child_process'
-import { readFileSync, writeFileSync, chmodSync, existsSync } from 'node:fs'
+import { readFileSync, appendFileSync, writeFileSync, existsSync } from 'node:fs'
 import { homedir } from 'node:os'
 import path from 'node:path'
 import { randomInt } from 'node:crypto'
@@ -57,7 +57,19 @@ for (const line of readFileSync(path.join(homedir(), '.claude/secrets/obt-cdt-su
 const REF = env.OBT_CDT_SUPABASE_PROJECT_REF
 const MGMT = `https://api.supabase.com/v1/projects/${REF}`
 const MH = { Authorization: `Bearer ${env.OBT_CDT_SUPABASE_ACCESS_TOKEN}`, 'User-Agent': 'curl/8', 'Content-Type': 'application/json' }
-const keys = await (await fetch(`${MGMT}/api-keys?reveal=true`, { headers: MH })).json()
+let keyRes
+let keys
+for (let attempt = 1; attempt <= 4; attempt++) {
+  // The management API answers an occasional transient 500 (seen 2026-10-01).
+  keyRes = await fetch(`${MGMT}/api-keys?reveal=true`, { headers: MH })
+  keys = await keyRes.json()
+  if (Array.isArray(keys)) break
+  await new Promise((r) => setTimeout(r, 1500 * attempt))
+}
+if (!Array.isArray(keys)) {
+  console.error(`could not read the project keys: HTTP ${keyRes.status} ${JSON.stringify(keys).slice(0, 160)}`)
+  process.exit(1)
+}
 const secret = keys.find((k) => k.type === 'secret')?.api_key
 const AUTH = `https://${REF}.supabase.co/auth/v1/admin`
 const AH = { apikey: secret, Authorization: `Bearer ${secret}`, 'Content-Type': 'application/json' }
@@ -78,7 +90,7 @@ for (let page = 1; ; page++) {
 }
 const allow = new Set((await sql('select lower(email) e from member_allowlist')).map((r) => r.e))
 
-const rows = []
+if (apply) writeFileSync(outPath, 'email,temporary_password\n', { mode: 0o600, flag: 'wx' })
 let updated = 0
 let created = 0
 let skipped = 0
@@ -91,23 +103,19 @@ for (const email of emails) {
   }
   const password = passphrase()
   if (!apply) {
-    console.log(`  would ${existing ? 'update' : 'create'} ${mask(email)}`)
+    console.log(`  would ${existing ? 'update' : 'create'} ${mask(email)}${existing ? (existing.email_confirmed_at ? ' (confirmed)' : ' (UNCONFIRMED: will be confirmed)') : ''}`)
     continue
   }
   const meta = { ...(existing?.user_metadata ?? {}), must_change_password: true }
   const res = existing
-    ? await fetch(`${AUTH}/users/${existing.id}`, { method: 'PUT', headers: AH, body: JSON.stringify({ password, user_metadata: meta }) })
+    ? await fetch(`${AUTH}/users/${existing.id}`, { method: 'PUT', headers: AH, body: JSON.stringify({ password, email_confirm: true, user_metadata: meta }) })
     : await fetch(`${AUTH}/users`, { method: 'POST', headers: AH, body: JSON.stringify({ email, password, email_confirm: true, user_metadata: meta }) })
   if (!res.ok) {
     console.log(`  FAILED ${mask(email)}: ${res.status}`)
     continue
   }
   existing ? updated++ : created++
-  rows.push(`${email},${password}`)
+  appendFileSync(outPath, `${email},${password}\n`)
   console.log(`  ${existing ? 'updated' : 'created'} ${mask(email)}`)
-}
-if (apply && rows.length) {
-  writeFileSync(outPath, 'email,temporary_password\n' + rows.join('\n') + '\n')
-  chmodSync(outPath, 0o600)
 }
 console.log(`\n${apply ? 'applied' : 'dry run'}: updated ${updated}, created ${created}, skipped ${skipped}, listed ${emails.length}`)

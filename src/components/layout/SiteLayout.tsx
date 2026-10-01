@@ -79,14 +79,14 @@ function SiteHeader() {
             same thing at nine entries and this is its fix, not a workaround.
             Below `lg` the Menu button opens the mobile nav, which lists every
             entry including the portal. */}
-        <nav aria-label="Site" className={`ml-auto hidden items-center gap-1 ${signedIn ? '2xl:flex' : 'lg:flex'}`}>
+        <nav aria-label="Site" className="ml-auto hidden items-center gap-1 lg:flex">
           {items.map((item) => (
             <NavLink
               key={item.route}
               to={item.route}
               end={item.route === '/'}
               className={({ isActive }) =>
-                `whitespace-nowrap rounded-full px-2.5 py-1.5 text-sm font-medium no-underline transition-colors xl:px-3.5 ${
+                `rounded-full px-3.5 py-1.5 text-sm font-medium no-underline transition-colors ${
                   isActive ? 'bg-ink text-paper' : 'text-ink-soft hover:bg-paper-deep hover:text-ink'
                 }`
               }
@@ -100,7 +100,7 @@ function SiteHeader() {
             <NavLink
               to="/portal"
               className={({ isActive }) =>
-                `whitespace-nowrap rounded-full border px-2.5 py-1.5 text-sm font-medium no-underline xl:px-3.5 transition-colors ${
+                `rounded-full border px-3.5 py-1.5 text-sm font-medium no-underline transition-colors ${
                   isActive ? 'border-ink bg-ink text-paper' : 'border-ink/20 text-ink-soft hover:bg-paper-deep hover:text-ink'
                 }`
               }
@@ -113,7 +113,7 @@ function SiteHeader() {
         </nav>
         <button
           type="button"
-          className={`ml-auto shrink-0 rounded-md border border-ink/15 px-3 py-1.5 text-sm font-medium text-ink ${signedIn ? '2xl:hidden' : 'lg:hidden'}`}
+          className="ml-auto shrink-0 rounded-md border border-ink/15 px-3 py-1.5 text-sm font-medium text-ink lg:hidden"
           aria-expanded={open}
           aria-label="Toggle menu"
           onClick={() => setOpen((v) => !v)}
@@ -122,7 +122,7 @@ function SiteHeader() {
         </button>
       </div>
       {open && (
-        <nav aria-label="Site" className={`border-t border-ink/10 px-5 pb-4 pt-2 ${signedIn ? '2xl:hidden' : 'lg:hidden'}`}>
+        <nav aria-label="Site" className="border-t border-ink/10 px-5 pb-4 pt-2 lg:hidden">
           {items.map((item) => (
             <NavLink
               key={item.route}

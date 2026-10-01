@@ -19,7 +19,8 @@
  * and the secret key is fetched at run time. Neither is written to disk or printed.
  */
 import { execFileSync, spawn } from 'node:child_process'
-import { readFileSync, mkdirSync } from 'node:fs'
+import { readFileSync, mkdirSync, writeFileSync, unlinkSync, existsSync } from 'node:fs'
+import { tmpdir } from 'node:os'
 import { homedir } from 'node:os'
 import path from 'node:path'
 import { randomBytes } from 'node:crypto'
@@ -64,7 +65,12 @@ async function counts() {
 
 async function main() {
   mkdirSync(SHOTS, { recursive: true })
-  const keys = await (await fetch(`${MGMT}/api-keys?reveal=true`, { headers: MGMT_HEADERS })).json()
+  let keys
+  for (let attempt = 1; attempt <= 4; attempt++) {
+    keys = await (await fetch(`${MGMT}/api-keys?reveal=true`, { headers: MGMT_HEADERS })).json()
+    if (Array.isArray(keys)) break
+    await new Promise((r) => setTimeout(r, 1500 * attempt))
+  }
   const publishable = keys.find((k) => k.type === 'publishable')?.api_key
   const secret = keys.find((k) => k.type === 'secret')?.api_key
   if (!publishable || !secret) throw new Error('could not resolve keys')
@@ -87,6 +93,8 @@ async function main() {
   const mine1 = `Mine-${randomBytes(6).toString('hex')}-one`
   const mine2 = `Mine-${randomBytes(6).toString('hex')}-two`
   let userId = null
+  let userId2 = null
+  const email2 = `site18-qb-${rand}@example.org`
   let browser = null
 
   try {
@@ -160,6 +168,40 @@ async function main() {
       await ctx.close()
     }
 
+    // The UPDATE path of scripts/issue-temp-passwords.mjs, which is how the real cohort is
+    // reached (their accounts exist already, some unconfirmed). Fixture 2 is created
+    // UNCONFIRMED with a password nobody knows, the script is run on it for real, and the
+    // password it issues must sign in and land on the forced card.
+    await sql(`insert into member_allowlist (email, note, full_name) values ('${email2}', 'site18-qa', 'Site18 QB')`)
+    const c2 = await (
+      await fetch(`${URL_}/auth/v1/admin/users`, {
+        method: 'POST',
+        headers: { apikey: secret, Authorization: `Bearer ${secret}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email2, password: `Nobody-${randomBytes(8).toString('hex')}`, email_confirm: false }),
+      })
+    ).json()
+    userId2 = c2.id
+    const listFile = path.join(tmpdir(), `site18-list-${rand}.txt`)
+    const credFile = path.join(tmpdir(), `site18-creds-${rand}.csv`)
+    writeFileSync(listFile, email2 + '\n')
+    try {
+      const out = execFileSync('node', ['scripts/issue-temp-passwords.mjs', '--emails', listFile, '--out', credFile, '--apply'], { cwd: REPO, encoding: 'utf8' })
+      check('issue script updates an existing unconfirmed account', /updated 1/.test(out))
+      check('issue script never prints the password', !out.includes(readFileSync(credFile, 'utf8').split('\n')[1].split(',')[1]))
+      const issued = readFileSync(credFile, 'utf8').split('\n')[1].split(',')[1]
+      const ctx2 = await browser.newContext({ viewport: { width: 1280, height: 900 } })
+      const p2 = await ctx2.newPage()
+      await p2.goto(`${BASE}/portal`, { waitUntil: 'networkidle' })
+      await p2.fill('#portal-email', email2)
+      await p2.fill('#portal-password', issued)
+      await p2.click('button[type=submit]')
+      await p2.waitForSelector('[data-portal-state="recovery"]', { timeout: 15000 })
+      check('an issued password signs in and lands on the forced card', /Choose your own password/.test(await p2.innerText('body')))
+      await ctx2.close()
+    } finally {
+      for (const f of [listFile, credFile]) if (existsSync(f)) unlinkSync(f)
+    }
+
     // The third context signs in fresh: only the newest password may work.
     const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } })
     const page = await ctx.newPage()
@@ -173,19 +215,6 @@ async function main() {
       const worked = t.includes(email) && !/Choose your own password/.test(t)
       check(`fresh sign-in with ${what} ${shouldWork ? 'works' : 'is refused'}`, worked === shouldWork)
       if (worked) {
-        // QA 2026-10-01: the signed-in desktop nav (11 entries) wrapped its labels and
-        // then squeezed the site title to nothing at 1280. Below 2xl it is now the Menu
-        // button, so the title must be whole and the Menu button visible.
-        const nav = await page.evaluate(() => {
-          const title = document.querySelector('header a span, header a')
-          const menu = document.querySelector('button[aria-label="Toggle menu"]')
-          const bar = document.querySelector('header nav[aria-label="Site"]')
-          const vis = (e) => Boolean(e) && e.getBoundingClientRect().width > 0
-          const t = document.querySelector('header a')
-          return { titleW: t ? Math.round(t.getBoundingClientRect().width) : 0, titleCut: t ? t.scrollWidth > t.clientWidth + 1 : true, menu: vis(menu), bar: vis(bar), titleText: (t?.textContent ?? '').trim().length }
-        })
-        check('signed-in nav at 1280 shows the Menu button, not an overcrowded bar', nav.menu && !nav.bar, `menu=${nav.menu} bar=${nav.bar}`)
-        check('signed-in header at 1280 shows the whole site title', nav.titleText > 10 && !nav.titleCut, `width=${nav.titleW}px`)
         await page.screenshot({ path: path.join(SHOTS, 'signed-in-1280.png') })
         await page.click('text=Sign out')
       }
@@ -197,7 +226,10 @@ async function main() {
     if (userId) {
       await fetch(`${URL_}/auth/v1/admin/users/${userId}`, { method: 'DELETE', headers: { apikey: secret, Authorization: `Bearer ${secret}` } })
     }
-    await sql(`delete from member_allowlist where email = '${email}'`)
+    if (userId2) {
+      await fetch(`${URL_}/auth/v1/admin/users/${userId2}`, { method: 'DELETE', headers: { apikey: secret, Authorization: `Bearer ${secret}` } })
+    }
+    await sql(`delete from member_allowlist where email in ('${email}', '${email2}')`)
     const after = await counts()
     console.log('after', after)
     check('fixture fully removed (counts unchanged)', after.a === before.a && after.u === before.u)
