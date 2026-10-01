@@ -89,7 +89,7 @@ function CertificatesBody({ session }: { session: Session }) {
                   type="button"
                   disabled={busy === cert.id}
                   onClick={() => void download(cert)}
-                  className="rounded-full bg-brand px-4 py-2 text-sm font-semibold text-white hover:bg-accent disabled:opacity-40"
+                  className="rounded-full bg-brand px-4 py-2 text-sm font-semibold text-white hover:bg-accent-deep disabled:opacity-40"
                 >
                   {busy === cert.id ? 'Preparing…' : 'Download PDF'}
                 </button>

@@ -155,7 +155,7 @@ function ImportInner({ session }: { session: Session }) {
         )}
         <button
           type="button"
-          className="mt-5 rounded-full border border-brand/40 px-5 py-2.5 text-sm font-semibold text-brand hover:border-accent hover:text-accent"
+          className="mt-5 rounded-full border border-brand/40 px-5 py-2.5 text-sm font-semibold text-brand hover:border-accent hover:text-accent-deep"
           data-site14-again
           onClick={() => {
             setImportedId('')
@@ -343,7 +343,7 @@ function ImportInner({ session }: { session: Session }) {
       {!resolved ? (
         <button
           type="button"
-          className="mt-6 rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-white hover:bg-accent disabled:opacity-50"
+          className="mt-6 rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-white hover:bg-accent-deep disabled:opacity-50"
           disabled={busy || !email.trim()}
           data-site14-resolve
           onClick={() => void resolve()}
@@ -393,7 +393,7 @@ function ImportInner({ session }: { session: Session }) {
           <div className="mt-4 flex flex-wrap gap-3">
             <button
               type="button"
-              className="rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-white hover:bg-accent disabled:opacity-50"
+              className="rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-white hover:bg-accent-deep disabled:opacity-50"
               disabled={busy || !documentId.trim() || !bodyMd.trim()}
               data-site14-commit
               onClick={() => void commit()}

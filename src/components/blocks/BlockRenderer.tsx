@@ -357,7 +357,7 @@ export function Cta({ block, onDark = false }: { block: Block; onDark?: boolean 
   const className = `inline-block rounded-full px-5 py-2.5 text-sm font-semibold no-underline transition-colors ${
     // SIL blue at rest, orange on hover: their own link behaviour, and blue
     // clears AA with white text where their orange does not.
-    primary ? 'bg-brand text-white hover:bg-accent' : ghost
+    primary ? 'bg-brand text-white hover:bg-accent-deep' : ghost
   }`
   const label = <Txt node={block} field="label" as="span" />
   if (block.href) {

@@ -168,7 +168,7 @@ export function Area({
         value={value}
         placeholder={placeholder}
         onChange={(e) => onChange(e.target.value)}
-        className="mt-1 w-full rounded-lg border border-ink/20 bg-white px-3 py-2.5 text-ink outline-none focus:border-accent"
+        className="mt-1 w-full rounded-lg border border-ink/20 bg-white px-3 py-2.5 text-ink outline-none focus:border-accent-deep focus-visible:ring-2 focus-visible:ring-brand/40"
       />
     </div>
   )

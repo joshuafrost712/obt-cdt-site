@@ -418,7 +418,7 @@ function Form({ loaded, onRead }: { loaded: Loaded; onRead: () => void }) {
             <button
               type="button"
               id="site02-restore-yes"
-              className="rounded-full bg-brand px-4 py-2 text-xs font-semibold text-white hover:bg-accent"
+              className="rounded-full bg-brand px-4 py-2 text-xs font-semibold text-white hover:bg-accent-deep"
               onClick={() => {
                 const d = draftStore.load(roundKey)
                 if (d) setDraft({ step: d.step, group: d.group, ratings: d.ratings, answers: d.answers })
@@ -481,7 +481,7 @@ function Form({ loaded, onRead }: { loaded: Loaded; onRead: () => void }) {
           <button
             type="button"
             id="site02-next"
-            className="rounded-full bg-brand px-6 py-2.5 text-sm font-semibold text-white hover:bg-accent"
+            className="rounded-full bg-brand px-6 py-2.5 text-sm font-semibold text-white hover:bg-accent-deep"
             onClick={() => setStep(step + 1)}
           >
             <L id="portal.eval.nav.next" fallback="Next" />
@@ -492,7 +492,7 @@ function Form({ loaded, onRead }: { loaded: Loaded; onRead: () => void }) {
             type="button"
             id="site02-file"
             disabled={working || !gate.ok}
-            className="rounded-full bg-brand px-6 py-3 text-sm font-semibold text-white hover:bg-accent disabled:opacity-50"
+            className="rounded-full bg-brand px-6 py-3 text-sm font-semibold text-white hover:bg-accent-deep disabled:opacity-50"
             onClick={() => void file()}
             data-eval-missing-count={gate.missing.length}
           >
@@ -1044,7 +1044,7 @@ function CompletionPanel({ onRead }: { onRead: () => void }) {
         <button
           type="button"
           onClick={onRead}
-          className="rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-white hover:bg-accent"
+          className="rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-white hover:bg-accent-deep"
           data-eval-done-own
         >
           <L id="portal.eval.done.own" fallback="Read what I wrote" />

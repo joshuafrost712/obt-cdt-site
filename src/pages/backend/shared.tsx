@@ -238,7 +238,7 @@ export function RecoveryCard({
         {onClose && (
           <button
             type="button"
-            className="mt-4 rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-white hover:bg-accent"
+            className="mt-4 rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-white hover:bg-accent-deep"
             onClick={onClose}
           >
             {siteLabel('portal.account.back', 'Back to your portal')}
@@ -287,7 +287,7 @@ export function RecoveryCard({
           autoComplete="new-password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="rounded-lg border border-ink/20 bg-white px-3 py-2.5 text-ink outline-none focus:border-accent"
+          className="rounded-lg border border-ink/20 bg-white px-3 py-2.5 text-ink outline-none focus:border-accent-deep focus-visible:ring-2 focus-visible:ring-brand/40"
         />
 
         <label
@@ -304,13 +304,13 @@ export function RecoveryCard({
           autoComplete="new-password"
           value={confirm}
           onChange={(e) => setConfirm(e.target.value)}
-          className="rounded-lg border border-ink/20 bg-white px-3 py-2.5 text-ink outline-none focus:border-accent"
+          className="rounded-lg border border-ink/20 bg-white px-3 py-2.5 text-ink outline-none focus:border-accent-deep focus-visible:ring-2 focus-visible:ring-brand/40"
         />
 
         <button
           type="submit"
           disabled={status === 'working'}
-          className="rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-white hover:bg-accent disabled:opacity-50"
+          className="rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-white hover:bg-accent-deep disabled:opacity-50"
         >
           {status === 'working'
             ? siteLabel('portal.recovery.working', 'Saving…')
@@ -516,7 +516,7 @@ function SignInCard({ returning }: { returning: boolean }) {
           autoComplete="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="rounded-lg border border-ink/20 bg-white px-3 py-2.5 text-ink outline-none focus:border-accent"
+          className="rounded-lg border border-ink/20 bg-white px-3 py-2.5 text-ink outline-none focus:border-accent-deep focus-visible:ring-2 focus-visible:ring-brand/40"
           placeholder="you@example.org"
         />
 
@@ -533,7 +533,7 @@ function SignInCard({ returning }: { returning: boolean }) {
               autoComplete={mode === 'register' ? 'new-password' : 'current-password'}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="rounded-lg border border-ink/20 bg-white px-3 py-2.5 text-ink outline-none focus:border-accent"
+              className="rounded-lg border border-ink/20 bg-white px-3 py-2.5 text-ink outline-none focus:border-accent-deep focus-visible:ring-2 focus-visible:ring-brand/40"
             />
           </>
         )}
@@ -572,7 +572,7 @@ function SignInCard({ returning }: { returning: boolean }) {
               autoComplete="new-password"
               value={confirm}
               onChange={(e) => setConfirm(e.target.value)}
-              className="rounded-lg border border-ink/20 bg-white px-3 py-2.5 text-ink outline-none focus:border-accent"
+              className="rounded-lg border border-ink/20 bg-white px-3 py-2.5 text-ink outline-none focus:border-accent-deep focus-visible:ring-2 focus-visible:ring-brand/40"
             />
             <p className="text-xs text-ink-faint" data-portal-hint>
               {siteLabel(
@@ -586,7 +586,7 @@ function SignInCard({ returning }: { returning: boolean }) {
         <button
           type="submit"
           disabled={status === 'working'}
-          className="rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-white hover:bg-accent disabled:opacity-50"
+          className="rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-white hover:bg-accent-deep disabled:opacity-50"
         >
           {status === 'working'
             ? siteLabel('portal.signin.working', 'Working…')

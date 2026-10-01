@@ -190,7 +190,7 @@ export function WriteupForm({
             fallback="There is an unfinished write-up for this session on this device."
           />
           <div className="mt-3 flex flex-wrap gap-3">
-            <button type="button" id="cdt-restore-yes" onClick={restore} className="rounded-full bg-brand px-4 py-2 text-xs font-semibold text-white hover:bg-accent">
+            <button type="button" id="cdt-restore-yes" onClick={restore} className="rounded-full bg-brand px-4 py-2 text-xs font-semibold text-white hover:bg-accent-deep">
               <L id="portal.assess.consultant.form.draft.restore.cta" fallback="Pick up where I left off" />
             </button>
             <button type="button" id="cdt-restore-no" onClick={discard} className="rounded-full border border-ink/20 px-4 py-2 text-xs font-medium text-ink-soft hover:bg-paper-deep">
@@ -274,7 +274,7 @@ export function WriteupForm({
             type="url"
             value={String(header.source_url ?? '')}
             onChange={(e) => setHeader((h) => ({ ...h, source_url: e.target.value }))}
-            className="mt-1 w-full rounded-lg border border-ink/20 bg-white px-3 py-2.5 text-ink outline-none focus:border-accent"
+            className="mt-1 w-full rounded-lg border border-ink/20 bg-white px-3 py-2.5 text-ink outline-none focus:border-accent-deep focus-visible:ring-2 focus-visible:ring-brand/40"
           />
         </div>
       </div>
@@ -308,7 +308,7 @@ export function WriteupForm({
           id="cdt-file"
           disabled={working || !canFile}
           onClick={() => void file()}
-          className="self-start rounded-full bg-brand px-6 py-3 text-sm font-semibold text-white hover:bg-accent disabled:opacity-50"
+          className="self-start rounded-full bg-brand px-6 py-3 text-sm font-semibold text-white hover:bg-accent-deep disabled:opacity-50"
         >
           <L
             id={working ? 'portal.assess.consultant.form.submit.working' : 'portal.assess.consultant.form.submit.cta'}

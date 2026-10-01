@@ -137,7 +137,7 @@ function RoundCard({ row }: { row: RoundListEntry }) {
       <div className="mt-4">
         <Link
           to={`/portal/e/${encodeURIComponent(row.round.round_key)}`}
-          className="inline-block rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-white hover:bg-accent"
+          className="inline-block rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-white hover:bg-accent-deep"
           data-eval-open
         >
           <L

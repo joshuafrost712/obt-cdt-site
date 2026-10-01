@@ -115,7 +115,7 @@ function EventsBody({ session }: { session: Session }) {
                       type="button"
                       disabled={busy === event.id}
                       onClick={() => void act(() => register(session.user.id, event), event.id)}
-                      className="rounded-full bg-brand px-4 py-2 text-sm font-semibold text-white hover:bg-accent disabled:opacity-40"
+                      className="rounded-full bg-brand px-4 py-2 text-sm font-semibold text-white hover:bg-accent-deep disabled:opacity-40"
                     >
                       {event.status === 'fully-booked' ? 'Join the waitlist' : 'Register'}
                     </button>

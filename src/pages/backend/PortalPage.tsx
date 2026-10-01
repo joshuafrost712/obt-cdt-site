@@ -52,7 +52,7 @@ function EvaluationsLink() {
       </p>
       <Link
         to="/portal/evaluations"
-        className="mt-3 inline-block rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-white hover:bg-accent"
+        className="mt-3 inline-block rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-white hover:bg-accent-deep"
       >
         {siteLabel('portal.list.evaluations.cta', 'Your workshop evaluations')}
       </Link>
@@ -85,7 +85,7 @@ function AccountLink() {
       </p>
       <Link
         to="/portal/account"
-        className="mt-3 inline-block rounded-full border border-brand/40 px-5 py-2.5 text-sm font-semibold text-brand hover:border-accent hover:text-accent"
+        className="mt-3 inline-block rounded-full border border-brand/40 px-5 py-2.5 text-sm font-semibold text-brand hover:border-accent hover:text-accent-deep"
       >
         {siteLabel('portal.account.card.cta', 'Your name and details')}
       </Link>

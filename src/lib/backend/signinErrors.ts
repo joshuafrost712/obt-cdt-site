@@ -29,6 +29,9 @@ export type SignInFailure =
   | 'other'
 
 export function classifySignInError(message: string): SignInFailure {
+  // auth-js turns the service's 500 into the bare message "{}" (QA 2026-10-01), so an
+  // off-list address would print braces and disclose that it is off the list.
+  if (/^\s*\{\s*\}\s*$/.test(message)) return 'not-on-list'
   if (/rate limit/i.test(message)) return 'email-rate-limit'
   if (/invalid login credentials/i.test(message)) return 'bad-credentials'
   if (/email not confirmed/i.test(message)) return 'unconfirmed'

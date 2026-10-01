@@ -543,7 +543,7 @@ function ScheduleCard({ assignment, onChanged }: { assignment: AssignmentRow; on
           type="datetime-local"
           value={when}
           onChange={(e) => setWhen(e.target.value)}
-          className="rounded-lg border border-ink/20 bg-white px-3 py-2.5 text-ink outline-none focus:border-accent"
+          className="rounded-lg border border-ink/20 bg-white px-3 py-2.5 text-ink outline-none focus:border-accent-deep focus-visible:ring-2 focus-visible:ring-brand/40"
         />
         <label className="text-xs font-semibold uppercase tracking-wide text-ink-faint" htmlFor="cdt-url">
           <L id="portal.assess.consultant.assignment.confirm.url" fallback="Meeting link" />
@@ -553,7 +553,7 @@ function ScheduleCard({ assignment, onChanged }: { assignment: AssignmentRow; on
           type="url"
           value={url}
           onChange={(e) => setUrl(e.target.value)}
-          className="rounded-lg border border-ink/20 bg-white px-3 py-2.5 text-ink outline-none focus:border-accent"
+          className="rounded-lg border border-ink/20 bg-white px-3 py-2.5 text-ink outline-none focus:border-accent-deep focus-visible:ring-2 focus-visible:ring-brand/40"
         />
         <div className="flex flex-wrap gap-3">
           <button
@@ -561,7 +561,7 @@ function ScheduleCard({ assignment, onChanged }: { assignment: AssignmentRow; on
             id="cdt-save-date"
             disabled={working || !when}
             onClick={() => void save(assignment.state === 'proposed' ? 'scheduled' : undefined)}
-            className="rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-white hover:bg-accent disabled:opacity-50"
+            className="rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-white hover:bg-accent-deep disabled:opacity-50"
           >
             <L
               id={

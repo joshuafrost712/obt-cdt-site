@@ -87,7 +87,7 @@ function AccountBody({ session }: { session: Session }) {
         </button>
       )}
       <p>
-        <Link to="/portal" className="text-sm font-semibold text-brand hover:text-accent">
+        <Link to="/portal" className="text-sm font-semibold text-brand hover:text-accent-deep">
           {siteLabel('portal.account.back', 'Back to your portal')}
         </Link>
       </p>
@@ -175,7 +175,7 @@ function ProfileForm({ session, profile }: { session: Session; profile: Profile 
           disabled={!dirty || state === 'saving'}
           onClick={() => void save()}
           data-site12-save
-          className="rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-white hover:bg-accent disabled:opacity-40"
+          className="rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-white hover:bg-accent-deep disabled:opacity-40"
         >
           {state === 'saving'
             ? siteLabel('portal.account.saving', 'Saving…')
@@ -218,7 +218,7 @@ function Field({
         id={id}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="mt-1 w-full rounded-lg border border-ink/20 bg-white px-3 py-2 text-sm text-ink outline-none focus:border-accent"
+        className="mt-1 w-full rounded-lg border border-ink/20 bg-white px-3 py-2 text-sm text-ink outline-none focus:border-accent-deep focus-visible:ring-2 focus-visible:ring-brand/40"
       />
       <p className="mt-1 text-xs leading-relaxed text-ink-faint">{hint}</p>
     </div>

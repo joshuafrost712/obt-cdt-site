@@ -172,7 +172,23 @@ async function main() {
       const t = await page.innerText('body')
       const worked = t.includes(email) && !/Choose your own password/.test(t)
       check(`fresh sign-in with ${what} ${shouldWork ? 'works' : 'is refused'}`, worked === shouldWork)
-      if (worked) await page.click('text=Sign out')
+      if (worked) {
+        // QA 2026-10-01: the signed-in desktop nav (11 entries) wrapped its labels and
+        // then squeezed the site title to nothing at 1280. Below 2xl it is now the Menu
+        // button, so the title must be whole and the Menu button visible.
+        const nav = await page.evaluate(() => {
+          const title = document.querySelector('header a span, header a')
+          const menu = document.querySelector('button[aria-label="Toggle menu"]')
+          const bar = document.querySelector('header nav[aria-label="Site"]')
+          const vis = (e) => Boolean(e) && e.getBoundingClientRect().width > 0
+          const t = document.querySelector('header a')
+          return { titleW: t ? Math.round(t.getBoundingClientRect().width) : 0, titleCut: t ? t.scrollWidth > t.clientWidth + 1 : true, menu: vis(menu), bar: vis(bar), titleText: (t?.textContent ?? '').trim().length }
+        })
+        check('signed-in nav at 1280 shows the Menu button, not an overcrowded bar', nav.menu && !nav.bar, `menu=${nav.menu} bar=${nav.bar}`)
+        check('signed-in header at 1280 shows the whole site title', nav.titleText > 10 && !nav.titleCut, `width=${nav.titleW}px`)
+        await page.screenshot({ path: path.join(SHOTS, 'signed-in-1280.png') })
+        await page.click('text=Sign out')
+      }
     }
     await ctx.close()
   } finally {
