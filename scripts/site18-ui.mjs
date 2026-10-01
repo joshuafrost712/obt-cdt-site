@@ -117,7 +117,8 @@ async function main() {
       await page.waitForSelector('[data-portal-state="recovery"]', { timeout: 15000 })
       const body = await page.innerText('body')
       check(`${label}: forced card shown after sign-in`, /Choose your own password/.test(body))
-      check(`${label}: no member shell behind the gate`, !/Your name and details|Sign out\s*$/m.test(body) || /Choose your own password/.test(body))
+      // The member shell prints the signed-in address in its bar; the gate must not.
+      check(`${label}: no member shell behind the gate`, !body.includes(email))
       const over = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1)
       check(`${label}: no horizontal overflow on the forced card`, !over)
       await page.screenshot({ path: path.join(SHOTS, `forced-${label}.png`), fullPage: true })
@@ -143,7 +144,7 @@ async function main() {
 
         await page.goto(`${BASE}/portal/account`, { waitUntil: 'networkidle' })
         await page.waitForSelector('[data-site18-change-password]', { timeout: 15000 })
-        check('account screen offers Change my password', true)
+        check('account screen offers Change my password', (await page.locator('[data-site18-change-password]').count()) === 1)
         await page.click('[data-site18-change-password]')
         await page.waitForSelector('#portal-recovery-password')
         await page.screenshot({ path: path.join(SHOTS, 'voluntary-phone.png'), fullPage: true })
@@ -151,7 +152,7 @@ async function main() {
         await page.fill('#portal-recovery-confirm', mine2)
         await page.click('button[type=submit]')
         await page.waitForSelector('[data-portal-state="recovery-done"]', { timeout: 15000 })
-        check('voluntary change confirms', true)
+        check('voluntary change confirms', (await page.locator('[data-portal-state="recovery-done"]').count()) === 1)
         await page.click('text=Back to your portal')
         await page.waitForTimeout(500)
         check('voluntary change did not raise the forced gate', !(await page.locator('[data-portal-state="recovery"]').count()))
