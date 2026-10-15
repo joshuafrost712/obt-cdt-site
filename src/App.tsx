@@ -60,6 +60,11 @@ const AccountPage = lazy(() => import('./pages/backend/AccountPage'))
 // here, so the lazy chunk takes this stem and the confirm-live proof greps
 // `assets/ImportPage-<hash>.js` for it.
 const ImportPage = lazy(() => import('./pages/backend/ImportPage'))
+// Spec SITE-19. A review quiz, keyed by its stable quiz key
+// (`psalms-bali-2026-q1`), which names no person and is the address Joshua's
+// announcement email and the Review 1 link both carry. The module name is fixed
+// by the spec: confirm-live follows the import graph to `QuizPage-<hash>.js`.
+const QuizPage = lazy(() => import('./pages/backend/QuizPage'))
 
 function Deferred({ children }: { children: ReactNode }) {
   return <Suspense fallback={<p className="mx-auto max-w-3xl px-5 py-16 text-ink-faint">Loading…</p>}>{children}</Suspense>
@@ -140,6 +145,7 @@ export default function App() {
             <Route path="/portal/evaluations" element={<Deferred><EvaluationsPage /></Deferred>} />
             <Route path="/portal/e/:roundKey" element={<Deferred><EvaluationPage /></Deferred>} />
             <Route path="/portal/account" element={<Deferred><AccountPage /></Deferred>} />
+            <Route path="/portal/q/:quizKey" element={<Deferred><QuizPage /></Deferred>} />
             <Route path="/portal/admin/attributions" element={<Deferred><AttributionsPage /></Deferred>} />
             <Route path="/portal/admin/import" element={<Deferred><ImportPage /></Deferred>} />
           </>

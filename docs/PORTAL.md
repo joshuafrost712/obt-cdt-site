@@ -194,6 +194,37 @@ returning that shape for the caller's own publications, plus a button. Do not ad
 a `cbc_export_state` column before then — it would be a guess about a schema that
 does not exist.
 
+## Review quizzes
+
+Spec SITE-19, migration `20261015120000_review_quiz.sql`. A member opens
+`/portal/q/<quiz_key>`, answers every question, sees which were right, and
+retakes until all are right; the first full score is recorded.
+
+| Table | Holds | A member can |
+|---|---|---|
+| `quiz` | the quiz, the review it pairs with, `active` | read active quizzes |
+| `quiz_question` | stems and explanations | nothing: no grant, RLS on, no policy |
+| `quiz_choice` | choices and `is_correct` | nothing: no grant, RLS on, no policy |
+| `quiz_attempt` | each submitted answer set, scored | read their own |
+| `quiz_completion` | the first full-score attempt | read their own |
+
+The paper comes only from `quiz_paper()`, which never returns the key and
+returns an explanation only for a question the caller has already answered
+correctly. Answers go only through `submit_quiz_attempt()`, which scores as
+`auth.uid()` and takes no profile id. No client role can write any of the five
+tables.
+
+Quiz text is member content. It lives in the vault
+(`Member Pages/Psalms-Quiz-1.md`) and is posted as `postgres` by
+`scripts/seed_review_quiz.py --source <file> --apply`, which refuses until the
+file says `signed_off: true` and runs a leak gate over the repo first. To
+withdraw a quiz without losing attempts, set `quiz.active = false`.
+
+Who has completed is a script, not a screen, because an admin screen needs
+`aal2` and no browser reaches it until CDT-10:
+`node scripts/site19-completions.mjs --quiz <key>` prints counts;
+`--names` adds name, completion date and attempts, to the terminal only.
+
 ## Not built yet
 
 - The pairing endpoints, the ingest function, and the outbox on the Honest Eval

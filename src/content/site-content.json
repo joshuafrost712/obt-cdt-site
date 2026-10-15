@@ -1392,6 +1392,106 @@
         "label": "Back to your portal"
       },
       {
+        "id": "portal.quiz.title",
+        "type": "labelToken",
+        "label": "Review quiz"
+      },
+      {
+        "id": "portal.quiz.signed_out",
+        "type": "labelToken",
+        "label": "This quiz is for workshop participants. Sign in to take it."
+      },
+      {
+        "id": "portal.quiz.loading",
+        "type": "labelToken",
+        "label": "Loading the quiz…"
+      },
+      {
+        "id": "portal.quiz.unknown",
+        "type": "labelToken",
+        "label": "There is no open quiz at this address. The link may be wrong, or the quiz may have been withdrawn."
+      },
+      {
+        "id": "portal.quiz.to_portal",
+        "type": "labelToken",
+        "label": "Back to your portal"
+      },
+      {
+        "id": "portal.quiz.back",
+        "type": "labelToken",
+        "label": "Back to the review"
+      },
+      {
+        "id": "portal.quiz.not_started",
+        "type": "labelToken",
+        "label": "Answer every question, then submit. You will see which answers were right, and you can retake the quiz until every answer is right."
+      },
+      {
+        "id": "portal.quiz.score",
+        "type": "labelToken",
+        "label": "{score} of {total} right."
+      },
+      {
+        "id": "portal.quiz.partly",
+        "type": "labelToken",
+        "label": "Where a question says not yet, read that part of the review again, then retake the quiz. Every question opens again on a retake."
+      },
+      {
+        "id": "portal.quiz.last_score",
+        "type": "labelToken",
+        "label": "Last attempt: {score} of {total}."
+      },
+      {
+        "id": "portal.quiz.complete",
+        "type": "labelToken",
+        "label": "Complete. You answered every question correctly on {date}."
+      },
+      {
+        "id": "portal.quiz.submit_failed",
+        "type": "labelToken",
+        "label": "Your answers did not reach the server, so nothing was recorded. Your picks are still here; check your connection and submit again."
+      },
+      {
+        "id": "portal.quiz.mark.right",
+        "type": "labelToken",
+        "label": "Right"
+      },
+      {
+        "id": "portal.quiz.mark.not_yet",
+        "type": "labelToken",
+        "label": "Not yet"
+      },
+      {
+        "id": "portal.quiz.reread",
+        "type": "labelToken",
+        "label": "Read the review again"
+      },
+      {
+        "id": "portal.quiz.submit",
+        "type": "labelToken",
+        "label": "Submit my answers"
+      },
+      {
+        "id": "portal.quiz.submitting",
+        "type": "labelToken",
+        "label": "Submitting…"
+      },
+      {
+        "id": "portal.quiz.pick_all",
+        "type": "labelToken",
+        "label": "Pick an answer for every question to submit."
+      },
+      {
+        "id": "portal.quiz.retake",
+        "type": "labelToken",
+        "label": "Retake the quiz"
+      },
+      {
+        "id": "portal.quiz.disclosure",
+        "type": "labelToken",
+        "label": "Each attempt you submit, the date you complete the quiz and the number of attempts it took are stored, and Joshua can see them by name."
+      },
+      {
         "id": "portal.eval.done.list",
         "type": "labelToken",
         "label": "All my evaluations"
