@@ -434,6 +434,21 @@ async function sqlHalf(fx, pubKey) {
     rows6.length > 0 && rows6.every((r) => Object.keys(r).length === SUBMIT_COLS.length && SUBMIT_COLS.every((k) => k in r)))
   const owner = (await sql(`select profile_id from public.quiz_attempt where quiz_key = ${q(QUIZ)} order by submitted_at desc limit 1`))[0]?.profile_id
   ok("criterion 6: the stored attempt's profile_id is A's", owner === fx.ids.a)
+  // The STORED attempt, not only the RPC's reply. Signing review 1 injected a
+  // function that kept the reply clean and stored the correct key beside the
+  // pick in `result`, which getLastAttempt reads into the browser after the
+  // first submission; the lane stayed 130 / 0. Asserted as postgres and as the
+  // owner's own read, element by element, by exact key set.
+  const RESULT_KEYS = ['choice_key', 'correct', 'question_key']
+  const shapeOk = (result) =>
+    Array.isArray(result) &&
+    result.length === total &&
+    result.every((e) => JSON.stringify(Object.keys(e).sort()) === JSON.stringify(RESULT_KEYS) && e.choice_key === pickedOf[e.question_key])
+  const stored = (await sql(`select result from public.quiz_attempt where profile_id = ${q(fx.ids.a)} order by attempt_no limit 1`))[0]?.result
+  ok('criterion 6: the stored result carries exactly {question_key, choice_key, correct} per question, and only the pick', shapeOk(stored),
+    `keys=${JSON.stringify(Object.keys(stored?.[0] ?? {}).sort())}`)
+  const ownRead = await A.select(`quiz_attempt?select=result&profile_id=eq.${fx.ids.a}&order=attempt_no.asc&limit=1`)
+  ok("criterion 6: and so does the owner's own REST read of it", shapeOk(ownRead.body?.[0]?.result))
 
   // ---- criterion 9: explanations follow the rule.
   ok('criterion 9: the submit returns null explanation on every not-yet question',
@@ -613,6 +628,14 @@ async function browserHalf(fx, pub) {
       // Criterion 4's capture: every /rest/v1/ body until Submit is pressed.
       const bodies = []
       let capturing = true
+      // Finding 37: every read of the member's own rows names its subject. RLS
+      // makes an unfiltered read return the same rows today, so only the
+      // request URL can show the filter is there (signing review 1, note 1).
+      const ownReads = []
+      page.on('request', (req) => {
+        const u = req.url()
+        if (/\/rest\/v1\/quiz_(attempt|completion)\?/.test(u)) ownReads.push(decodeURIComponent(u))
+      })
       page.on('response', async (res) => {
         if (!capturing || !res.url().includes('/rest/v1/')) return
         try {
@@ -669,6 +692,26 @@ async function browserHalf(fx, pub) {
       ok(`criterion 10 @${width}: no horizontal overflow`, await noOverflow(page))
       await page.screenshot({ path: `${SHOTS}/partly-${width}.png`, fullPage: true })
 
+      // Criterion 4, after the first submission: the reload reads the stored
+      // attempt back into the browser, and that body must carry the picks and
+      // nothing that names an unpicked right answer (signing review 1).
+      const [attemptResp] = await Promise.all([
+        page.waitForResponse((r) => /\/rest\/v1\/quiz_attempt\?/.test(r.url())),
+        page.reload({ waitUntil: 'networkidle' }),
+      ])
+      const attemptBody = await attemptResp.text()
+      // supabase-js's maybeSingle() fetches an ARRAY and picks the row client-
+      // side, so the body is `[{...}]`; the first version read `.result` off the
+      // array and went red on a clean run (elements=0), which is how this was found.
+      const parsedBody = JSON.parse(attemptBody)
+      const readBack = (Array.isArray(parsedBody) ? parsedBody[0] : parsedBody)?.result ?? []
+      ok(`criterion 4 @${width}: after a submission, the stored attempt the browser reads carries only {question_key, choice_key, correct}`,
+        readBack.length === keys.length && readBack.every((e) => JSON.stringify(Object.keys(e).sort()) === '["choice_key","correct","question_key"]'),
+        `elements=${readBack.length}`)
+      ok(`criterion 4 @${width}: and no is_correct`, !attemptBody.includes('is_correct'))
+      await page.waitForSelector('[data-quiz-state="partly"]', { timeout: 15000 }).catch(() => {})
+      ok(`criterion 10 @${width}: a reload after a partly-right attempt lands in partly again`, (await page.locator('[data-quiz-state="partly"]').count()) === 1)
+
       await page.click('[data-quiz-retake]')
       await page.waitForSelector('[data-quiz-state="retaking"]', { timeout: 5000 })
       ok(`criterion 10 @${width}: Retake clears every radio, including the right ones`, (await page.locator('input[type="radio"]:checked').count()) === 0)
@@ -695,6 +738,10 @@ async function browserHalf(fx, pub) {
       await page.waitForSelector('[data-quiz-state="complete"]', { timeout: 15000 }).catch(() => {})
       ok(`criterion 10 @${width}: a reload lands in complete again`, (await page.locator('[data-quiz-state="complete"]').count()) === 1)
       ok(`criterion 10 @${width}: no horizontal overflow when complete`, await noOverflow(page))
+      const memberId = fx.ids[member]
+      ok(`criterion 7 @${width}: every quiz_attempt and quiz_completion read the page made names its subject`,
+        ownReads.length >= 4 && ownReads.every((u) => u.includes(`profile_id=eq.${memberId}`)),
+        `reads=${ownReads.length} unnamed=${ownReads.filter((u) => !u.includes(`profile_id=eq.${memberId}`)).length}`)
       await ctx.close()
     }
 
