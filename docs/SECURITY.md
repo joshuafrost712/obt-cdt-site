@@ -448,6 +448,17 @@ The remaining prerequisite is now only the enrolment itself: TOTP is enabled and
 an administrator exists, so `scripts/mfa-enrol.mjs` can run today, after which
 `20260821120000_admin_mfa.sql` applies and its own safety gate passes.
 
+#### Closed 2026-10-15: enrolled, then applied
+
+Joshua ran `scripts/mfa-enrol.mjs` for `josh_frost@sil.org` and the session reached `aal2`:
+
+```
+after password sign-in: aal=aal1 amr=[{"method":"password","timestamp":1792079754}]
+after MFA verify: aal=aal2 amr=[{"method":"totp","timestamp":1792079975},{"method":"password","timestamp":1792079754}]
+```
+
+`20260821120000_admin_mfa.sql` was then applied with `scripts/apply-migration.mjs` against `lvzwmzqqvbnurumygcnt`. Measured live straight after: `is_portal_admin()` and `is_portal_owner()` both now carry the `aal2` clause, and 1 administrator holds a verified factor. The management API does not relay `raise notice`, so the gate's notice text was not seen; the verified-factor count it tests was measured directly instead. The ledger row is not yet recorded (`supabase migration repair --status applied 20260821120000` is still owed). The browser half of the check (refused at `aal1`, admitted at `aal2`) waits on the in-app TOTP challenge, CDT-10. Until it ships, the admin pages show empty to a password-only session, as described above.
+
 Worth carrying forward as a rule rather than a note: a guard that lives only in
 prose ("these belong in the same sitting") is not a guard. The migration's DO
 block correctly refuses to run *too early*; nothing anywhere refuses to leave it
@@ -653,6 +664,8 @@ check is advisory in any case, since anything the browser computes a script can
 skip. The posture is therefore an L1 row left unmet knowingly, which is different
 from one nobody had noticed. Revisit it with the HIBP trigger above; if the
 project moves to Pro, the server-side check supersedes this question entirely.
+
+**Superseded 2026-10-15: the MFA migration is applied**; see "Closed 2026-10-15" above. The paragraph below is kept as the record of its earlier state.
 
 **The MFA migration is written, reviewed and not applied.** Its safety gate will
 refuse until an administrator has enrolled, which is the correct behaviour and
