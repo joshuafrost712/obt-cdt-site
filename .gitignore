@@ -171,3 +171,8 @@ scripts/.site14-fixture-ids.json
 # time this is a guard rather than a cleanup.
 feedback/site15-shots/
 scripts/.site18-shots/
+
+# Spec SITE-19's shots. They photograph the review quiz signed in as a fixture,
+# and criterion 16's shot is the Psalms member page, which is member content.
+# Ignored before the first shot is taken (program findings 11 and 36).
+feedback/site19-shots/
